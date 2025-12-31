@@ -1,38 +1,81 @@
-
 :root {
-  --bg: #0b0c10;
-  --card: #11131a;
-  --card2: #161926;
-  --text: #f3f4f6;
-  --muted: #a7a9b3;
-  --border: rgba(255,255,255,0.10);
-  --accent: #7c9cff;
-  --danger: #ff6b6b;
-  --radius: 16px;
+  /* 🎨 THE ONLY 3 YOU CHANGE */
+  --bg: #fbe8ef;
+  --ink: #2d0819;
+  --accent: #f7b7d2;
+  --font-main: "Poppins", system-ui, -apple-system, Segoe UI, Roboto, Arial,
+    sans-serif;
+  --font-alt: "Quicksand", system-ui, -apple-system, Segoe UI, Roboto, Arial,
+    sans-serif;
+
+  /* derived theme tokens (don’t edit) */
+  --surface: color-mix(in srgb, white 92%, var(--bg));
+  --surface-2: color-mix(in srgb, white 86%, var(--bg));
+  --muted: color-mix(in srgb, var(--ink) 55%, var(--bg));
+  --border: color-mix(in srgb, var(--ink) 18%, var(--bg));
+
+  --accent-ink: color-mix(
+    in srgb,
+    var(--ink) 70%,
+    #7a1f45
+  ); /* richer headings/labels */
+  --accent-soft: color-mix(in srgb, var(--accent) 18%, white);
+  --accent-outline: color-mix(in srgb, var(--accent) 55%, transparent);
+
+  --danger: #c43b58;
+
+  --radius: 22px;
+
+  --shadow: 0 10px 26px color-mix(in srgb, var(--accent) 16%, transparent);
+  --shadow-soft: 0 4px 14px color-mix(in srgb, var(--accent) 12%, transparent);
 }
 
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  background: radial-gradient(1000px 500px at 20% 0%, rgba(124,156,255,0.18), transparent 55%),
-              radial-gradient(800px 400px at 80% 10%, rgba(255,107,107,0.12), transparent 55%),
-              var(--bg);
-  color: var(--text);
+  font-family: var(--font-main);
+
+  /* cute glow derived from accent */
+  background: radial-gradient(
+      1000px 500px at 20% 0%,
+      color-mix(in srgb, var(--accent) 25%, transparent),
+      transparent 55%
+    ),
+    radial-gradient(
+      800px 400px at 80% 10%,
+      color-mix(in srgb, var(--accent) 16%, transparent),
+      transparent 55%
+    ),
+    var(--bg);
+
+  color: var(--ink);
 }
 
 .topbar {
   position: sticky;
   top: 0;
-  background: rgba(11,12,16,0.82);
+  background: color-mix(in srgb, var(--surface) 90%, transparent);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--border);
   padding: 14px 14px 10px;
   z-index: 10;
 }
 
-.title h1 { margin: 0; font-size: 20px; letter-spacing: 0.2px; }
-.subtitle { margin: 4px 0 10px; color: var(--muted); font-size: 13px; }
+.title h1 {
+  margin: 0;
+  font-size: 24px;
+  letter-spacing: 0.2px;
+  color: var(--accent-ink);
+}
+
+.subtitle {
+  margin: 4px 0 10px;
+  color: var(--muted);
+  font-size: 18px;
+}
 
 .controls {
   display: flex;
@@ -40,7 +83,9 @@ body {
   flex-wrap: wrap;
   align-items: center;
 }
-.controls.secondary { margin-top: 10px; }
+.controls.secondary {
+  margin-top: 10px;
+}
 
 .container {
   padding: 14px;
@@ -48,37 +93,57 @@ body {
   margin: 0 auto;
 }
 
-.btn, .select, .search {
+.btn,
+.select,
+.search {
+  font-family: var(--font-main);
   border: 1px solid var(--border);
-  background: rgba(255,255,255,0.03);
-  color: var(--text);
+  background: var(--surface);
+  color: var(--ink);
   border-radius: 999px;
   padding: 10px 12px;
   font-size: 14px;
   line-height: 1;
 }
-.btn { cursor: pointer; }
-.btn:active { transform: translateY(1px); }
+
+.btn {
+  cursor: pointer;
+}
+.btn:active {
+  transform: translateY(1px);
+}
 
 .btn-primary {
-  border-color: rgba(124,156,255,0.45);
-  background: rgba(124,156,255,0.12);
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+  background: color-mix(in srgb, var(--accent) 14%, var(--surface));
 }
+
 .btn-danger {
-  border-color: rgba(255,107,107,0.5);
-  background: rgba(255,107,107,0.10);
+  border-color: color-mix(in srgb, var(--danger) 55%, var(--border));
+  background: color-mix(in srgb, var(--danger) 12%, var(--surface));
 }
 
-.fileBtn { display: inline-flex; align-items: center; gap: 8px; }
+.fileBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
 
-.view { margin-top: 14px; }
-.hidden { display: none !important; }
+.view {
+  margin-top: 14px;
+}
+.hidden {
+  display: none !important;
+}
 
+/* cards */
 .card {
-  background: rgba(255,255,255,0.02);
+  font-family: var(--font-main);
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   overflow: hidden;
+  box-shadow: var(--shadow-soft);
 }
 
 .monthHeader {
@@ -87,10 +152,17 @@ body {
   align-items: baseline;
   padding: 14px 14px 10px;
   border-bottom: 1px solid var(--border);
-  background: rgba(255,255,255,0.02);
+  background: var(--surface-2);
 }
-.monthHeader h2 { margin: 0; font-size: 16px; }
-.monthHeader .small { color: var(--muted); font-size: 12px; }
+.monthHeader h2 {
+  margin: 0;
+  font-size: 16px;
+  color: var(--accent-ink);
+}
+.monthHeader .small {
+  color: var(--muted);
+  font-size: 12px;
+}
 
 .weekdays {
   display: grid;
@@ -100,7 +172,10 @@ body {
   color: var(--muted);
   font-size: 12px;
 }
-.weekdays div { text-align: center; padding: 6px 0; }
+.weekdays div {
+  text-align: center;
+  padding: 6px 0;
+}
 
 .calendar {
   display: grid;
@@ -110,37 +185,56 @@ body {
 }
 
 .day {
+  font-family: var(--font-alt);
+  font-weight: 600;
   min-height: 78px;
   border-radius: 14px;
-  border: 1px solid var(--border);
-  background: rgba(255,255,255,0.02);
+  border: 2px solid var(--border);
+  background: var(--surface);
   padding: 8px;
   position: relative;
   cursor: pointer;
   display: flex;
   flex-direction: column;
   gap: 6px;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  overflow: hidden;
 }
-.day:active { transform: translateY(1px); }
+.day:active {
+  transform: translateY(1px);
+}
+.day:hover {
+  box-shadow: var(--shadow-soft);
+}
 
 .day .num {
   font-size: 12px;
   color: var(--muted);
 }
-.day.today { outline: 2px solid rgba(124,156,255,0.35); }
-.day.outside { opacity: 0.45; }
+
+.day.today {
+  outline: 2px solid var(--accent-outline);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent),
+    var(--shadow-soft);
+}
+
+.day.outside {
+  opacity: 0.45;
+}
 
 .stickerSlot {
   flex: 1;
   display: grid;
   place-items: center;
   padding: 2px;
+  min-height: 0; /* allows children to shrink */
 }
+
 .stickerSlot img {
-  max-width: 44px;
-  max-height: 44px;
+  width: min(44px, 80%);
+  height: min(44px, 80%);
   object-fit: contain;
-  image-rendering: auto;
+  display: block;
 }
 
 /* Year view */
@@ -150,68 +244,110 @@ body {
   gap: 12px;
 }
 @media (min-width: 720px) {
-  .yearGrid { grid-template-columns: repeat(4, 1fr); }
+  .yearGrid {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
+
 .miniMonth {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 10px;
-  background: rgba(255,255,255,0.02);
+  background: var(--surface);
+  box-shadow: var(--shadow-soft);
 }
+
 .miniMonthTitle {
   font-size: 13px;
   color: var(--muted);
   margin-bottom: 8px;
 }
+
 .miniCal {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 6px;
 }
+
 .miniDay {
   border: 1px solid var(--border);
   border-radius: 10px;
-  background: rgba(255,255,255,0.02);
+  background: var(--surface);
   height: 28px;
   display: grid;
   place-items: center;
   cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
-.miniDay img { width: 18px; height: 18px; object-fit: contain; }
-.miniDay.empty { opacity: 0.35; cursor: default; }
+.miniDay:hover {
+  box-shadow: var(--shadow-soft);
+  transform: translateY(-1px);
+}
+
+.miniDay img {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+}
+
+.miniDay.empty {
+  opacity: 0.35;
+  cursor: default;
+}
 
 /* Modal */
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.55);
+  background: color-mix(
+    in srgb,
+    black 55%,
+    color-mix(in srgb, var(--accent) 18%, transparent)
+  );
   display: grid;
   place-items: end center;
   padding: 14px;
+  z-index: 9999;
 }
 @media (min-width: 720px) {
-  .overlay { place-items: center; }
+  .overlay {
+    place-items: center;
+  }
 }
+
 .modal {
   width: min(980px, 100%);
   max-height: 86vh;
   overflow: hidden;
   border-radius: 20px;
   border: 1px solid var(--border);
-  background: rgba(17,19,26,0.96);
+  background: color-mix(in srgb, var(--surface) 94%, transparent);
   backdrop-filter: blur(12px);
   display: flex;
   flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18), var(--shadow);
 }
+
 .modalHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 14px;
   border-bottom: 1px solid var(--border);
+  background: var(--surface-2);
 }
-.modalDate { font-size: 14px; font-weight: 600; }
-.modalHint { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+.modalDate {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent-ink);
+}
+
+.modalHint {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 2px;
+}
 
 .modalTools {
   display: flex;
@@ -219,8 +355,14 @@ body {
   padding: 12px 14px;
   border-bottom: 1px solid var(--border);
   flex-wrap: wrap;
+  background: var(--surface);
 }
-.search { flex: 1; min-width: 200px; border-radius: 999px; }
+
+.search {
+  flex: 1;
+  min-width: 200px;
+  border-radius: 999px;
+}
 
 .grid {
   padding: 12px 14px 16px;
@@ -230,17 +372,151 @@ body {
   gap: 10px;
 }
 @media (min-width: 720px) {
-  .grid { grid-template-columns: repeat(8, 1fr); }
+  .grid {
+    grid-template-columns: repeat(8, 1fr);
+  }
 }
+
 .stickerBtn {
   border: 1px solid var(--border);
-  background: rgba(255,255,255,0.02);
+  background: var(--surface);
   border-radius: 16px;
   padding: 10px;
   cursor: pointer;
   display: grid;
   place-items: center;
   gap: 6px;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
-.stickerBtn img { width: 44px; height: 44px; object-fit: contain; }
-.stickerLabel { font-size: 11px; color: var(--muted); text-align: center; }
+.stickerBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-soft);
+}
+.stickerBtn:active {
+  transform: translateY(0px);
+}
+
+.stickerBtn img {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+}
+
+.stickerLabel {
+  font-size: 11px;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* Accessibility: focus ring */
+.btn:focus-visible,
+.select:focus-visible,
+.search:focus-visible,
+.day:focus-visible,
+.miniDay:focus-visible,
+.stickerBtn:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  outline-offset: 2px;
+}
+
+/* --- Mobile month grid fixes --- */
+
+/* Prevent random horizontal cutoff */
+html,
+body {
+  overflow-x: hidden;
+}
+
+.calendar {
+  width: 100%;
+}
+
+/* Under ~550px: make day cells uniform + tighten spacing */
+@media (max-width: 550px) {
+  .container {
+    padding: 10px;
+  }
+
+  .calendar {
+    gap: 6px;
+    padding: 8px;
+  }
+
+  .day {
+    min-height: 0; /* remove the old minimum */
+    aspect-ratio: 1 / 1; /* keep all cells the same size */
+    padding: 6px;
+    border-radius: 16px;
+  }
+
+  .day .num {
+    font-size: 11px;
+  }
+
+  .stickerSlot img {
+    max-width: 36px;
+    max-height: 36px;
+  }
+
+  .controls {
+    justify-content: center;
+  }
+}
+
+/* Under ~440px: tighten even more so nothing clips */
+@media (max-width: 440px) {
+  .calendar {
+    gap: 4px;
+    padding: 6px;
+  }
+
+  .day {
+    padding: 5px;
+    border-radius: 14px;
+  }
+
+  .stickerSlot img {
+    max-width: 32px;
+    max-height: 32px;
+  }
+}
+
+/* --- Tiny screens: keep stickers inside day boxes --- */
+@media (max-width: 440px) {
+  /* Let the day number float so it doesn't steal layout space */
+  .day {
+    position: relative;
+  }
+
+  .day .num {
+    position: absolute;
+    top: 6px;
+    left: 8px;
+    margin: 0;
+    z-index: 2;
+    font-size: 11px;
+    line-height: 1;
+    color: var(--muted);
+    pointer-events: none;
+  }
+
+  /* Sticker gets the whole box, with a bit of top room for the number */
+  .stickerSlot {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 18px 6px 6px; /* top padding leaves room for date */
+    min-height: 0;
+    min-width: 0;
+  }
+
+  .stickerSlot img {
+    width: clamp(18px, 70%, 40px);
+    height: clamp(18px, 70%, 40px);
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+}
