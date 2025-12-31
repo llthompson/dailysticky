@@ -1,67 +1,89 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Sticker Year</title>
-  <link rel="stylesheet" href="styles.css" />
-</head>
-<body>
-  <header class="topbar">
-    <div class="title">
-      <h1>Sticker Year</h1>
-      <p class="subtitle">Tap a day → choose a sticker → done.</p>
-    </div>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Daily Sticker</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&family=Manjari:wght@100;400;700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand:wght@300..700&family=Truculenta:opsz,wght@12..72,100..900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="title">
+        <h1>Daily Sticker</h1>
+        <p class="subtitle">Tap a day → choose a sticker → done.</p>
+      </div>
 
-    <div class="controls">
-      <button id="prevBtn" class="btn">◀</button>
-      <button id="todayBtn" class="btn">Today</button>
-      <button id="nextBtn" class="btn">▶</button>
+      <div class="controls">
+        <button id="prevBtn" class="btn">◀</button>
+        <button id="todayBtn" class="btn">Today</button>
+        <button id="nextBtn" class="btn">▶</button>
 
-      <select id="monthSelect" class="select" aria-label="Month"></select>
-      <select id="yearSelect" class="select" aria-label="Year"></select>
+        <select id="monthSelect" class="select" aria-label="Month"></select>
+        <select id="yearSelect" class="select" aria-label="Year"></select>
 
-      <button id="toggleViewBtn" class="btn btn-primary">Year view</button>
-    </div>
+        <button id="toggleViewBtn" class="btn btn-primary">Year view</button>
+      </div>
 
-    <div class="controls secondary">
-      <button id="exportBtn" class="btn">Export JSON</button>
-      <label class="btn fileBtn">
-        Import JSON
-        <input id="importInput" type="file" accept="application/json" hidden />
-      </label>
-      <button id="clearBtn" class="btn btn-danger">Clear year</button>
-    </div>
-  </header>
+      <div class="controls secondary">
+        <button id="exportBtn" class="btn">Export JSON</button>
+        <label class="btn fileBtn">
+          Import JSON
+          <input
+            id="importInput"
+            type="file"
+            accept="application/json"
+            hidden
+          />
+        </label>
+        <!-- <button id="clearBtn" class="btn btn-danger">Clear year</button> -->
+      </div>
+    </header>
 
-  <main class="container">
-    <section id="monthView" class="view"></section>
-    <section id="yearView" class="view hidden"></section>
-  </main>
+    <main class="container">
+      <section id="monthView" class="view"></section>
+      <section id="yearView" class="view hidden"></section>
+    </main>
 
-  <!-- Sticker Picker Modal -->
-  <div id="modalOverlay" class="overlay hidden" role="dialog" aria-modal="true" aria-label="Sticker picker">
-    <div class="modal">
-      <div class="modalHeader">
-        <div>
-          <div id="modalDate" class="modalDate">Date</div>
-          <div class="modalHint">Choose a sticker (1 per day)</div>
+    <!-- Sticker Picker Modal -->
+    <div
+      id="modalOverlay"
+      class="overlay hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Sticker picker"
+    >
+      <div class="modal">
+        <div class="modalHeader">
+          <div>
+            <div id="modalDate" class="modalDate">Date</div>
+            <div class="modalHint">Choose a sticker (1 per day)</div>
+          </div>
+          <button id="closeModalBtn" class="btn">✕</button>
         </div>
-        <button id="closeModalBtn" class="btn">✕</button>
-      </div>
 
-      <div class="modalTools">
-        <input id="searchInput" class="search" type="search" placeholder="Search stickers (e.g., cat, coffee, book)"/>
-        <select id="categorySelect" class="select">
-          <option value="">All categories</option>
-        </select>
-        <button id="removeStickerBtn" class="btn">Remove</button>
-      </div>
+        <div class="modalTools">
+          <input
+            id="searchInput"
+            class="search"
+            type="search"
+            placeholder="Search stickers (e.g., cat, coffee, book)"
+          />
+          <select id="categorySelect" class="select">
+            <option value="">All categories</option>
+          </select>
+          <button id="removeStickerBtn" class="btn">Remove</button>
+        </div>
 
-      <div id="stickerGrid" class="grid"></div>
+        <div id="stickerGrid" class="grid"></div>
+      </div>
     </div>
-  </div>
 
-  <script src="app.js"></script>
-</body>
+    <script src="app.js"></script>
+  </body>
 </html>

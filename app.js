@@ -27,14 +27,28 @@ const searchInput = el("searchInput");
 const categorySelect = el("categorySelect");
 const removeStickerBtn = el("removeStickerBtn");
 
-const WEEKDAYS = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
-const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const MONTHS = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
 
 const pad2 = (n) => String(n).padStart(2, "0");
-const ymd = (d) => `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+const ymd = (d) =>
+  `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
 const parseYmd = (s) => {
-  const [y,m,d] = s.split("-").map(Number);
-  return new Date(y, m-1, d);
+  const [y, m, d] = s.split("-").map(Number);
+  return new Date(y, m - 1, d);
 };
 
 const today = new Date();
@@ -42,7 +56,7 @@ let state = loadState() || {
   year: today.getFullYear(),
   month: today.getMonth(),
   view: "month", // "month" | "year"
-  placements: {} // { "YYYY-MM-DD": "stickerId" }
+  placements: {}, // { "YYYY-MM-DD": "stickerId" }
 };
 
 let stickers = [];
@@ -50,7 +64,16 @@ let stickerById = new Map();
 
 let selectedDayKey = null;
 
-init();
+window.addEventListener("DOMContentLoaded", () => {
+  init();
+});
+
+// Handles Safari/back-forward cache restores where DOM is present but JS state/render can be stale
+window.addEventListener("pageshow", () => {
+  try {
+    render();
+  } catch {}
+});
 
 async function init() {
   populateMonthYearSelects();
@@ -83,12 +106,14 @@ function populateMonthYearSelects() {
 async function loadStickers() {
   const res = await fetch("./stickers.json", { cache: "no-store" });
   stickers = await res.json();
-  stickerById = new Map(stickers.map(s => [s.id, s]));
+  stickerById = new Map(stickers.map((s) => [s.id, s]));
 
   // category dropdown
-  const cats = Array.from(new Set(stickers.map(s => s.category).filter(Boolean))).sort();
+  const cats = Array.from(
+    new Set(stickers.map((s) => s.category).filter(Boolean))
+  ).sort();
   categorySelect.innerHTML = `<option value="">All categories</option>`;
-  cats.forEach(c => {
+  cats.forEach((c) => {
     const opt = document.createElement("option");
     opt.value = c;
     opt.textContent = c;
@@ -170,7 +195,8 @@ function render() {
   // sync selects + button text
   monthSelect.value = String(state.month);
   yearSelect.value = String(state.year);
-  toggleViewBtn.textContent = state.view === "month" ? "Year view" : "Month view";
+  toggleViewBtn.textContent =
+    state.view === "month" ? "Year view" : "Month view";
 
   if (state.view === "month") {
     yearViewEl.classList.add("hidden");
@@ -204,14 +230,18 @@ function renderMonth() {
   header.innerHTML = `
     <div>
       <h2>${MONTHS[month]} ${year}</h2>
-      <div class="small">${Object.keys(state.placements).filter(k => k.startsWith(`${year}-${pad2(month+1)}-`)).length} days stickered</div>
+      <div class="small">${
+        Object.keys(state.placements).filter((k) =>
+          k.startsWith(`${year}-${pad2(month + 1)}-`)
+        ).length
+      } days stickered</div>
     </div>
   `;
   wrapper.appendChild(header);
 
   const weekdays = document.createElement("div");
   weekdays.className = "weekdays";
-  WEEKDAYS.forEach(w => {
+  WEEKDAYS.forEach((w) => {
     const d = document.createElement("div");
     d.textContent = w;
     weekdays.appendChild(d);
@@ -231,7 +261,9 @@ function renderMonth() {
 
     const cell = document.createElement("button");
     cell.type = "button";
-    cell.className = `day${isToday ? " today" : ""}${isOutside ? " outside" : ""}`;
+    cell.className = `day${isToday ? " today" : ""}${
+      isOutside ? " outside" : ""
+    }`;
     cell.setAttribute("aria-label", `Day ${key}`);
 
     const num = document.createElement("div");
@@ -362,21 +394,19 @@ function renderStickerGrid() {
   const q = (searchInput.value || "").trim().toLowerCase();
   const cat = categorySelect.value;
 
-  const filtered = stickers.filter(s => {
+  const filtered = stickers.filter((s) => {
     if (cat && s.category !== cat) return false;
     if (!q) return true;
-    const hay = [
-      s.id,
-      s.label,
-      s.category,
-      ...(s.tags || [])
-    ].filter(Boolean).join(" ").toLowerCase();
+    const hay = [s.id, s.label, s.category, ...(s.tags || [])]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
     return hay.includes(q);
   });
 
   stickerGrid.innerHTML = "";
 
-  filtered.slice(0, 600).forEach(s => {
+  filtered.slice(0, 600).forEach((s) => {
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "stickerBtn";
@@ -422,7 +452,9 @@ function saveState(next) {
 }
 
 function exportJson() {
-  const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+  const blob = new Blob([JSON.stringify(state, null, 2)], {
+    type: "application/json",
+  });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
   a.download = `sticker-year-${state.year}.json`;
@@ -449,7 +481,7 @@ async function importJson(e) {
       year: imported.year ?? state.year,
       month: imported.month ?? state.month,
       view: imported.view ?? state.view,
-      placements: imported.placements ?? {}
+      placements: imported.placements ?? {},
     };
 
     saveAndRender();
@@ -460,4 +492,3 @@ async function importJson(e) {
     importInput.value = "";
   }
 }
-
