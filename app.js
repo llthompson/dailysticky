@@ -11,6 +11,8 @@ const prevBtn = el("prevBtn");
 const nextBtn = el("nextBtn");
 const todayBtn = el("todayBtn");
 const toggleViewBtn = el("toggleViewBtn");
+const settingsBtn = el("settingsBtn");
+const secondaryControls = el("secondaryControls");
 
 const monthSelect = el("monthSelect");
 const yearSelect = el("yearSelect");
@@ -23,8 +25,11 @@ const overlay = el("modalOverlay");
 const closeModalBtn = el("closeModalBtn");
 const modalDateEl = el("modalDate");
 const stickerGrid = el("stickerGrid");
+
+// These are now optional; you can remove them from HTML safely
 const searchInput = el("searchInput");
 const categorySelect = el("categorySelect");
+
 const removeStickerBtn = el("removeStickerBtn");
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -59,10 +64,15 @@ let state = loadState() || {
   placements: {}, // { "YYYY-MM-DD": "stickerId" }
 };
 
-let stickers = [];
+let stickerGroups = []; // [{ category, items:[{id,file,label...}] }]
+let stickers = []; // flattened internal list
 let stickerById = new Map();
 
 let selectedDayKey = null;
+
+// Modal navigation state
+let stickerModalMode = "cats"; // "cats" | "stickers"
+let activeStickerCategory = null;
 
 window.addEventListener("DOMContentLoaded", () => {
   init();
@@ -104,21 +114,27 @@ function populateMonthYearSelects() {
 }
 
 async function loadStickers() {
-  const res = await fetch("./stickers.json", { cache: "no-store" });
-  stickers = await res.json();
-  stickerById = new Map(stickers.map((s) => [s.id, s]));
+  const res = await fetch("./stickers.json");
+  const data = await res.json();
 
-  // category dropdown
-  const cats = Array.from(
-    new Set(stickers.map((s) => s.category).filter(Boolean))
-  ).sort();
-  categorySelect.innerHTML = `<option value="">All categories</option>`;
-  cats.forEach((c) => {
-    const opt = document.createElement("option");
-    opt.value = c;
-    opt.textContent = c;
-    categorySelect.appendChild(opt);
-  });
+  // grouped format
+  if (Array.isArray(data) && data.length && data[0].items) {
+    stickerGroups = data;
+
+    stickers = data.flatMap((group) =>
+      (group.items || []).map((item) => ({
+        ...item,
+        category: group.category || item.category || "Other",
+        file: item.file || item.src || "",
+      }))
+    );
+  } else {
+    // flat format
+    stickerGroups = [];
+    stickers = data;
+  }
+
+  stickerById = new Map(stickers.map((s) => [s.id, s]));
 }
 
 function wireEvents() {
@@ -128,6 +144,10 @@ function wireEvents() {
     state.year = today.getFullYear();
     state.month = today.getMonth();
     saveAndRender();
+  });
+
+  settingsBtn.addEventListener("click", () => {
+    secondaryControls.classList.toggle("is-visible");
   });
 
   toggleViewBtn.addEventListener("click", () => {
@@ -150,18 +170,16 @@ function wireEvents() {
     if (e.target === overlay) closeModal();
   });
 
-  // picker filters
-  searchInput.addEventListener("input", renderStickerGrid);
-  categorySelect.addEventListener("change", renderStickerGrid);
-
+  // REMOVE sticker for day
   removeStickerBtn.addEventListener("click", () => {
     if (!selectedDayKey) return;
     delete state.placements[selectedDayKey];
     saveState(state);
     closeModal();
-    render(); // refresh calendar icons
+    render();
   });
 
+  // Export/import/clear
   exportBtn.addEventListener("click", exportJson);
   importInput.addEventListener("change", importJson);
   clearBtn.addEventListener("click", () => {
@@ -174,9 +192,15 @@ function wireEvents() {
     saveAndRender();
   });
 
+
+
   // sync selects on load
   monthSelect.value = String(state.month);
   yearSelect.value = String(state.year);
+
+  // If these controls still exist in your HTML, disable them safely
+  if (searchInput) searchInput.value = "";
+  if (categorySelect) categorySelect.value = "";
 }
 
 function shiftMonth(delta) {
@@ -215,11 +239,9 @@ function renderMonth() {
 
   const first = new Date(year, month, 1);
   const startDay = first.getDay();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
 
   // show a nice 6-week grid including previous/next month days
   const gridCells = 42;
-  const prevMonthDays = new Date(year, month, 0).getDate();
   const startDate = new Date(year, month, 1 - startDay);
 
   const wrapper = document.createElement("div");
@@ -378,38 +400,128 @@ function renderYear() {
 
 function openModal(dayKey) {
   selectedDayKey = dayKey;
+
+  // Optional: keep day shown, but we’ll change the modal content beneath it
   modalDateEl.textContent = dayKey;
-  searchInput.value = "";
-  categorySelect.value = "";
-  renderStickerGrid();
+
+  // If these still exist, clear them (they're unused now)
+  if (searchInput) searchInput.value = "";
+  if (categorySelect) categorySelect.value = "";
+
+  // Start in Categories view
+  renderStickerCategories();
+
   overlay.classList.remove("hidden");
 }
 
 function closeModal() {
   overlay.classList.add("hidden");
   selectedDayKey = null;
+  stickerModalMode = "cats";
+  activeStickerCategory = null;
+  // leave stickerGrid content as-is; it will be re-rendered next open
 }
 
-function renderStickerGrid() {
-  const q = (searchInput.value || "").trim().toLowerCase();
-  const cat = categorySelect.value;
+/* ---------- Modal rendering: Categories -> Stickers ---------- */
 
-  const filtered = stickers.filter((s) => {
-    if (cat && s.category !== cat) return false;
-    if (!q) return true;
-    const hay = [s.id, s.label, s.category, ...(s.tags || [])]
-      .filter(Boolean)
-      .join(" ")
-      .toLowerCase();
-    return hay.includes(q);
-  });
+function renderStickerCategories() {
+  stickerModalMode = "cats";
+  activeStickerCategory = null;
+
+  const groups = getGroups();
 
   stickerGrid.innerHTML = "";
 
-  filtered.slice(0, 600).forEach((s) => {
+  const wrapper = document.createElement("div");
+  wrapper.className = "catList";
+
+  groups.forEach((g) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "catTile";
+    btn.addEventListener("click", () => renderStickersForCategory(g.category));
+
+    btn.setAttribute("data-cat", g.category);
+
+    const name = document.createElement("div");
+    name.className = "catName";
+    name.textContent = g.category;
+
+    const meta = document.createElement("div");
+    meta.className = "catMeta";
+    meta.textContent = `${g.items.length} stickers`;
+
+    const preview = document.createElement("div");
+    preview.className = "catPreview";
+
+    // show up to 3 preview icons
+    g.items.slice(0, 3).forEach((s) => {
+      const img = document.createElement("img");
+      img.alt = "";
+      img.loading = "lazy";
+      img.src = `./stickers/${s.file}`;
+      preview.appendChild(img);
+    });
+
+    btn.appendChild(name);
+    btn.appendChild(meta);
+    btn.appendChild(preview);
+
+    wrapper.appendChild(btn);
+  });
+
+  stickerGrid.appendChild(wrapper);
+}
+
+function renderStickersForCategory(category) {
+  stickerModalMode = "stickers";
+  activeStickerCategory = category;
+
+  const groups = getGroups();
+  const group = groups.find((g) => g.category === category);
+  const items = (group?.items || [])
+    .slice()
+    .sort((a, b) => a.id.localeCompare(b.id));
+
+  stickerGrid.innerHTML = "";
+
+  // Top row: Back + Title
+  const top = document.createElement("div");
+  top.className = "catTopRow";
+
+  const back = document.createElement("button");
+  back.type = "button";
+  back.className = "btn catBack";
+  back.setAttribute("data-action", "back-to-cats");
+  back.textContent = "← Categories";
+  back.addEventListener("click", () => {
+    renderStickerCategories();
+  });
+
+  const title = document.createElement("div");
+  title.className = "catTitle";
+  title.textContent = category;
+
+  top.appendChild(back);
+  top.appendChild(title);
+
+  const grid = document.createElement("div");
+  grid.className = "catGrid";
+
+  items.forEach((s) => {
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "stickerBtn";
+    btn.setAttribute("data-sticker-id", s.id);
+
+    btn.addEventListener("click", () => {
+      if (!selectedDayKey) return;
+
+      state.placements[selectedDayKey] = s.id;
+      saveState(state);
+      closeModal(); // closes overlay
+      render(); // updates calendar
+    });
 
     const img = document.createElement("img");
     img.alt = s.label || s.id;
@@ -423,16 +535,42 @@ function renderStickerGrid() {
     btn.appendChild(img);
     btn.appendChild(label);
 
-    btn.addEventListener("click", () => {
-      if (!selectedDayKey) return;
-      state.placements[selectedDayKey] = s.id;
-      saveState(state);
-      closeModal();
-      render();
-    });
-
-    stickerGrid.appendChild(btn);
+    grid.appendChild(btn);
   });
+
+  stickerGrid.appendChild(top);
+  stickerGrid.appendChild(grid);
+}
+
+function getGroups() {
+  // Prefer the grouped JSON from stickers.json
+  if (stickerGroups && stickerGroups.length) {
+    // Ensure each item has file populated (defensive)
+    return stickerGroups
+      .map((g) => ({
+        category: g.category || "Other",
+        items: (g.items || []).map((item) => ({
+          ...item,
+          file: item.file || item.src || "",
+        })),
+      }))
+      .filter((g) => g.items.length);
+  }
+
+  // Fallback: build from flat stickers
+  const map = new Map();
+  stickers.forEach((s) => {
+    const cat = s.category || "Other";
+    if (!map.has(cat)) map.set(cat, []);
+    map.get(cat).push(s);
+  });
+
+  return [...map.entries()]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([category, items]) => ({
+      category,
+      items: items.slice().sort((a, b) => a.id.localeCompare(b.id)),
+    }));
 }
 
 /* storage + import/export */
