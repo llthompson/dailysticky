@@ -375,7 +375,7 @@ function renderYear() {
         cell.appendChild(img);
       } else {
         // show dot for empty to keep grid readable
-        cell.textContent = "·";
+        cell.textContent = d;
         cell.style.color = "rgba(255,255,255,0.18)";
       }
 
