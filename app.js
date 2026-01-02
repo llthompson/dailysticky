@@ -192,8 +192,6 @@ function wireEvents() {
     saveAndRender();
   });
 
-
-
   // sync selects on load
   monthSelect.value = String(state.month);
   yearSelect.value = String(state.year);
@@ -365,6 +363,11 @@ function renderYear() {
       cell.className = "miniDay";
       cell.setAttribute("aria-label", key);
 
+      const num = document.createElement("div");
+      num.className = "miniNum";
+      num.textContent = String(d);
+      cell.appendChild(num);
+
       const stickerId = state.placements[key];
       if (stickerId && stickerById.has(stickerId)) {
         const s = stickerById.get(stickerId);
@@ -373,10 +376,6 @@ function renderYear() {
         img.loading = "lazy";
         img.src = `./stickers/${s.file}`;
         cell.appendChild(img);
-      } else {
-        // show dot for empty to keep grid readable
-        cell.textContent = d;
-        cell.style.color = "rgba(255,255,255,0.18)";
       }
 
       cell.addEventListener("click", () => {
