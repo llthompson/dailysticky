@@ -11,29 +11,49 @@
       href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&family=Manjari:wght@100;400;700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand:wght@300..700&family=Truculenta:opsz,wght@12..72,100..900&display=swap"
       rel="stylesheet"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+      integrity="sha512-…"
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
   </head>
   <body>
     <header class="topbar">
       <div class="title">
-        <h1>Daily Sticky</h1>
+        <h1>
+          Daily Sticky
+
+          <p class="slogan">a daily sticker diary</p>
+        </h1>
         <p class="subtitle">Tap a day → choose a sticker → done.</p>
       </div>
 
       <div class="controls">
-        <button id="prevBtn" class="btn">◀</button>
-        <button id="todayBtn" class="btn">Today</button>
-        <button id="nextBtn" class="btn">▶</button>
+        <div class="nav-stack">
+          <div class="navigate">
+            <button id="prevBtn" class="btn">◀</button>
+            <button id="todayBtn" class="btn">Today</button>
+            <button id="nextBtn" class="btn">▶</button>
+          </div>
 
+          <button id="toggleViewBtn" class="btn btn-primary">Year view</button>
+        </div>
+
+        <button id="settingsBtn" class="btn icon-btn" aria-label="More options">
+          <i class="fa-solid fa-ellipsis-vertical"></i>
+        </button>
+      </div>
+
+      <div class="controls secondary" id="secondaryControls">
         <select id="monthSelect" class="select" aria-label="Month"></select>
         <select id="yearSelect" class="select" aria-label="Year"></select>
 
-        <button id="toggleViewBtn" class="btn btn-primary">Year view</button>
-      </div>
+        <button id="exportBtn" class="btn">Export Backup</button>
 
-      <div class="controls secondary">
-        <button id="exportBtn" class="btn">Export JSON</button>
         <label class="btn fileBtn">
-          Import JSON
+          Import Backup
           <input
             id="importInput"
             type="file"
@@ -41,9 +61,10 @@
             hidden
           />
         </label>
-        <!-- <button id="clearBtn" class="btn btn-danger">Clear year</button> -->
       </div>
     </header>
+
+    <!-- <button id="clearBtn" class="btn btn-danger">Clear year</button> -->
 
     <main class="container">
       <section id="monthView" class="view"></section>
