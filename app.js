@@ -27,7 +27,6 @@ const modalDateEl = el("modalDate");
 const stickerGrid = el("stickerGrid");
 
 const searchInput = el("searchInput");
-const categorySelect = el("categorySelect");
 
 const noteBtn = el("noteBtn");
 const removeStickerBtn = el("removeStickerBtn");
@@ -60,12 +59,9 @@ const MONTHS = [
 const pad2 = (n) => String(n).padStart(2, "0");
 const ymd = (d) =>
   `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
-const parseYmd = (s) => {
-  const [y, m, d] = s.split("-").map(Number);
-  return new Date(y, m - 1, d);
-};
 
 const today = new Date();
+
 let state = loadState() || {
   year: today.getFullYear(),
   month: today.getMonth(),
@@ -77,23 +73,16 @@ let state = loadState() || {
 if (!state.notes) state.notes = {};
 
 let stickerGroups = []; // [{ category, items:[{id,file,label...}] }]
-let stickers = []; // flattened internal list
+let stickers = []; // flattened list
 let stickerById = new Map();
 
 let selectedDayKey = null;
-
-// Modal navigation state
-let stickerModalMode = "cats"; // "cats" | "stickers"
+let stickerModalMode = "cats";
 let activeStickerCategory = null;
-
-// Browser history state for modal UX
 let modalHistoryDepth = 0;
 
-window.addEventListener("DOMContentLoaded", () => {
-  init();
-});
+window.addEventListener("DOMContentLoaded", init);
 
-// Handles Safari/back-forward cache restores where DOM is present but JS state/render can be stale
 window.addEventListener("pageshow", () => {
   try {
     render();
@@ -109,19 +98,20 @@ async function init() {
 
 function populateMonthYearSelects() {
   monthSelect.innerHTML = "";
-  MONTHS.forEach((m, i) => {
+  MONTHS.forEach((monthName, index) => {
     const opt = document.createElement("option");
-    opt.value = String(i);
-    opt.textContent = m;
+    opt.value = String(index);
+    opt.textContent = monthName;
     monthSelect.appendChild(opt);
   });
 
-  const base = today.getFullYear();
+  const baseYear = today.getFullYear();
   yearSelect.innerHTML = "";
-  for (let y = base - 5; y <= base + 5; y++) {
+
+  for (let year = baseYear - 5; year <= baseYear + 5; year++) {
     const opt = document.createElement("option");
-    opt.value = String(y);
-    opt.textContent = String(y);
+    opt.value = String(year);
+    opt.textContent = String(year);
     yearSelect.appendChild(opt);
   }
 }
@@ -132,7 +122,6 @@ async function loadStickers() {
 
   if (Array.isArray(data) && data.length && data[0].items) {
     stickerGroups = data;
-
     stickers = data.flatMap((group) =>
       (group.items || []).map((item) => ({
         ...item,
@@ -145,7 +134,7 @@ async function loadStickers() {
     stickers = data;
   }
 
-  stickerById = new Map(stickers.map((s) => [s.id, s]));
+  stickerById = new Map(stickers.map((sticker) => [sticker.id, sticker]));
 }
 
 function wireEvents() {
@@ -202,89 +191,66 @@ function wireEvents() {
     noteCount.textContent = `${noteInput.value.length}/160`;
   });
 
-  saveNoteBtn.addEventListener("click", () => {
-    if (!selectedDayKey) return;
-
-    const value = noteInput.value.trim();
-
-    if (value) {
-      state.notes[selectedDayKey] = value;
-    } else {
-      delete state.notes[selectedDayKey];
-    }
-
-    saveState(state);
-    closeNoteModal();
-    closeModal(true);
-    render();
-  });
+  saveNoteBtn.addEventListener("click", saveNoteForSelectedDay);
 
   deleteNoteBtn.addEventListener("click", () => {
     if (!selectedDayKey) return;
-    delete state.notes[selectedDayKey];
-    saveState(state);
+
+    if (state.notes[selectedDayKey]) {
+      delete state.notes[selectedDayKey];
+      saveState(state);
+      render();
+    }
+
     closeNoteModal();
-    closeModal(true);
-    render();
+    requestModalClose();
   });
 
   exportBtn.addEventListener("click", exportJson);
   importInput.addEventListener("change", importJson);
 
   if (clearBtn) {
-    clearBtn.addEventListener("click", () => {
-      if (!confirm("Clear all stickers for this year?")) return;
-
-      const yearStr = String(state.year) + "-";
-      for (const k of Object.keys(state.placements)) {
-        if (k.startsWith(yearStr)) delete state.placements[k];
-      }
-      for (const k of Object.keys(state.notes)) {
-        if (k.startsWith(yearStr)) delete state.notes[k];
-      }
-      saveAndRender();
-    });
+    clearBtn.addEventListener("click", clearCurrentYear);
   }
 
-  window.addEventListener("popstate", (e) => {
-    const historyState = e.state;
-
-    // Move into a modal state
-    if (historyState?.modal) {
-      selectedDayKey = historyState.dayKey || selectedDayKey;
-      modalDateEl.textContent = selectedDayKey || "Date";
-      overlay.classList.remove("hidden");
-      updateNoteButtonLabel();
-
-      if (historyState.view === "categories") {
-        stickerModalMode = "cats";
-        activeStickerCategory = null;
-        modalHistoryDepth = 1;
-        renderStickerCategories(true);
-        return;
-      }
-
-      if (historyState.view === "stickers") {
-        stickerModalMode = "stickers";
-        activeStickerCategory = historyState.category || null;
-        modalHistoryDepth = 2;
-        renderStickersForCategory(historyState.category, true);
-        return;
-      }
-    }
-
-    // Move out of modal state
-    if (!overlay.classList.contains("hidden")) {
-      closeModal(true);
-      render();
-    }
-  });
+  window.addEventListener("popstate", handlePopState);
 
   monthSelect.value = String(state.month);
   yearSelect.value = String(state.year);
 
   if (searchInput) searchInput.value = "";
-  if (categorySelect) categorySelect.value = "";
+}
+
+function handlePopState(e) {
+  const historyState = e.state;
+
+  if (historyState?.modal) {
+    selectedDayKey = historyState.dayKey || selectedDayKey;
+    modalDateEl.textContent = selectedDayKey || "Date";
+    overlay.classList.remove("hidden");
+    updateNoteButtonLabel();
+
+    if (historyState.view === "categories") {
+      stickerModalMode = "cats";
+      activeStickerCategory = null;
+      modalHistoryDepth = 1;
+      renderStickerCategories();
+      return;
+    }
+
+    if (historyState.view === "stickers") {
+      stickerModalMode = "stickers";
+      activeStickerCategory = historyState.category || null;
+      modalHistoryDepth = 2;
+      renderStickersForCategory(historyState.category, true);
+      return;
+    }
+  }
+
+  if (!overlay.classList.contains("hidden")) {
+    closeModal(true);
+    render();
+  }
 }
 
 function shiftMonth(delta) {
@@ -322,32 +288,31 @@ function renderMonth() {
 
   const first = new Date(year, month, 1);
   const startDay = first.getDay();
-
   const gridCells = 42;
   const startDate = new Date(year, month, 1 - startDay);
 
   const wrapper = document.createElement("div");
   wrapper.className = "card";
 
+  const stickeredCount = Object.keys(state.placements).filter((key) =>
+    key.startsWith(`${year}-${pad2(month + 1)}-`),
+  ).length;
+
   const header = document.createElement("div");
   header.className = "monthHeader";
   header.innerHTML = `
     <div>
       <h2>${MONTHS[month]} ${year}</h2>
-      <div class="small">${
-        Object.keys(state.placements).filter((k) =>
-          k.startsWith(`${year}-${pad2(month + 1)}-`),
-        ).length
-      } days stickered</div>
+      <div class="small">${stickeredCount} days stickered</div>
     </div>
   `;
   wrapper.appendChild(header);
 
   const weekdays = document.createElement("div");
   weekdays.className = "weekdays";
-  WEEKDAYS.forEach((w) => {
+  WEEKDAYS.forEach((dayName) => {
     const d = document.createElement("div");
-    d.textContent = w;
+    d.textContent = dayName;
     weekdays.appendChild(d);
   });
   wrapper.appendChild(weekdays);
@@ -380,11 +345,11 @@ function renderMonth() {
 
     const stickerId = state.placements[key];
     if (stickerId && stickerById.has(stickerId)) {
-      const s = stickerById.get(stickerId);
+      const sticker = stickerById.get(stickerId);
       const img = document.createElement("img");
-      img.alt = s.label || s.id;
+      img.alt = sticker.label || sticker.id;
       img.loading = "lazy";
-      img.src = `./stickers/${s.file}`;
+      img.src = `./stickers/${sticker.file}`;
       slot.appendChild(img);
     }
 
@@ -415,21 +380,21 @@ function renderYear() {
   const wrapper = document.createElement("div");
   wrapper.className = "yearGrid";
 
-  for (let m = 0; m < 12; m++) {
+  for (let month = 0; month < 12; month++) {
     const card = document.createElement("div");
     card.className = "miniMonth";
 
     const title = document.createElement("div");
     title.className = "miniMonthTitle";
-    title.textContent = `${MONTHS[m]} ${year}`;
+    title.textContent = `${MONTHS[month]} ${year}`;
     card.appendChild(title);
 
     const cal = document.createElement("div");
     cal.className = "miniCal";
 
-    const first = new Date(year, m, 1);
+    const first = new Date(year, month, 1);
     const startDay = first.getDay();
-    const daysInMonth = new Date(year, m + 1, 0).getDate();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
 
     for (let i = 0; i < startDay; i++) {
       const empty = document.createElement("div");
@@ -437,8 +402,8 @@ function renderYear() {
       cal.appendChild(empty);
     }
 
-    for (let d = 1; d <= daysInMonth; d++) {
-      const date = new Date(year, m, d);
+    for (let day = 1; day <= daysInMonth; day++) {
+      const date = new Date(year, month, day);
       const key = ymd(date);
       const hasNote = !!state.notes[key];
 
@@ -449,21 +414,21 @@ function renderYear() {
 
       const num = document.createElement("div");
       num.className = `miniNum${hasNote ? " has-note" : ""}`;
-      num.textContent = String(d);
+      num.textContent = String(day);
       cell.appendChild(num);
 
       const stickerId = state.placements[key];
       if (stickerId && stickerById.has(stickerId)) {
-        const s = stickerById.get(stickerId);
+        const sticker = stickerById.get(stickerId);
         const img = document.createElement("img");
-        img.alt = s.label || s.id;
+        img.alt = sticker.label || sticker.id;
         img.loading = "lazy";
-        img.src = `./stickers/${s.file}`;
+        img.src = `./stickers/${sticker.file}`;
         cell.appendChild(img);
       }
 
       cell.addEventListener("click", () => {
-        state.month = m;
+        state.month = month;
         state.view = "month";
         saveState(state);
         render();
@@ -486,10 +451,9 @@ function openModal(dayKey) {
   modalDateEl.textContent = dayKey;
 
   if (searchInput) searchInput.value = "";
-  if (categorySelect) categorySelect.value = "";
 
   updateNoteButtonLabel();
-  renderStickerCategories(true);
+  renderStickerCategories();
   overlay.classList.remove("hidden");
 
   history.pushState(
@@ -543,6 +507,10 @@ function openNoteModal() {
   noteModalDateEl.textContent = selectedDayKey;
   noteInput.value = state.notes[selectedDayKey] || "";
   noteCount.textContent = `${noteInput.value.length}/160`;
+  deleteNoteBtn.textContent = state.notes[selectedDayKey]
+    ? "Delete Note"
+    : "Skip";
+
   noteOverlay.classList.remove("hidden");
   noteInput.focus();
 }
@@ -551,48 +519,64 @@ function closeNoteModal() {
   noteOverlay.classList.add("hidden");
 }
 
-function renderStickerCategories(fromHistory = false) {
+function saveNoteForSelectedDay() {
+  if (!selectedDayKey) return;
+
+  const value = noteInput.value.trim();
+
+  if (value) {
+    state.notes[selectedDayKey] = value;
+  } else {
+    delete state.notes[selectedDayKey];
+  }
+
+  saveState(state);
+  closeNoteModal();
+  closeModal(true);
+  render();
+}
+
+function renderStickerCategories() {
   stickerModalMode = "cats";
   activeStickerCategory = null;
 
   const groups = getGroups();
-
   stickerGrid.innerHTML = "";
 
   const wrapper = document.createElement("div");
   wrapper.className = "catList";
 
-  groups.forEach((g) => {
+  groups.forEach((group) => {
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "catTile";
-    btn.addEventListener("click", () => renderStickersForCategory(g.category));
-
-    btn.setAttribute("data-cat", g.category);
+    btn.setAttribute("data-cat", group.category);
+    btn.addEventListener("click", () =>
+      renderStickersForCategory(group.category),
+    );
 
     const name = document.createElement("div");
     name.className = "catName";
-    name.textContent = g.category;
+    name.textContent = group.category;
 
     const meta = document.createElement("div");
     meta.className = "catMeta";
-    meta.textContent = `${g.items.length} stickers`;
+    meta.textContent = `${group.items.length} stickers`;
 
     const preview = document.createElement("div");
     preview.className = "catPreview";
 
-    g.items.slice(0, 3).forEach((s) => {
+    group.items.slice(0, 3).forEach((sticker) => {
       const img = document.createElement("img");
       img.alt = "";
       img.loading = "lazy";
-      img.src = `./stickers/${s.file}`;
+      img.src = `./stickers/${sticker.file}`;
       preview.appendChild(img);
     });
 
     btn.appendChild(name);
     btn.appendChild(meta);
     btn.appendChild(preview);
-
     wrapper.appendChild(btn);
   });
 
@@ -604,20 +588,36 @@ function renderStickersForCategory(category, fromHistory = false) {
   activeStickerCategory = category;
 
   if (!fromHistory) {
-    history.pushState(
-      {
-        modal: true,
-        view: "stickers",
-        category,
-        dayKey: selectedDayKey,
-      },
-      "",
-    );
+    const historyState = history.state;
+
+    // If we're already on a sticker view for this same modal session,
+    // replace it instead of pushing another history entry.
+    if (historyState?.modal && historyState.view === "stickers") {
+      history.replaceState(
+        {
+          modal: true,
+          view: "stickers",
+          category,
+          dayKey: selectedDayKey,
+        },
+        "",
+      );
+    } else {
+      history.pushState(
+        {
+          modal: true,
+          view: "stickers",
+          category,
+          dayKey: selectedDayKey,
+        },
+        "",
+      );
+    }
+
     modalHistoryDepth = 2;
   }
 
-  const groups = getGroups();
-  const group = groups.find((g) => g.category === category);
+  const group = getGroups().find((g) => g.category === category);
   const items = (group?.items || [])
     .slice()
     .sort((a, b) => a.id.localeCompare(b.id));
@@ -632,9 +632,7 @@ function renderStickersForCategory(category, fromHistory = false) {
   back.className = "btn catBack";
   back.setAttribute("data-action", "back-to-cats");
   back.textContent = "← Categories";
-  back.addEventListener("click", () => {
-    history.back();
-  });
+  back.addEventListener("click", () => history.back());
 
   const title = document.createElement("div");
   title.className = "catTitle";
@@ -646,32 +644,32 @@ function renderStickersForCategory(category, fromHistory = false) {
   const grid = document.createElement("div");
   grid.className = "catGrid";
 
-  items.forEach((s) => {
+  items.forEach((sticker) => {
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "stickerBtn";
-    btn.setAttribute("data-sticker-id", s.id);
+    btn.setAttribute("data-sticker-id", sticker.id);
 
     btn.addEventListener("click", () => {
       if (!selectedDayKey) return;
 
-      state.placements[selectedDayKey] = s.id;
+      state.placements[selectedDayKey] = sticker.id;
       saveState(state);
-      requestModalClose();
+      updateNoteButtonLabel();
+      openNoteModal();
     });
 
     const img = document.createElement("img");
-    img.alt = s.label || s.id;
+    img.alt = sticker.label || sticker.id;
     img.loading = "lazy";
-    img.src = `./stickers/${s.file}`;
+    img.src = `./stickers/${sticker.file}`;
 
     const label = document.createElement("div");
     label.className = "stickerLabel";
-    label.textContent = s.label || s.id;
+    label.textContent = sticker.label || sticker.id;
 
     btn.appendChild(img);
     btn.appendChild(label);
-
     grid.appendChild(btn);
   });
 
@@ -682,24 +680,25 @@ function renderStickersForCategory(category, fromHistory = false) {
 function getGroups() {
   if (stickerGroups && stickerGroups.length) {
     return stickerGroups
-      .map((g) => ({
-        category: g.category || "Other",
-        items: (g.items || []).map((item) => ({
+      .map((group) => ({
+        category: group.category || "Other",
+        items: (group.items || []).map((item) => ({
           ...item,
           file: item.file || item.src || "",
         })),
       }))
-      .filter((g) => g.items.length);
+      .filter((group) => group.items.length);
   }
 
-  const map = new Map();
-  stickers.forEach((s) => {
-    const cat = s.category || "Other";
-    if (!map.has(cat)) map.set(cat, []);
-    map.get(cat).push(s);
+  const groupMap = new Map();
+
+  stickers.forEach((sticker) => {
+    const category = sticker.category || "Other";
+    if (!groupMap.has(category)) groupMap.set(category, []);
+    groupMap.get(category).push(sticker);
   });
 
-  return [...map.entries()]
+  return [...groupMap.entries()]
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([category, items]) => ({
       category,
@@ -707,10 +706,27 @@ function getGroups() {
     }));
 }
 
+function clearCurrentYear() {
+  if (!confirm("Clear all stickers for this year?")) return;
+
+  const yearPrefix = `${state.year}-`;
+
+  for (const key of Object.keys(state.placements)) {
+    if (key.startsWith(yearPrefix)) delete state.placements[key];
+  }
+
+  for (const key of Object.keys(state.notes)) {
+    if (key.startsWith(yearPrefix)) delete state.notes[key];
+  }
+
+  saveAndRender();
+}
+
 function loadState() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
+
     const parsed = JSON.parse(raw);
     if (!parsed.notes) parsed.notes = {};
     return parsed;
@@ -727,6 +743,7 @@ function exportJson() {
   const blob = new Blob([JSON.stringify(state, null, 2)], {
     type: "application/json",
   });
+
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
   a.download = `sticker-year-${state.year}.json`;
@@ -759,7 +776,7 @@ async function importJson(e) {
 
     saveAndRender();
     alert("Imported!");
-  } catch (err) {
+  } catch {
     alert("Import failed. Make sure it's a valid JSON export from this app.");
   } finally {
     importInput.value = "";
