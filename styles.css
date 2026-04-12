@@ -3,10 +3,10 @@
   --bg: #fbe8ef;
   --ink: #2d0819;
   --accent: #f7b7d2;
-  --font-main: "Poppins", system-ui, -apple-system, Segoe UI, Roboto, Arial,
-    sans-serif;
-  --font-alt: "Quicksand", system-ui, -apple-system, Segoe UI, Roboto, Arial,
-    sans-serif;
+  --font-main:
+    "Poppins", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  --font-alt:
+    "Quicksand", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 
   /* derived theme tokens (don’t edit) */
   --surface: color-mix(in srgb, white 92%, var(--bg));
@@ -39,7 +39,8 @@ body {
   font-family: var(--font-main);
 
   /* cute glow derived from accent */
-  background: radial-gradient(
+  background:
+    radial-gradient(
       1000px 500px at 20% 0%,
       color-mix(in srgb, var(--accent) 25%, transparent),
       transparent 55%
@@ -52,6 +53,17 @@ body {
     var(--bg);
 
   color: var(--ink);
+}
+
+.noteInput {
+  width: 100%;
+  min-height: 120px;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  font: inherit;
+  resize: vertical;
+  box-sizing: border-box;
 }
 
 .topbar {
@@ -255,7 +267,7 @@ h1 {
 
 .day {
   font-family: var(--font-alt);
-  font-weight: 600;
+  font-weight: 400;
   min-height: 78px;
   border-radius: 14px;
   border: 2px solid var(--border);
@@ -265,7 +277,9 @@ h1 {
   cursor: pointer;
   display: flex;
   flex-direction: column;
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
   overflow: hidden;
 }
 .day:active {
@@ -282,7 +296,8 @@ h1 {
 
 .day.today {
   outline: 2px solid var(--accent-outline);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent),
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent),
     var(--shadow-soft);
 }
 
@@ -353,7 +368,9 @@ h1 {
   place-items: center;
   cursor: pointer;
   align-content: end;
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
 }
 .miniDay:hover {
   box-shadow: var(--shadow-soft);
@@ -395,10 +412,12 @@ h1 {
     color-mix(in srgb, var(--accent) 18%, transparent)
   );
   display: grid;
-  place-items: end center;
+  place-items: start center;
   padding: 14px;
+  overflow-y: auto;
   z-index: 9999;
 }
+
 @media (min-width: 720px) {
   .overlay {
     place-items: center;
@@ -408,23 +427,41 @@ h1 {
 .modal {
   width: min(980px, 100%);
   max-height: 86vh;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   border-radius: 20px;
   border: 1px solid var(--border);
   background: color-mix(in srgb, var(--surface) 94%, transparent);
   backdrop-filter: blur(12px);
   display: flex;
   flex-direction: column;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18), var(--shadow);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.18),
+    var(--shadow);
 }
 
 .modalHeader {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 14px;
+
   border-bottom: 1px solid var(--border);
   background: var(--surface-2);
+}
+
+.modalHeader {
+  backdrop-filter: blur(6px);
+}
+
+.modalHeaderActions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
 }
 
 .modalDate {
@@ -457,7 +494,7 @@ h1 {
 
 .grid {
   padding: 12px 14px 16px;
-  overflow: auto;
+  overflow: visible;
   display: block;
   grid-template-columns: repeat(4, 1fr);
   gap: 10px;
@@ -473,7 +510,9 @@ h1 {
   place-items: center;
   gap: 6px;
   min-height: 120px;
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
 }
 .stickerBtn:hover {
   transform: translateY(-2px);
@@ -681,6 +720,14 @@ body {
   gap: 10px;
 }
 
+/* deleted */
+
+.day .num.has-note,
+.miniDay .miniNum.has-note {
+  font-weight: 999;
+  color: var(--accent-ink);
+}
+
 @media (min-width: 720px) {
   .catGrid {
     grid-template-columns: repeat(4, 1fr);
@@ -692,5 +739,31 @@ body {
   .catPreview img {
     max-width: 42px;
     height: auto;
+  }
+}
+
+@media (max-width: 720px) {
+  .modal {
+    max-height: 92vh;
+  }
+}
+
+@media (max-width: 440px) {
+  .day .num.has-note {
+    z-index: 2;
+    background: transparent; /* ← key change */
+    padding: 1px 1.5px;
+    min-width: 1.4em;
+    height: 1.3em;
+    border-width: 1.5px;
+  }
+
+  .miniDay .miniNum.has-note {
+    background: transparent; /* ← key change */
+    z-index: 2;
+    padding: 1px 2px;
+    min-width: 1em;
+    height: 1em;
+    border-width: 1px;
   }
 }

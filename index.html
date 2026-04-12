@@ -87,7 +87,10 @@
             <div class="modalHint">Choose a sticker (1 per day)</div>
           </div>
 
-          <button id="closeModalBtn" class="btn">✕</button>
+          <div class="modalHeaderActions">
+            <button id="noteBtn" class="btn">Add Note</button>
+            <button id="closeModalBtn" class="btn">✕</button>
+          </div>
         </div>
 
         <div id="stickerGrid" class="grid"></div>
@@ -101,9 +104,46 @@
           placeholder="Search stickers (e.g., cat, coffee, book)"
         />
         <!-- <select id="categorySelect" class="select">
-            <option value="">All categories</option>
-          </select> -->
+          <option value="">All categories</option>
+        </select> -->
         <button id="removeStickerBtn" class="btn">Remove Sticker</button>
+      </div>
+    </div>
+
+    <!-- Note Modal -->
+    <div
+      id="noteOverlay"
+      class="overlay hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Day note"
+    >
+      <div class="modal noteModal">
+        <div class="modalHeader">
+          <div>
+            <div id="noteModalDate" class="modalDate">Date</div>
+            <div class="modalHint">Add a short note</div>
+          </div>
+
+          <button id="closeNoteModalBtn" class="btn">✕</button>
+        </div>
+
+        <textarea
+          id="noteInput"
+          class="noteInput"
+          maxlength="160"
+          rows="5"
+          placeholder="Write a short note..."
+        ></textarea>
+
+        <div class="noteFooter">
+          <div id="noteCount" class="small">0/160</div>
+
+          <div class="noteActions">
+            <button id="deleteNoteBtn" class="btn">Delete Note</button>
+            <button id="saveNoteBtn" class="btn btn-primary">Save Note</button>
+          </div>
+        </div>
       </div>
     </div>
 

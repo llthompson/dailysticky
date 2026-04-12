@@ -29,7 +29,17 @@ const stickerGrid = el("stickerGrid");
 const searchInput = el("searchInput");
 const categorySelect = el("categorySelect");
 
+const noteBtn = el("noteBtn");
 const removeStickerBtn = el("removeStickerBtn");
+
+// Note modal
+const noteOverlay = el("noteOverlay");
+const noteModalDateEl = el("noteModalDate");
+const noteInput = el("noteInput");
+const noteCount = el("noteCount");
+const closeNoteModalBtn = el("closeNoteModalBtn");
+const saveNoteBtn = el("saveNoteBtn");
+const deleteNoteBtn = el("deleteNoteBtn");
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const MONTHS = [
@@ -61,7 +71,10 @@ let state = loadState() || {
   month: today.getMonth(),
   view: "month", // "month" | "year"
   placements: {}, // { "YYYY-MM-DD": "stickerId" }
+  notes: {}, // { "YYYY-MM-DD": "short note" }
 };
+
+if (!state.notes) state.notes = {};
 
 let stickerGroups = []; // [{ category, items:[{id,file,label...}] }]
 let stickers = []; // flattened internal list
@@ -170,11 +183,49 @@ function wireEvents() {
     if (e.target === overlay) requestModalClose();
   });
 
+  noteBtn.addEventListener("click", openNoteModal);
+
   removeStickerBtn.addEventListener("click", () => {
     if (!selectedDayKey) return;
     delete state.placements[selectedDayKey];
     saveState(state);
     requestModalClose();
+  });
+
+  closeNoteModalBtn.addEventListener("click", closeNoteModal);
+
+  noteOverlay.addEventListener("click", (e) => {
+    if (e.target === noteOverlay) closeNoteModal();
+  });
+
+  noteInput.addEventListener("input", () => {
+    noteCount.textContent = `${noteInput.value.length}/160`;
+  });
+
+  saveNoteBtn.addEventListener("click", () => {
+    if (!selectedDayKey) return;
+
+    const value = noteInput.value.trim();
+
+    if (value) {
+      state.notes[selectedDayKey] = value;
+    } else {
+      delete state.notes[selectedDayKey];
+    }
+
+    saveState(state);
+    closeNoteModal();
+    closeModal(true);
+    render();
+  });
+
+  deleteNoteBtn.addEventListener("click", () => {
+    if (!selectedDayKey) return;
+    delete state.notes[selectedDayKey];
+    saveState(state);
+    closeNoteModal();
+    closeModal(true);
+    render();
   });
 
   exportBtn.addEventListener("click", exportJson);
@@ -188,6 +239,9 @@ function wireEvents() {
       for (const k of Object.keys(state.placements)) {
         if (k.startsWith(yearStr)) delete state.placements[k];
       }
+      for (const k of Object.keys(state.notes)) {
+        if (k.startsWith(yearStr)) delete state.notes[k];
+      }
       saveAndRender();
     });
   }
@@ -200,6 +254,7 @@ function wireEvents() {
       selectedDayKey = historyState.dayKey || selectedDayKey;
       modalDateEl.textContent = selectedDayKey || "Date";
       overlay.classList.remove("hidden");
+      updateNoteButtonLabel();
 
       if (historyState.view === "categories") {
         stickerModalMode = "cats";
@@ -307,16 +362,17 @@ function renderMonth() {
     const key = ymd(d);
     const isToday = key === ymd(today);
     const isOutside = d.getMonth() !== month;
+    const hasNote = !!state.notes[key];
 
     const cell = document.createElement("button");
     cell.type = "button";
     cell.className = `day${isToday ? " today" : ""}${
       isOutside ? " outside" : ""
-    }`;
+    }${hasNote ? " has-note" : ""}`;
     cell.setAttribute("aria-label", `Day ${key}`);
 
     const num = document.createElement("div");
-    num.className = "num";
+    num.className = `num${hasNote ? " has-note" : ""}`;
     num.textContent = String(d.getDate());
 
     const slot = document.createElement("div");
@@ -384,14 +440,15 @@ function renderYear() {
     for (let d = 1; d <= daysInMonth; d++) {
       const date = new Date(year, m, d);
       const key = ymd(date);
+      const hasNote = !!state.notes[key];
 
       const cell = document.createElement("button");
       cell.type = "button";
-      cell.className = "miniDay";
+      cell.className = `miniDay${hasNote ? " has-note" : ""}`;
       cell.setAttribute("aria-label", key);
 
       const num = document.createElement("div");
-      num.className = "miniNum";
+      num.className = `miniNum${hasNote ? " has-note" : ""}`;
       num.textContent = String(d);
       cell.appendChild(num);
 
@@ -431,6 +488,7 @@ function openModal(dayKey) {
   if (searchInput) searchInput.value = "";
   if (categorySelect) categorySelect.value = "";
 
+  updateNoteButtonLabel();
   renderStickerCategories(true);
   overlay.classList.remove("hidden");
 
@@ -451,6 +509,7 @@ function closeModal(fromHistory = false) {
   selectedDayKey = null;
   stickerModalMode = "cats";
   activeStickerCategory = null;
+  closeNoteModal();
 
   if (fromHistory) {
     modalHistoryDepth = 0;
@@ -467,6 +526,29 @@ function requestModalClose() {
 
   closeModal(true);
   render();
+}
+
+function updateNoteButtonLabel() {
+  if (!selectedDayKey) {
+    noteBtn.textContent = "Add Note";
+    return;
+  }
+
+  noteBtn.textContent = state.notes[selectedDayKey] ? "Edit Note" : "Add Note";
+}
+
+function openNoteModal() {
+  if (!selectedDayKey) return;
+
+  noteModalDateEl.textContent = selectedDayKey;
+  noteInput.value = state.notes[selectedDayKey] || "";
+  noteCount.textContent = `${noteInput.value.length}/160`;
+  noteOverlay.classList.remove("hidden");
+  noteInput.focus();
+}
+
+function closeNoteModal() {
+  noteOverlay.classList.add("hidden");
 }
 
 function renderStickerCategories(fromHistory = false) {
@@ -629,7 +711,9 @@ function loadState() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
-    return JSON.parse(raw);
+    const parsed = JSON.parse(raw);
+    if (!parsed.notes) parsed.notes = {};
+    return parsed;
   } catch {
     return null;
   }
@@ -670,6 +754,7 @@ async function importJson(e) {
       month: imported.month ?? state.month,
       view: imported.view ?? state.view,
       placements: imported.placements ?? {},
+      notes: imported.notes ?? {},
     };
 
     saveAndRender();
