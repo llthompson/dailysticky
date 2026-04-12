@@ -26,7 +26,6 @@ const closeModalBtn = el("closeModalBtn");
 const modalDateEl = el("modalDate");
 const stickerGrid = el("stickerGrid");
 
-// These are now optional; you can remove them from HTML safely
 const searchInput = el("searchInput");
 const categorySelect = el("categorySelect");
 
@@ -74,6 +73,9 @@ let selectedDayKey = null;
 let stickerModalMode = "cats"; // "cats" | "stickers"
 let activeStickerCategory = null;
 
+// Browser history state for modal UX
+let modalHistoryDepth = 0;
+
 window.addEventListener("DOMContentLoaded", () => {
   init();
 });
@@ -93,7 +95,6 @@ async function init() {
 }
 
 function populateMonthYearSelects() {
-  // months
   monthSelect.innerHTML = "";
   MONTHS.forEach((m, i) => {
     const opt = document.createElement("option");
@@ -102,7 +103,6 @@ function populateMonthYearSelects() {
     monthSelect.appendChild(opt);
   });
 
-  // years: this year ± 5
   const base = today.getFullYear();
   yearSelect.innerHTML = "";
   for (let y = base - 5; y <= base + 5; y++) {
@@ -117,7 +117,6 @@ async function loadStickers() {
   const res = await fetch("./stickers.json");
   const data = await res.json();
 
-  // grouped format
   if (Array.isArray(data) && data.length && data[0].items) {
     stickerGroups = data;
 
@@ -126,10 +125,9 @@ async function loadStickers() {
         ...item,
         category: group.category || item.category || "Other",
         file: item.file || item.src || "",
-      }))
+      })),
     );
   } else {
-    // flat format
     stickerGroups = [];
     stickers = data;
   }
@@ -140,6 +138,7 @@ async function loadStickers() {
 function wireEvents() {
   prevBtn.addEventListener("click", () => shiftMonth(-1));
   nextBtn.addEventListener("click", () => shiftMonth(1));
+
   todayBtn.addEventListener("click", () => {
     state.year = today.getFullYear();
     state.month = today.getMonth();
@@ -159,44 +158,76 @@ function wireEvents() {
     state.month = Number(monthSelect.value);
     saveAndRender();
   });
+
   yearSelect.addEventListener("change", () => {
     state.year = Number(yearSelect.value);
     saveAndRender();
   });
 
-  // modal close
-  closeModalBtn.addEventListener("click", closeModal);
+  closeModalBtn.addEventListener("click", requestModalClose);
+
   overlay.addEventListener("click", (e) => {
-    if (e.target === overlay) closeModal();
+    if (e.target === overlay) requestModalClose();
   });
 
-  // REMOVE sticker for day
   removeStickerBtn.addEventListener("click", () => {
     if (!selectedDayKey) return;
     delete state.placements[selectedDayKey];
     saveState(state);
-    closeModal();
-    render();
+    requestModalClose();
   });
 
-  // Export/import/clear
   exportBtn.addEventListener("click", exportJson);
   importInput.addEventListener("change", importJson);
-  clearBtn.addEventListener("click", () => {
-    if (!confirm("Clear all stickers for this year?")) return;
-    // only clear current year
-    const yearStr = String(state.year) + "-";
-    for (const k of Object.keys(state.placements)) {
-      if (k.startsWith(yearStr)) delete state.placements[k];
+
+  if (clearBtn) {
+    clearBtn.addEventListener("click", () => {
+      if (!confirm("Clear all stickers for this year?")) return;
+
+      const yearStr = String(state.year) + "-";
+      for (const k of Object.keys(state.placements)) {
+        if (k.startsWith(yearStr)) delete state.placements[k];
+      }
+      saveAndRender();
+    });
+  }
+
+  window.addEventListener("popstate", (e) => {
+    const historyState = e.state;
+
+    // Move into a modal state
+    if (historyState?.modal) {
+      selectedDayKey = historyState.dayKey || selectedDayKey;
+      modalDateEl.textContent = selectedDayKey || "Date";
+      overlay.classList.remove("hidden");
+
+      if (historyState.view === "categories") {
+        stickerModalMode = "cats";
+        activeStickerCategory = null;
+        modalHistoryDepth = 1;
+        renderStickerCategories(true);
+        return;
+      }
+
+      if (historyState.view === "stickers") {
+        stickerModalMode = "stickers";
+        activeStickerCategory = historyState.category || null;
+        modalHistoryDepth = 2;
+        renderStickersForCategory(historyState.category, true);
+        return;
+      }
     }
-    saveAndRender();
+
+    // Move out of modal state
+    if (!overlay.classList.contains("hidden")) {
+      closeModal(true);
+      render();
+    }
   });
 
-  // sync selects on load
   monthSelect.value = String(state.month);
   yearSelect.value = String(state.year);
 
-  // If these controls still exist in your HTML, disable them safely
   if (searchInput) searchInput.value = "";
   if (categorySelect) categorySelect.value = "";
 }
@@ -214,7 +245,6 @@ function saveAndRender() {
 }
 
 function render() {
-  // sync selects + button text
   monthSelect.value = String(state.month);
   yearSelect.value = String(state.year);
   toggleViewBtn.textContent =
@@ -238,7 +268,6 @@ function renderMonth() {
   const first = new Date(year, month, 1);
   const startDay = first.getDay();
 
-  // show a nice 6-week grid including previous/next month days
   const gridCells = 42;
   const startDate = new Date(year, month, 1 - startDay);
 
@@ -252,7 +281,7 @@ function renderMonth() {
       <h2>${MONTHS[month]} ${year}</h2>
       <div class="small">${
         Object.keys(state.placements).filter((k) =>
-          k.startsWith(`${year}-${pad2(month + 1)}-`)
+          k.startsWith(`${year}-${pad2(month + 1)}-`),
         ).length
       } days stickered</div>
     </div>
@@ -307,7 +336,6 @@ function renderMonth() {
     cell.appendChild(slot);
 
     cell.addEventListener("click", () => {
-      // if tapping an "outside" day, jump to that month first
       if (isOutside) {
         state.year = d.getFullYear();
         state.month = d.getMonth();
@@ -347,7 +375,6 @@ function renderYear() {
     const startDay = first.getDay();
     const daysInMonth = new Date(year, m + 1, 0).getDate();
 
-    // pad empty cells
     for (let i = 0; i < startDay; i++) {
       const empty = document.createElement("div");
       empty.className = "miniDay empty";
@@ -399,31 +426,50 @@ function renderYear() {
 
 function openModal(dayKey) {
   selectedDayKey = dayKey;
-
-  // Optional: keep day shown, but we’ll change the modal content beneath it
   modalDateEl.textContent = dayKey;
 
-  // If these still exist, clear them (they're unused now)
   if (searchInput) searchInput.value = "";
   if (categorySelect) categorySelect.value = "";
 
-  // Start in Categories view
-  renderStickerCategories();
-
+  renderStickerCategories(true);
   overlay.classList.remove("hidden");
+
+  history.pushState(
+    {
+      modal: true,
+      view: "categories",
+      dayKey,
+    },
+    "",
+  );
+
+  modalHistoryDepth = 1;
 }
 
-function closeModal() {
+function closeModal(fromHistory = false) {
   overlay.classList.add("hidden");
   selectedDayKey = null;
   stickerModalMode = "cats";
   activeStickerCategory = null;
-  // leave stickerGrid content as-is; it will be re-rendered next open
+
+  if (fromHistory) {
+    modalHistoryDepth = 0;
+  }
 }
 
-/* ---------- Modal rendering: Categories -> Stickers ---------- */
+function requestModalClose() {
+  if (overlay.classList.contains("hidden")) return;
 
-function renderStickerCategories() {
+  if (modalHistoryDepth > 0) {
+    history.go(-modalHistoryDepth);
+    return;
+  }
+
+  closeModal(true);
+  render();
+}
+
+function renderStickerCategories(fromHistory = false) {
   stickerModalMode = "cats";
   activeStickerCategory = null;
 
@@ -453,7 +499,6 @@ function renderStickerCategories() {
     const preview = document.createElement("div");
     preview.className = "catPreview";
 
-    // show up to 3 preview icons
     g.items.slice(0, 3).forEach((s) => {
       const img = document.createElement("img");
       img.alt = "";
@@ -472,9 +517,22 @@ function renderStickerCategories() {
   stickerGrid.appendChild(wrapper);
 }
 
-function renderStickersForCategory(category) {
+function renderStickersForCategory(category, fromHistory = false) {
   stickerModalMode = "stickers";
   activeStickerCategory = category;
+
+  if (!fromHistory) {
+    history.pushState(
+      {
+        modal: true,
+        view: "stickers",
+        category,
+        dayKey: selectedDayKey,
+      },
+      "",
+    );
+    modalHistoryDepth = 2;
+  }
 
   const groups = getGroups();
   const group = groups.find((g) => g.category === category);
@@ -484,7 +542,6 @@ function renderStickersForCategory(category) {
 
   stickerGrid.innerHTML = "";
 
-  // Top row: Back + Title
   const top = document.createElement("div");
   top.className = "catTopRow";
 
@@ -494,7 +551,7 @@ function renderStickersForCategory(category) {
   back.setAttribute("data-action", "back-to-cats");
   back.textContent = "← Categories";
   back.addEventListener("click", () => {
-    renderStickerCategories();
+    history.back();
   });
 
   const title = document.createElement("div");
@@ -518,8 +575,7 @@ function renderStickersForCategory(category) {
 
       state.placements[selectedDayKey] = s.id;
       saveState(state);
-      closeModal(); // closes overlay
-      render(); // updates calendar
+      requestModalClose();
     });
 
     const img = document.createElement("img");
@@ -542,9 +598,7 @@ function renderStickersForCategory(category) {
 }
 
 function getGroups() {
-  // Prefer the grouped JSON from stickers.json
   if (stickerGroups && stickerGroups.length) {
-    // Ensure each item has file populated (defensive)
     return stickerGroups
       .map((g) => ({
         category: g.category || "Other",
@@ -556,7 +610,6 @@ function getGroups() {
       .filter((g) => g.items.length);
   }
 
-  // Fallback: build from flat stickers
   const map = new Map();
   stickers.forEach((s) => {
     const cat = s.category || "Other";
@@ -571,8 +624,6 @@ function getGroups() {
       items: items.slice().sort((a, b) => a.id.localeCompare(b.id)),
     }));
 }
-
-/* storage + import/export */
 
 function loadState() {
   try {
@@ -604,11 +655,11 @@ function exportJson() {
 async function importJson(e) {
   const file = e.target.files?.[0];
   if (!file) return;
+
   try {
     const text = await file.text();
     const imported = JSON.parse(text);
 
-    // minimal validation
     if (!imported || typeof imported !== "object" || !imported.placements) {
       alert("That JSON doesn't look like a Sticker Year export.");
       return;
