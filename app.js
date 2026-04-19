@@ -933,7 +933,7 @@ function renderWeeklyShare() {
   }
 
   // Row 1: empty, Mon, Tue, Wed
-  const brandCell = makeLabelCell("my diary:");
+  const brandCell = makeLabelCell("my week:");
   brandCell.classList.add("share-brand-cell");
   grid.appendChild(brandCell);
   topThree.forEach((day) => {
@@ -958,7 +958,7 @@ function renderWeeklyShare() {
 }
 
 async function shareWeek() {
-  const shareText = "my week in stickers";
+  const shareText = "stick with me! start your own diary at";
   const shareUrl = "https://dailysticky.app";
 
   // Try file share first, if we have a prepared file
