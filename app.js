@@ -181,6 +181,7 @@ function wireEvents() {
     if (!selectedDayKey) return;
     delete state.placements[selectedDayKey];
     saveState(state);
+    scheduleSharePreparation();
     requestModalClose();
   });
 
@@ -202,6 +203,7 @@ function wireEvents() {
     if (state.notes[selectedDayKey]) {
       delete state.notes[selectedDayKey];
       saveState(state);
+      scheduleSharePreparation();
       render();
     }
 
@@ -537,6 +539,7 @@ function saveNoteForSelectedDay() {
   }
 
   saveState(state);
+  scheduleSharePreparation();
   closeNoteModal();
   closeModal(true);
   render();
@@ -661,6 +664,7 @@ function renderStickersForCategory(category, fromHistory = false) {
 
       state.placements[selectedDayKey] = sticker.id;
       saveState(state);
+      scheduleSharePreparation();
       updateNoteButtonLabel();
       openNoteModal();
     });
@@ -801,7 +805,7 @@ function scheduleSharePreparation() {
   // wait until user pauses interaction
   sharePrepTimeout = setTimeout(() => {
     prepareShareImage();
-  }, 800); // tweak if needed
+  }, 200); // tweak if needed
 }
 
 async function prepareShareImage() {
@@ -929,7 +933,7 @@ function renderWeeklyShare() {
   }
 
   // Row 1: empty, Mon, Tue, Wed
-  const brandCell = makeLabelCell("dailysticky");
+  const brandCell = makeLabelCell("my diary:");
   brandCell.classList.add("share-brand-cell");
   grid.appendChild(brandCell);
   topThree.forEach((day) => {
