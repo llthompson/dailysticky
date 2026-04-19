@@ -26,7 +26,7 @@
         <h1>
           Daily Sticky
 
-          <p class="slogan">a daily sticker diary</p>
+          <p class="slogan">a daily diary habit you can stick to</p>
         </h1>
         <p class="subtitle">Tap a day → choose a sticker → done.</p>
       </div>
@@ -42,16 +42,28 @@
           <button id="toggleViewBtn" class="btn btn-primary">Year view</button>
         </div>
 
-        <button id="settingsBtn" class="btn icon-btn" aria-label="More options">
-          <i class="fa-solid fa-ellipsis-vertical"></i>
-        </button>
+        <div class="topbar-actions">
+          <button
+            id="shareWeekBtn"
+            class="btn icon-btn"
+            aria-label="Share week"
+          >
+            <i class="fa-solid fa-share-nodes"></i>
+          </button>
+
+          <button
+            id="exportBtn"
+            class="btn icon-btn"
+            aria-label="Export backup"
+          >
+            <i class="fa-solid fa-download"></i>
+          </button>
+        </div>
       </div>
 
       <div class="controls secondary" id="secondaryControls">
         <select id="monthSelect" class="select" aria-label="Month"></select>
         <select id="yearSelect" class="select" aria-label="Year"></select>
-
-        <button id="exportBtn" class="btn">Export Backup</button>
 
         <label class="btn fileBtn">
           Import Backup
@@ -147,6 +159,21 @@
       </div>
     </div>
 
+    <div id="weeklyShareCard" class="weekly-share-card" aria-hidden="true">
+      <div class="weekly-share-title">My Week in Stickers</div>
+      <div class="weekly-share-range" id="weeklyShareRange"></div>
+
+      <div id="weeklyShareGrid" class="weekly-share-grid">
+        <!-- JS fills this -->
+      </div>
+
+      <!-- <div class="weekly-share-footer">
+        start yours at 
+        <a href="https://dailysticky.app">dailysticky.app</a>
+      </div> -->
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script src="app.js"></script>
   </body>
 </html>

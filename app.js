@@ -11,7 +11,7 @@ const prevBtn = el("prevBtn");
 const nextBtn = el("nextBtn");
 const todayBtn = el("todayBtn");
 const toggleViewBtn = el("toggleViewBtn");
-const settingsBtn = el("settingsBtn");
+const shareWeekBtn = el("shareWeekBtn");
 const secondaryControls = el("secondaryControls");
 
 const monthSelect = el("monthSelect");
@@ -72,6 +72,10 @@ let state = loadState() || {
 
 if (!state.notes) state.notes = {};
 
+let shareState = "idle"; // "idle" | "preparing" | "ready"
+let preparedShareFile = null;
+let sharePrepTimeout = null;
+
 let stickerGroups = []; // [{ category, items:[{id,file,label...}] }]
 let stickers = []; // flattened list
 let stickerById = new Map();
@@ -94,6 +98,7 @@ async function init() {
   await loadStickers();
   wireEvents();
   render();
+  scheduleSharePreparation();
 }
 
 function populateMonthYearSelects() {
@@ -147,9 +152,7 @@ function wireEvents() {
     saveAndRender();
   });
 
-  settingsBtn.addEventListener("click", () => {
-    secondaryControls.classList.toggle("is-visible");
-  });
+  shareWeekBtn.addEventListener("click", shareWeek);
 
   toggleViewBtn.addEventListener("click", () => {
     state.view = state.view === "month" ? "year" : "month";
@@ -263,6 +266,7 @@ function shiftMonth(delta) {
 function saveAndRender() {
   saveState(state);
   render();
+  scheduleSharePreparation();
 }
 
 function render() {
@@ -280,6 +284,8 @@ function render() {
     yearViewEl.classList.remove("hidden");
     renderYear();
   }
+
+  renderWeeklyShare();
 }
 
 function renderMonth() {
@@ -498,7 +504,7 @@ function updateNoteButtonLabel() {
     return;
   }
 
-  noteBtn.textContent = state.notes[selectedDayKey] ? "Edit Note" : "Add Note";
+  noteBtn.textContent = state.notes[selectedDayKey] ? "View Note" : "Add Note";
 }
 
 function openNoteModal() {
@@ -780,5 +786,228 @@ async function importJson(e) {
     alert("Import failed. Make sure it's a valid JSON export from this app.");
   } finally {
     importInput.value = "";
+  }
+}
+
+function scheduleSharePreparation() {
+  // mark as needing rebuild
+  shareState = "idle";
+  preparedShareFile = null;
+
+  if (sharePrepTimeout) {
+    clearTimeout(sharePrepTimeout);
+  }
+
+  // wait until user pauses interaction
+  sharePrepTimeout = setTimeout(() => {
+    prepareShareImage();
+  }, 800); // tweak if needed
+}
+
+async function prepareShareImage() {
+  const card = document.getElementById("weeklyShareCard");
+  if (!card || typeof html2canvas === "undefined") return;
+
+  shareState = "preparing";
+
+  try {
+    renderWeeklyShare();
+
+    const canvas = await html2canvas(card, {
+      backgroundColor: "#fffafc",
+      scale: 2,
+      useCORS: true,
+      logging: false,
+    });
+
+    const blob = await new Promise((resolve) =>
+      canvas.toBlob(resolve, "image/png"),
+    );
+
+    if (!blob) {
+      shareState = "idle";
+      return;
+    }
+
+    preparedShareFile = new File([blob], "my-week-in-stickers.png", {
+      type: "image/png",
+    });
+
+    shareState = "ready";
+  } catch (e) {
+    console.error("prepareShareImage error:", e);
+    shareState = "idle";
+  }
+}
+
+function renderWeeklyShare() {
+  const grid = document.getElementById("weeklyShareGrid");
+  const rangeEl = document.getElementById("weeklyShareRange");
+
+  if (!grid || !rangeEl) return;
+
+  grid.innerHTML = "";
+
+  const now = new Date();
+  now.setHours(12, 0, 0, 0);
+
+  const days = [];
+
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(now);
+    d.setDate(now.getDate() - i);
+
+    const key = ymd(d);
+    const stickerId = state.placements[key];
+    const sticker = stickerId ? stickerById.get(stickerId) : null;
+
+    days.push({
+      date: d,
+      label: WEEKDAYS[d.getDay()],
+      sticker,
+    });
+  }
+
+  const start = days[0].date;
+  const end = days[6].date;
+
+  const startStr = start.toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+  });
+
+  const endStr = end.toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+  });
+
+  rangeEl.textContent = `${startStr}–${endStr}`;
+
+  const topThree = days.slice(0, 3);
+  const bottomFour = days.slice(3, 7);
+
+  function makeLabelCell(text) {
+    const el = document.createElement("div");
+    el.className = "share-label-cell";
+    el.textContent = text;
+    return el;
+  }
+
+  function makeStickerCell(sticker) {
+    const el = document.createElement("div");
+    el.className = "share-sticker-cell";
+
+    if (sticker) {
+      const img = document.createElement("img");
+      img.src = `./stickers/${sticker.file}`;
+      img.alt = sticker.label || sticker.id;
+      el.appendChild(img);
+    } else {
+      el.classList.add("is-empty");
+      el.textContent = "•";
+    }
+
+    return el;
+  }
+
+  function makeEmptyCell() {
+    const el = document.createElement("div");
+    el.className = "share-empty-cell";
+    return el;
+  }
+
+  function makeLogoCell() {
+    const el = document.createElement("div");
+    el.className = "share-logo-cell";
+
+    const img = document.createElement("img");
+    img.src = "./logo.png"; // <-- change this if your logo path is different
+    img.alt = "Daily Sticky";
+    el.appendChild(img);
+
+    return el;
+  }
+
+  // Row 1: empty, Mon, Tue, Wed
+  const brandCell = makeLabelCell("dailysticky");
+  brandCell.classList.add("share-brand-cell");
+  grid.appendChild(brandCell);
+  topThree.forEach((day) => {
+    grid.appendChild(makeLabelCell(day.label));
+  });
+
+  // Row 2: logo, sticker, sticker, sticker
+  grid.appendChild(makeLogoCell());
+  topThree.forEach((day) => {
+    grid.appendChild(makeStickerCell(day.sticker));
+  });
+
+  // Row 3: Thu, Fri, Sat, Sun
+  bottomFour.forEach((day) => {
+    grid.appendChild(makeLabelCell(day.label));
+  });
+
+  // Row 4: sticker, sticker, sticker, sticker
+  bottomFour.forEach((day) => {
+    grid.appendChild(makeStickerCell(day.sticker));
+  });
+}
+
+async function shareWeek() {
+  const shareText = "my week in stickers";
+  const shareUrl = "https://dailysticky.app";
+
+  // Try file share first, if we have a prepared file
+  if (
+    shareState === "ready" &&
+    preparedShareFile &&
+    navigator.share &&
+    navigator.canShare &&
+    navigator.canShare({ files: [preparedShareFile] })
+  ) {
+    try {
+      await navigator.share({
+        files: [preparedShareFile],
+        text: shareText,
+        url: shareUrl,
+      });
+      return;
+    } catch (err) {
+      if (err?.name === "AbortError") return;
+      console.error("file share failed:", err);
+    }
+  }
+
+  // If file share didn't work, try plain native share next
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        text: shareText,
+        url: shareUrl,
+      });
+      return;
+    } catch (err) {
+      if (err?.name === "AbortError") return;
+      console.error("text share failed:", err);
+    }
+  }
+
+  // Final fallback: download image + copy link
+  if (preparedShareFile) {
+    const url = URL.createObjectURL(preparedShareFile);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "my-week-in-stickers.png";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  try {
+    await navigator.clipboard.writeText(shareUrl);
+    alert("Image downloaded. Link copied.");
+  } catch {
+    alert("Image downloaded.");
   }
 }

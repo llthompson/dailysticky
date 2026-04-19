@@ -167,9 +167,11 @@ h1 {
   /* color: green; */
 }
 
-#settingsBtn {
+.topbar-actions {
   grid-column: 3;
   justify-self: end;
+  display: flex;
+  gap: 8px;
 }
 
 .icon-btn {
@@ -727,6 +729,96 @@ body {
   font-weight: 999;
   color: var(--accent-ink);
 }
+
+/* Weekly share */
+
+.weekly-share-card {
+  width: 500px;
+  padding: 22px 24px 18px;
+  background: #fffafc;
+  color: #2d0819;
+  font-family: "Poppins", sans-serif;
+
+  position: fixed;
+  left: -99999px;
+  top: 0;
+}
+
+.weekly-share-title {
+  font-size: 22px;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.weekly-share-range {
+  font-size: 13px;
+  color: #7a6f67;
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+.weekly-share-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: 26px 64px 26px 64px;
+  column-gap: 2px;
+  row-gap: 2px;
+  align-items: center;
+  justify-items: center;
+  margin-bottom: 2px;
+}
+
+.share-label-cell {
+  font-size: 14px;
+  font-weight: 500;
+  color: #7a1f45;
+  text-transform: lowercase;
+  /* text-transform: uppercase; */
+}
+
+.share-sticker-cell,
+.share-logo-cell {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.share-sticker-cell img,
+.share-logo-cell img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  display: block;
+}
+
+.share-empty-cell {
+  width: 56px;
+  height: 56px;
+}
+
+.share-sticker-cell.is-empty {
+  opacity: 0;
+  font-size: 18px;
+  color: #7a6f67;
+}
+
+.weekly-share-footer {
+  font-size: 13px;
+  color: #7a1f45;
+  text-align: center;
+}
+
+.share-brand-cell {
+  font-size: 14px;
+  color: #7a1f45;
+  font-weight: 500;
+  /* font-style: italic; */
+}
+
+/* end weekly share */
 
 @media (min-width: 720px) {
   .catGrid {
