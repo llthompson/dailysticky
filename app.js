@@ -17,8 +17,13 @@ const secondaryControls = el("secondaryControls");
 const monthSelect = el("monthSelect");
 const yearSelect = el("yearSelect");
 
-const exportBtn = el("exportBtn");
-const importInput = el("importInput");
+// New menu elements
+const menuBtn = el("menuBtn");
+const menuDropdown = el("menuDropdown");
+const menuAbout = el("menuAbout");
+const menuExport = el("menuExport");
+const menuImportInput = el("menuImportInput");
+
 const clearBtn = el("clearBtn");
 
 const overlay = el("modalOverlay");
@@ -211,8 +216,7 @@ function wireEvents() {
     requestModalClose();
   });
 
-  exportBtn.addEventListener("click", exportJson);
-  importInput.addEventListener("change", importJson);
+  wireMenuEvents();
 
   if (clearBtn) {
     clearBtn.addEventListener("click", clearCurrentYear);
@@ -224,6 +228,39 @@ function wireEvents() {
   yearSelect.value = String(state.year);
 
   if (searchInput) searchInput.value = "";
+}
+
+function wireMenuEvents() {
+  if (menuBtn && menuDropdown) {
+    menuBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      menuDropdown.classList.toggle("hidden");
+    });
+
+    menuDropdown.addEventListener("click", (e) => {
+      e.stopPropagation();
+    });
+
+    document.addEventListener("click", () => {
+      menuDropdown.classList.add("hidden");
+    });
+  }
+
+  menuAbout.addEventListener("click", () => {
+    menuDropdown.classList.add("hidden");
+    window.location.href = "/about.html";
+  });
+
+  if (menuExport) {
+    menuExport.addEventListener("click", () => {
+      if (menuDropdown) menuDropdown.classList.add("hidden");
+      exportJson();
+    });
+  }
+
+  if (menuImportInput) {
+    menuImportInput.addEventListener("change", importJson);
+  }
 }
 
 function handlePopState(e) {
@@ -599,8 +636,6 @@ function renderStickersForCategory(category, fromHistory = false) {
   if (!fromHistory) {
     const historyState = history.state;
 
-    // If we're already on a sticker view for this same modal session,
-    // replace it instead of pushing another history entry.
     if (historyState?.modal && historyState.view === "stickers") {
       history.replaceState(
         {
@@ -789,12 +824,12 @@ async function importJson(e) {
   } catch {
     alert("Import failed. Make sure it's a valid JSON export from this app.");
   } finally {
-    importInput.value = "";
+    if (menuImportInput) menuImportInput.value = "";
+    if (menuDropdown) menuDropdown.classList.add("hidden");
   }
 }
 
 function scheduleSharePreparation() {
-  // mark as needing rebuild
   shareState = "idle";
   preparedShareFile = null;
 
@@ -802,10 +837,9 @@ function scheduleSharePreparation() {
     clearTimeout(sharePrepTimeout);
   }
 
-  // wait until user pauses interaction
   sharePrepTimeout = setTimeout(() => {
     prepareShareImage();
-  }, 200); // tweak if needed
+  }, 200);
 }
 
 async function prepareShareImage() {
@@ -914,44 +948,36 @@ function renderWeeklyShare() {
     return el;
   }
 
-  function makeEmptyCell() {
-    const el = document.createElement("div");
-    el.className = "share-empty-cell";
-    return el;
-  }
-
   function makeLogoCell() {
     const el = document.createElement("div");
     el.className = "share-logo-cell";
 
     const img = document.createElement("img");
-    img.src = "./logo.png"; // <-- change this if your logo path is different
+    img.src = "./logo.png";
     img.alt = "Daily Sticky";
     el.appendChild(img);
 
     return el;
   }
 
-  // Row 1: empty, Mon, Tue, Wed
   const brandCell = makeLabelCell("my week:");
   brandCell.classList.add("share-brand-cell");
   grid.appendChild(brandCell);
+
   topThree.forEach((day) => {
     grid.appendChild(makeLabelCell(day.label));
   });
 
-  // Row 2: logo, sticker, sticker, sticker
   grid.appendChild(makeLogoCell());
+
   topThree.forEach((day) => {
     grid.appendChild(makeStickerCell(day.sticker));
   });
 
-  // Row 3: Thu, Fri, Sat, Sun
   bottomFour.forEach((day) => {
     grid.appendChild(makeLabelCell(day.label));
   });
 
-  // Row 4: sticker, sticker, sticker, sticker
   bottomFour.forEach((day) => {
     grid.appendChild(makeStickerCell(day.sticker));
   });
@@ -961,7 +987,6 @@ async function shareWeek() {
   const shareText = "stick with me! start your own diary at";
   const shareUrl = "https://dailysticky.app";
 
-  // Try file share first, if we have a prepared file
   if (
     shareState === "ready" &&
     preparedShareFile &&
@@ -982,7 +1007,6 @@ async function shareWeek() {
     }
   }
 
-  // If file share didn't work, try plain native share next
   if (navigator.share) {
     try {
       await navigator.share({
@@ -996,7 +1020,6 @@ async function shareWeek() {
     }
   }
 
-  // Final fallback: download image + copy link
   if (preparedShareFile) {
     const url = URL.createObjectURL(preparedShareFile);
     const a = document.createElement("a");
