@@ -4,6 +4,12 @@
 const fs = require("fs");
 
 const STICKERS_DIR = "./stickers";
+const DISABLED_FILE = "./disabled-stickers.json";
+
+const disabledStickers = fs.existsSync(DISABLED_FILE)
+  ? JSON.parse(fs.readFileSync(DISABLED_FILE, "utf8"))
+  : [];
+console.log("DISABLED:", disabledStickers);
 const files = fs.readdirSync(STICKERS_DIR).filter((f) => f.endsWith(".png"));
 
 const groups = {};
@@ -21,6 +27,7 @@ for (const file of files) {
     id: base,
     file,
     label: category.replace(/-/g, " "),
+    active: !disabledStickers.includes(base),
   });
 }
 

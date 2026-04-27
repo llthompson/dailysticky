@@ -663,7 +663,7 @@ function renderStickersForCategory(category, fromHistory = false) {
 
   const group = getGroups().find((g) => g.category === category);
   const items = (group?.items || [])
-    .slice()
+    .filter((sticker) => sticker.active !== false)
     .sort((a, b) => a.id.localeCompare(b.id));
 
   stickerGrid.innerHTML = "";
@@ -727,10 +727,12 @@ function getGroups() {
     return stickerGroups
       .map((group) => ({
         category: group.category || "Other",
-        items: (group.items || []).map((item) => ({
-          ...item,
-          file: item.file || item.src || "",
-        })),
+        items: (group.items || [])
+          .filter((sticker) => sticker.active !== false)
+          .map((item) => ({
+            ...item,
+            file: item.file || item.src || "",
+          })),
       }))
       .filter((group) => group.items.length);
   }
