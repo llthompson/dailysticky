@@ -542,8 +542,68 @@
         "active": true
       },
       {
+        "id": "adulting25",
+        "file": "adulting25.png",
+        "label": "adulting",
+        "active": true
+      },
+      {
+        "id": "adulting26",
+        "file": "adulting26.png",
+        "label": "adulting",
+        "active": true
+      },
+      {
+        "id": "adulting27",
+        "file": "adulting27.png",
+        "label": "adulting",
+        "active": true
+      },
+      {
+        "id": "adulting28",
+        "file": "adulting28.png",
+        "label": "adulting",
+        "active": true
+      },
+      {
+        "id": "adulting29",
+        "file": "adulting29.png",
+        "label": "adulting",
+        "active": true
+      },
+      {
         "id": "adulting3",
         "file": "adulting3.png",
+        "label": "adulting",
+        "active": true
+      },
+      {
+        "id": "adulting30",
+        "file": "adulting30.png",
+        "label": "adulting",
+        "active": true
+      },
+      {
+        "id": "adulting31",
+        "file": "adulting31.png",
+        "label": "adulting",
+        "active": true
+      },
+      {
+        "id": "adulting32",
+        "file": "adulting32.png",
+        "label": "adulting",
+        "active": true
+      },
+      {
+        "id": "adulting33",
+        "file": "adulting33.png",
+        "label": "adulting",
+        "active": true
+      },
+      {
+        "id": "adulting34",
+        "file": "adulting34.png",
         "label": "adulting",
         "active": true
       },
@@ -807,6 +867,12 @@
       {
         "id": "animal-vibes133",
         "file": "animal-vibes133.png",
+        "label": "animal vibes",
+        "active": true
+      },
+      {
+        "id": "animal-vibes134",
+        "file": "animal-vibes134.png",
         "label": "animal vibes",
         "active": true
       },
@@ -5382,6 +5448,12 @@
         "active": true
       },
       {
+        "id": "food-fruits-veggies29",
+        "file": "food-fruits-veggies29.png",
+        "label": "food fruits veggies",
+        "active": true
+      },
+      {
         "id": "food-fruits-veggies3",
         "file": "food-fruits-veggies3.png",
         "label": "food fruits veggies",
@@ -5639,8 +5711,62 @@
         "active": true
       },
       {
+        "id": "fun42",
+        "file": "fun42.png",
+        "label": "fun",
+        "active": true
+      },
+      {
+        "id": "fun43",
+        "file": "fun43.png",
+        "label": "fun",
+        "active": true
+      },
+      {
+        "id": "fun44",
+        "file": "fun44.png",
+        "label": "fun",
+        "active": true
+      },
+      {
+        "id": "fun45",
+        "file": "fun45.png",
+        "label": "fun",
+        "active": true
+      },
+      {
+        "id": "fun46",
+        "file": "fun46.png",
+        "label": "fun",
+        "active": true
+      },
+      {
+        "id": "fun47",
+        "file": "fun47.png",
+        "label": "fun",
+        "active": true
+      },
+      {
+        "id": "fun48",
+        "file": "fun48.png",
+        "label": "fun",
+        "active": true
+      },
+      {
+        "id": "fun49",
+        "file": "fun49.png",
+        "label": "fun",
+        "active": true
+      },
+      {
         "id": "fun5",
         "file": "fun5.png",
+        "label": "fun",
+        "active": true
+      },
+      {
+        "id": "fun50",
+        "file": "fun50.png",
         "label": "fun",
         "active": true
       },
@@ -5682,6 +5808,42 @@
       {
         "id": "health10",
         "file": "health10.png",
+        "label": "health",
+        "active": true
+      },
+      {
+        "id": "health11",
+        "file": "health11.png",
+        "label": "health",
+        "active": true
+      },
+      {
+        "id": "health12",
+        "file": "health12.png",
+        "label": "health",
+        "active": true
+      },
+      {
+        "id": "health13",
+        "file": "health13.png",
+        "label": "health",
+        "active": true
+      },
+      {
+        "id": "health14",
+        "file": "health14.png",
+        "label": "health",
+        "active": true
+      },
+      {
+        "id": "health15",
+        "file": "health15.png",
+        "label": "health",
+        "active": true
+      },
+      {
+        "id": "health16",
+        "file": "health16.png",
         "label": "health",
         "active": true
       },
@@ -6951,6 +7113,12 @@
         "active": true
       },
       {
+        "id": "pets10",
+        "file": "pets10.png",
+        "label": "pets",
+        "active": true
+      },
+      {
         "id": "pets2",
         "file": "pets2.png",
         "label": "pets",
@@ -6977,6 +7145,24 @@
       {
         "id": "pets6",
         "file": "pets6.png",
+        "label": "pets",
+        "active": true
+      },
+      {
+        "id": "pets7",
+        "file": "pets7.png",
+        "label": "pets",
+        "active": true
+      },
+      {
+        "id": "pets8",
+        "file": "pets8.png",
+        "label": "pets",
+        "active": true
+      },
+      {
+        "id": "pets9",
+        "file": "pets9.png",
         "label": "pets",
         "active": true
       }
@@ -7305,6 +7491,89 @@
         "id": "relax9",
         "file": "relax9.png",
         "label": "relax",
+        "active": true
+      }
+    ]
+  },
+  {
+    "category": "School",
+    "items": [
+      {
+        "id": "school1",
+        "file": "school1.png",
+        "label": "school",
+        "active": true
+      },
+      {
+        "id": "school10",
+        "file": "school10.png",
+        "label": "school",
+        "active": true
+      },
+      {
+        "id": "school11",
+        "file": "school11.png",
+        "label": "school",
+        "active": true
+      },
+      {
+        "id": "school12",
+        "file": "school12.png",
+        "label": "school",
+        "active": true
+      },
+      {
+        "id": "school13",
+        "file": "school13.png",
+        "label": "school",
+        "active": true
+      },
+      {
+        "id": "school2",
+        "file": "school2.png",
+        "label": "school",
+        "active": true
+      },
+      {
+        "id": "school3",
+        "file": "school3.png",
+        "label": "school",
+        "active": true
+      },
+      {
+        "id": "school4",
+        "file": "school4.png",
+        "label": "school",
+        "active": true
+      },
+      {
+        "id": "school5",
+        "file": "school5.png",
+        "label": "school",
+        "active": true
+      },
+      {
+        "id": "school6",
+        "file": "school6.png",
+        "label": "school",
+        "active": true
+      },
+      {
+        "id": "school7",
+        "file": "school7.png",
+        "label": "school",
+        "active": true
+      },
+      {
+        "id": "school8",
+        "file": "school8.png",
+        "label": "school",
+        "active": true
+      },
+      {
+        "id": "school9",
+        "file": "school9.png",
+        "label": "school",
         "active": true
       }
     ]
