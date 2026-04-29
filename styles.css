@@ -109,6 +109,7 @@ body::after {
   font: inherit;
   resize: vertical;
   box-sizing: border-box;
+  font-size: 20px;
 }
 
 .topbar {
@@ -223,6 +224,10 @@ h1 {
   padding: 0 14px; /* horizontal comfort */
   font-size: 18px;
   line-height: 1;
+}
+
+#removeStickerBtn {
+  display: none;
 }
 
 #backup {
@@ -591,7 +596,7 @@ h1 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 14px;
+  padding: 8px;
 
   border-bottom: 1px solid var(--border);
   background: var(--surface-2);
@@ -608,15 +613,16 @@ h1 {
 }
 
 .modalDate {
-  font-size: 14px;
+  font-size: 22px;
   font-weight: 700;
   color: var(--accent-ink);
 }
 
 .modalHint {
-  font-size: 12px;
+  font-size: 16px;
   color: var(--muted);
   margin-top: 2px;
+  display: none;
 }
 
 .modalTools {
