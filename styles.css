@@ -134,6 +134,11 @@ body::after {
   /* font-style: italic; */
 }
 
+.about-card .slogan {
+  font-weight: 600;
+  text-align: center;
+}
+
 h1 {
   display: flex;
   flex-direction: column;
@@ -312,7 +317,13 @@ h1 {
 /* Typography spacing */
 .about-card p {
   /* margin-bottom: 14px; */
-  font-size: 16px;
+  font-size: 18px;
+}
+
+.tagline {
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 12px;
 }
 
 .about-card h2 {
@@ -326,6 +337,7 @@ h1 {
   position: relative;
   padding-left: 20px; /* space for icon */
   margin-bottom: 8px;
+  font-size: 18px;
 }
 
 .about-card li::before {
@@ -471,9 +483,10 @@ h1 {
 }
 
 .miniMonthTitle {
-  font-size: 13px;
+  font-size: 16px;
   color: var(--muted);
   margin-bottom: 8px;
+  font-weight: 500;
 }
 
 .miniCal {
