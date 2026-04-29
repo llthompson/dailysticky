@@ -1,18 +1,23 @@
 :root {
   /* 🎨 THE ONLY 3 YOU CHANGE */
-  --bg: #fbe8ef;
-  --ink: #2d0819;
-  --accent: #f7b7d2;
+  --bg: #f7d9ef;
+  --ink: #241039;
+  --accent: #d892ff;
+  --mint: #b9f7df;
+  --sky: #b9d7ff;
+  --peach: #ffd6df;
   --font-main:
-    "Poppins", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    "Truculenta", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   --font-alt:
     "Quicksand", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 
   /* derived theme tokens (don’t edit) */
-  --surface: color-mix(in srgb, white 92%, var(--bg));
-  --surface-2: color-mix(in srgb, white 86%, var(--bg));
-  --muted: color-mix(in srgb, var(--ink) 55%, var(--bg));
-  --border: color-mix(in srgb, var(--ink) 18%, var(--bg));
+  --surface: rgba(255, 255, 255, 0.34);
+  --surface-2: rgba(255, 255, 255, 0.26);
+  --glass-strong: rgba(255, 255, 255, 0.46);
+  --glass-soft: rgba(255, 255, 255, 0.22);
+  --muted: color-mix(in srgb, var(--ink) 58%, white);
+  --border: rgba(255, 255, 255, 0.58);
 
   --accent-ink: color-mix(
     in srgb,
@@ -26,8 +31,9 @@
 
   --radius: 22px;
 
-  --shadow: 0 10px 26px color-mix(in srgb, var(--accent) 16%, transparent);
-  --shadow-soft: 0 4px 14px color-mix(in srgb, var(--accent) 12%, transparent);
+  --shadow: 0 24px 70px rgba(87, 52, 124, 0.18);
+  --shadow-soft: 0 10px 28px rgba(87, 52, 124, 0.12);
+  --inner-glow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 
 * {
@@ -36,23 +42,62 @@
 
 body {
   margin: 0;
+  min-height: 100vh;
   font-family: var(--font-main);
+  color: var(--ink);
 
-  /* cute glow derived from accent */
+  /* dreamy glassmorphism background */
   background:
     radial-gradient(
-      1000px 500px at 20% 0%,
-      color-mix(in srgb, var(--accent) 25%, transparent),
-      transparent 55%
+      circle at 12% 22%,
+      rgba(255, 255, 255, 0.46) 0 58px,
+      transparent 59px
     ),
     radial-gradient(
-      800px 400px at 80% 10%,
-      color-mix(in srgb, var(--accent) 16%, transparent),
-      transparent 55%
+      circle at 88% 18%,
+      rgba(255, 255, 255, 0.34) 0 14px,
+      transparent 15px
     ),
-    var(--bg);
+    radial-gradient(
+      circle at 78% 84%,
+      rgba(255, 252, 214, 0.46) 0 120px,
+      transparent 121px
+    ),
+    radial-gradient(
+      circle at 10% 82%,
+      rgba(148, 92, 255, 0.55) 0 90px,
+      transparent 91px
+    ),
+    linear-gradient(135deg, #ffd7e7 0%, #edccff 38%, #c7dcff 68%, #c5f7e2 100%);
+  background-attachment: fixed;
+}
 
-  color: var(--ink);
+/* soft floating color blobs behind the UI */
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  pointer-events: none;
+  z-index: -1;
+  border-radius: 999px;
+  filter: blur(32px);
+  opacity: 0.75;
+}
+
+body::before {
+  width: 260px;
+  height: 260px;
+  top: 110px;
+  right: -70px;
+  background: radial-gradient(circle, #7e4dff 0%, rgba(126, 77, 255, 0) 68%);
+}
+
+body::after {
+  width: 230px;
+  height: 230px;
+  bottom: 80px;
+  left: -80px;
+  background: radial-gradient(circle, #f7a5e8 0%, rgba(247, 165, 232, 0) 70%);
 }
 
 .noteInput {
@@ -69,9 +114,11 @@ body {
 .topbar {
   position: sticky;
   top: 0;
-  background: color-mix(in srgb, var(--surface) 90%, transparent);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.45);
+  box-shadow: var(--inner-glow);
   padding: 14px 14px 10px;
   z-index: 10;
   display: flex;
@@ -95,15 +142,22 @@ h1 {
 
 .title h1 {
   margin: 0;
-  font-size: 24px;
+  font-size: 33px;
   letter-spacing: 0.2px;
   color: var(--accent-ink);
+}
+
+.title h1,
+.weekly-share-title,
+.monthHeader h2 {
+  font-family: "Truculenta", sans-serif;
+  font-weight: 600;
 }
 
 .subtitle {
   margin: 4px 0 10px;
   color: var(--muted);
-  font-size: 18px;
+  font-size: 20px;
 }
 
 .controls {
@@ -154,12 +208,15 @@ h1 {
 .search {
   font-family: var(--font-main);
   border: 1px solid var(--border);
-  background: var(--surface);
+  background: rgba(255, 255, 255, 0.3);
   color: var(--ink);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: var(--inner-glow);
   border-radius: 999px;
   min-height: 30px; /* good touch target */
   padding: 0 14px; /* horizontal comfort */
-  font-size: 14px;
+  font-size: 18px;
   line-height: 1;
 }
 
@@ -222,11 +279,13 @@ h1 {
 /* cards */
 .card {
   font-family: var(--font-main);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.24);
+  border: 1px solid rgba(255, 255, 255, 0.62);
+  border-radius: calc(var(--radius) + 8px);
   overflow: hidden;
-  box-shadow: var(--shadow-soft);
+  box-shadow: var(--shadow), var(--inner-glow);
+  backdrop-filter: blur(24px) saturate(135%);
+  -webkit-backdrop-filter: blur(24px) saturate(135%);
 }
 
 .about-container {
@@ -252,14 +311,14 @@ h1 {
 
 /* Typography spacing */
 .about-card p {
-  margin-bottom: 14px;
-  line-height: 1.5;
+  /* margin-bottom: 14px; */
+  font-size: 16px;
 }
 
 .about-card h2 {
   margin-top: 20px;
   margin-bottom: 8px;
-  font-size: 1.1rem;
+  font-size: 22px;
 }
 
 .about-card li {
@@ -296,16 +355,19 @@ h1 {
   align-items: baseline;
   padding: 14px 14px 10px;
   border-bottom: 1px solid var(--border);
-  background: var(--surface-2);
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
+
 .monthHeader h2 {
   margin: 0;
-  font-size: 16px;
+  font-size: 22px;
   color: var(--accent-ink);
 }
 .monthHeader .small {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 15px;
 }
 
 .weekdays {
@@ -314,7 +376,8 @@ h1 {
   gap: 0;
   padding: 10px 10px 0;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 14px;
+  font-weight: 600;
 }
 .weekdays div {
   text-align: center;
@@ -333,8 +396,11 @@ h1 {
   font-weight: 400;
   min-height: 78px;
   border-radius: 14px;
-  border: 2px solid var(--border);
-  background: var(--surface);
+  border: 1px solid rgba(255, 255, 255, 0.68);
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: var(--inner-glow);
   padding: 2px;
   position: relative;
   cursor: pointer;
@@ -361,7 +427,8 @@ h1 {
   outline: 2px solid var(--accent-outline);
   box-shadow:
     0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent),
-    var(--shadow-soft);
+    var(--shadow-soft),
+    var(--inner-glow);
 }
 
 .day.outside {
@@ -830,88 +897,98 @@ body {
 
 .weekly-share-card {
   width: 500px;
-  padding: 22px 24px 18px;
-  background: #fffafc;
+  padding: 12px;
+  background:
+    radial-gradient(
+      circle at 15% 20%,
+      rgba(255, 255, 255, 0.65),
+      transparent 22%
+    ),
+    radial-gradient(
+      circle at 85% 75%,
+      rgba(255, 255, 255, 0.45),
+      transparent 34%
+    ),
+    linear-gradient(135deg, #ffd6e8, #d7c7ff, #bff4e6);
   color: #2d0819;
   font-family: "Poppins", sans-serif;
-
   position: fixed;
   left: -99999px;
+  /* z-index: 9999; */
   top: 0;
+  border-radius: 28px;
 }
 
 .weekly-share-title {
-  font-size: 22px;
-  font-weight: 600;
+  font-size: 24px;
+  font-weight: 500;
   text-align: center;
-  margin-bottom: 4px;
+  /* margin-bottom: 4px; */
+  color: #2d0819;
 }
 
 .weekly-share-range {
   font-size: 13px;
-  color: #7a6f67;
+  color: rgba(45, 8, 25, 0.65);
   text-align: center;
-  margin-bottom: 18px;
+  margin-bottom: 4px;
+  font-family: quicksand, var(--font-main);
+  font-weight: 400;
 }
 
 .weekly-share-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: 26px 64px 26px 64px;
-  column-gap: 2px;
-  row-gap: 2px;
+  grid-template-rows: auto 1fr auto 1fr;
+
+  column-gap: 6px;
+  row-gap: 6px;
+
+  padding: 0; /* remove padding */
+  margin-bottom: 6px;
+
+  background: none;
+  border: none;
+  backdrop-filter: none;
+  box-shadow: none;
+
   align-items: center;
   justify-items: center;
-  margin-bottom: 2px;
 }
 
 .share-label-cell {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 500;
-  color: #7a1f45;
+  color: rgba(45, 8, 25, 0.75);
   text-transform: lowercase;
-  /* text-transform: uppercase; */
+  font-family: truculenta, var(--font-main);
 }
 
 .share-sticker-cell,
 .share-logo-cell {
-  width: 56px;
-  height: 56px;
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 16px;
 }
 
 .share-sticker-cell img,
 .share-logo-cell img {
-  width: 48px;
-  height: 48px;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
   display: block;
 }
 
-.share-empty-cell {
-  width: 56px;
-  height: 56px;
-}
-
-.share-sticker-cell.is-empty {
-  opacity: 0;
-  font-size: 18px;
-  color: #7a6f67;
-}
-
-.weekly-share-footer {
-  font-size: 13px;
-  color: #7a1f45;
-  text-align: center;
-}
-
+.weekly-share-footer,
 .share-brand-cell {
-  font-size: 14px;
-  color: #7a1f45;
-  font-weight: 500;
-  /* font-style: italic; */
+  font-size: 15.5px;
+  color: rgba(45, 8, 25, 0.7);
+  text-align: center;
+  font-weight: 650;
 }
 
 /* end weekly share */
@@ -962,5 +1039,65 @@ p[name="credits"] {
     min-width: 1em;
     height: 1em;
     border-width: 1px;
+  }
+}
+
+/* --- Glassmorphism polish layer --- */
+.title h1,
+.monthHeader h2 {
+  text-shadow: 0 1px 12px rgba(255, 255, 255, 0.35);
+}
+
+.btn:hover,
+.icon-btn:hover,
+.day:hover,
+.stickerBtn:hover,
+.catTile:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.day .num,
+.miniNum {
+  text-shadow: 0 1px 8px rgba(255, 255, 255, 0.55);
+}
+
+.stickerSlot img,
+.miniDay img {
+  filter: drop-shadow(0 4px 7px rgba(36, 16, 57, 0.16));
+}
+
+.menu-dropdown,
+.about-card,
+.modal {
+  background: rgba(255, 255, 255, 0.42);
+  backdrop-filter: blur(22px) saturate(135%);
+  -webkit-backdrop-filter: blur(22px) saturate(135%);
+  border: 1px solid rgba(255, 255, 255, 0.62);
+  box-shadow: var(--shadow), var(--inner-glow);
+}
+
+.modalHeader {
+  background: rgba(255, 255, 255, 0.32);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  body {
+    background: var(--bg);
+  }
+
+  .card,
+  .btn,
+  .select,
+  .search,
+  .topbar,
+  .day,
+  .modal,
+  .menu-dropdown,
+  .about-card {
+    background: #fff7fb;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
 }
