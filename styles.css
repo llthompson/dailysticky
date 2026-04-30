@@ -221,14 +221,20 @@ h1 {
   box-shadow: var(--inner-glow);
   border-radius: 999px;
   min-height: 30px; /* good touch target */
-  padding: 0 14px; /* horizontal comfort */
+  padding: 0 6px; /* horizontal comfort */
   font-size: 18px;
   line-height: 1;
 }
 
-#removeStickerBtn {
-  display: none;
+.modalDateRow {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* adjust spacing */
 }
+
+/* #removeStickerBtn {
+  display: none;
+} */
 
 #backup {
   /* color: green; */

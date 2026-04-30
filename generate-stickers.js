@@ -1,4 +1,4 @@
-// to generate sticker file JSON, run this command in the terminal
+// to generate sticker file JSON, run this command in the terminal:
 // node generate-stickers.js
 
 const fs = require("fs");
@@ -16,12 +16,12 @@ const disabledStickers = fs.existsSync(DISABLED_FILE)
 
 console.log("DISABLED:", disabledStickers);
 
-const files = fs.readdirSync(STICKERS_DIR).filter((f) => f.endsWith(".png"));
+const files = fs.readdirSync(STICKERS_DIR).filter((f) => f.endsWith(".webp"));
 
 const groups = {};
 
 for (const file of files) {
-  const base = file.replace(".png", "");
+  const base = file.replace(".webp", "");
 
   // category = everything before the first number
   const match = base.match(/^([a-z-]+)/i);
