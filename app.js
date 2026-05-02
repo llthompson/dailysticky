@@ -882,9 +882,8 @@ async function prepareShareImage() {
 
 function renderWeeklyShare() {
   const grid = document.getElementById("weeklyShareGrid");
-  const rangeEl = document.getElementById("weeklyShareRange");
 
-  if (!grid || !rangeEl) return;
+  if (!grid) return;
 
   grid.innerHTML = "";
 
@@ -921,7 +920,7 @@ function renderWeeklyShare() {
     day: "numeric",
   });
 
-  rangeEl.textContent = `${startStr}–${endStr}`;
+  const weekRangeText = `${startStr}–${endStr}`;
 
   const topThree = days.slice(0, 3);
   const bottomFour = days.slice(3, 7);
@@ -944,7 +943,7 @@ function renderWeeklyShare() {
       el.appendChild(img);
     } else {
       el.classList.add("is-empty");
-      el.textContent = "•";
+      el.textContent = "";
     }
 
     return el;
@@ -955,15 +954,15 @@ function renderWeeklyShare() {
     el.className = "share-logo-cell";
 
     const img = document.createElement("img");
-    img.src = "./logo.png";
-    img.alt = "Daily Sticky";
+    img.src = "./the-daily-sticky-words.png";
+    img.alt = "The Daily Sticky — a sticker journal for your year";
     el.appendChild(img);
 
     return el;
   }
 
-  const brandCell = makeLabelCell("my week:");
-  brandCell.classList.add("share-brand-cell");
+  const brandCell = makeLabelCell(weekRangeText);
+  brandCell.classList.add("share-brand-cell", "share-range-cell");
   grid.appendChild(brandCell);
 
   topThree.forEach((day) => {
@@ -986,7 +985,7 @@ function renderWeeklyShare() {
 }
 
 async function shareWeek() {
-  const shareText = "my week in stickers!";
+  const shareText = "stick YOUR week!";
   const shareUrl = "https://dailysticky.app";
 
   if (
