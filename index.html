@@ -7,6 +7,9 @@
     <title>The Daily Sticker Diary – A Simple Digital Sticker Journal</title>
 
     <!-- SEO Meta -->
+
+    <link rel="canonical" href="https://dailysticky.app/" />
+    <meta name="robots" content="index, follow" />
     <meta
       name="description"
       content="Daily Sticky is a simple digital sticker journal for tracking your year one sticker at a time. A cute, visual way to remember your moods, moments, and memories without writing long journal entries."
@@ -27,7 +30,13 @@
     />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://dailysticky.app" />
-    <meta property="og:image" content="https://dailysticky.app/preview.png" />
+    <meta
+      property="og:image"
+      content="https://dailysticky.app/the-daily-sticky-logo.png"
+    />
+
+    <meta property="og:image:width" content="1080" />
+    <meta property="og:image:height" content="604" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
@@ -39,7 +48,10 @@
       name="twitter:description"
       content="A cute daily sticker journal for remembering your moods, moments, and memories."
     />
-    <meta name="twitter:image" content="https://dailysticky.app/preview.png" />
+    <meta
+      name="twitter:image"
+      content="https://dailysticky.app/the-daily-sticky-logo.png"
+    />
 
     <!-- Structured Data -->
     <script type="application/ld+json">
@@ -81,13 +93,13 @@
 
   <body>
     <!-- Hidden SEO Content -->
-    <div style="display: none">
+    <!-- <div style="display: none">
       Daily Sticky is a digital sticker journal and daily sticker diary for
       people who want an easy, visual way to remember their year. Choose one
       sticker a day to track your mood, moments, habits, memories, and little
       life updates. It is a simple alternative to journaling, like a year in
       pixels or visual mood tracker, but with cute stickers instead of colors.
-    </div>
+    </div> -->
 
     <header class="topbar">
       <div class="title">
@@ -132,7 +144,8 @@
     </header>
 
     <div id="menuDropdown" class="menu-dropdown hidden" role="menu">
-      <button id="menuAbout" class="menu-item">About</button>
+      <!-- <button id="menuAbout" class="menu-item">About</button> -->
+      <a id="menuAbout" class="menu-item" href="/about.html">About</a>
       <button id="menuExport" class="menu-item">Export Backup</button>
       <label class="menu-item fileBtn">
         Import Backup

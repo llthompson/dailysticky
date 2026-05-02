@@ -20,7 +20,7 @@ const yearSelect = el("yearSelect");
 // New menu elements
 const menuBtn = el("menuBtn");
 const menuDropdown = el("menuDropdown");
-const menuAbout = el("menuAbout");
+// const menuAbout = el("menuAbout");
 const menuExport = el("menuExport");
 const menuImportInput = el("menuImportInput");
 
@@ -246,10 +246,10 @@ function wireMenuEvents() {
     });
   }
 
-  menuAbout.addEventListener("click", () => {
-    menuDropdown.classList.add("hidden");
-    window.location.href = "/about.html";
-  });
+  // menuAbout.addEventListener("click", () => {
+  //   menuDropdown.classList.add("hidden");
+  //   window.location.href = "/about.html";
+  // });
 
   if (menuExport) {
     menuExport.addEventListener("click", () => {
