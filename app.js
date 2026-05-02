@@ -986,7 +986,7 @@ function renderWeeklyShare() {
 
 async function shareWeek() {
   const shareText = "sticker your week @ ";
-  const shareUrl = "https://dailysticky.app";
+  const shareUrl = "https://dailysticky.app/share.html";
 
   if (
     shareState === "ready" &&
