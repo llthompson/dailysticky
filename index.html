@@ -126,6 +126,27 @@
       </div>
 
       <div class="controls">
+        <div class="menu-wrap">
+          <button id="menuBtn" class="btn icon-btn" aria-label="Menu">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+
+          <div id="menuDropdown" class="menu-dropdown hidden" role="menu">
+            <a id="menuAbout" class="menu-item" href="/about.html">About</a>
+            <a class="menu-item" href="/blog/">Sticky Notes</a>
+            <button id="menuExport" class="menu-item">Export Backup</button>
+            <label class="menu-item fileBtn">
+              Import Backup
+              <input
+                id="menuImportInput"
+                type="file"
+                accept="application/json"
+                hidden
+              />
+            </label>
+          </div>
+        </div>
+
         <div class="nav-stack">
           <div class="navigate">
             <button id="prevBtn" class="btn">◀</button>
@@ -143,10 +164,6 @@
             aria-label="Share week"
           >
             <i class="fa-solid fa-share-nodes"></i>
-          </button>
-
-          <button id="menuBtn" class="btn icon-btn" aria-label="Menu">
-            <i class="fa-solid fa-bars"></i>
           </button>
         </div>
       </div>
