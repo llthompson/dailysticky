@@ -1094,9 +1094,24 @@ p[name="credits"] {
 }
 
 .about-highlight {
- display: flex;
- flex-direction: column;
- align-items: center;
+  margin: 1.5rem 0;
+  padding: .5rem;
+  border: 1px solid rgba(36, 16, 57, 0.12);
+  border-radius: 18px;
+  background: #ffffff99;
+  text-align: center;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.about-highlight p {
+  margin: 0 0 0.75rem;
+  font-weight: 600;
+}
+
+.about-highlight img {
+  max-width: 230px;
+  width: 100%;
+  height: auto;
 }
 
 .menu-dropdown {
