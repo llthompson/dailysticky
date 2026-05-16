@@ -671,12 +671,13 @@ body::after {
   border: 1px solid var(--border);
   background: var(--surface);
   border-radius: 16px;
-  padding: 2px;
+  padding: 8px;
   cursor: pointer;
   display: grid;
   place-items: center;
   gap: 6px;
   min-height: 120px;
+  overflow: hidden;
   transition:
     transform 0.12s ease,
     box-shadow 0.12s ease;
@@ -692,8 +693,12 @@ body::after {
 }
 
 .stickerBtn img {
-  width: 70%;
+  width: 100%;
+  max-width: 88px;
+  max-height: 88px;
+  height: auto;
   object-fit: contain;
+  display: block;
 }
 
 .stickerLabel {
@@ -1028,8 +1033,7 @@ p[name="credits"] {
 
 @media (min-width: 720px) {
   .catGrid {
-    grid-template-columns: repeat(4, 1fr);
-    aspect-ratio: 1;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
@@ -1095,7 +1099,7 @@ p[name="credits"] {
 
 .about-highlight {
   margin: 1.5rem 0;
-  padding: .5rem;
+  padding: 0.5rem;
   border: 1px solid rgba(36, 16, 57, 0.12);
   border-radius: 18px;
   background: #ffffff99;
