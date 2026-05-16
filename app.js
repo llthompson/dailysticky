@@ -293,6 +293,7 @@ function handlePopState(e) {
   if (!overlay.classList.contains("hidden")) {
     closeModal(true);
     render();
+    return;
   }
 }
 
@@ -526,16 +527,19 @@ function closeModal(fromHistory = false) {
   }
 }
 
+function closePickerImmediately() {
+  closeModal(true);
+  render();
+
+  if (history.state?.modal) {
+    history.replaceState(null, "", window.location.href);
+  }
+}
+
 function requestModalClose() {
   if (overlay.classList.contains("hidden")) return;
 
-  if (modalHistoryDepth > 0) {
-    history.go(-modalHistoryDepth);
-    return;
-  }
-
-  closeModal(true);
-  render();
+  closePickerImmediately();
 }
 
 function updateNoteButtonLabel() {
@@ -586,6 +590,14 @@ function saveNoteForSelectedDay() {
   render();
 }
 
+function resetStickerPickerScroll() {
+  const modal = overlay?.querySelector(".modal");
+
+  if (modal) modal.scrollTop = 0;
+  if (overlay) overlay.scrollTop = 0;
+  if (stickerGrid) stickerGrid.scrollTop = 0;
+}
+
 function renderStickerCategories() {
   stickerModalMode = "cats";
   activeStickerCategory = null;
@@ -631,6 +643,7 @@ function renderStickerCategories() {
   });
 
   stickerGrid.appendChild(wrapper);
+  resetStickerPickerScroll();
 }
 
 function renderStickersForCategory(category, fromHistory = false) {
@@ -724,6 +737,7 @@ function renderStickersForCategory(category, fromHistory = false) {
 
   stickerGrid.appendChild(top);
   stickerGrid.appendChild(grid);
+  resetStickerPickerScroll();
 }
 
 function getGroups() {
