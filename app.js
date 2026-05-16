@@ -86,6 +86,7 @@ let stickers = []; // flattened list
 let stickerById = new Map();
 
 let selectedDayKey = null;
+let noteDayKey = null;
 let stickerModalMode = "cats";
 let activeStickerCategory = null;
 let modalHistoryDepth = 0;
@@ -549,12 +550,12 @@ function updateNoteButtonLabel() {
 function openNoteModal() {
   if (!selectedDayKey) return;
 
-  noteModalDateEl.textContent = selectedDayKey;
-  noteInput.value = state.notes[selectedDayKey] || "";
+  noteDayKey = selectedDayKey;
+
+  noteModalDateEl.textContent = noteDayKey;
+  noteInput.value = state.notes[noteDayKey] || "";
   noteCount.textContent = `${noteInput.value.length}/160`;
-  deleteNoteBtn.textContent = state.notes[selectedDayKey]
-    ? "Delete Note"
-    : "Skip";
+  deleteNoteBtn.textContent = state.notes[noteDayKey] ? "Delete Note" : "Skip";
 
   noteOverlay.classList.remove("hidden");
   noteInput.focus();
@@ -565,18 +566,21 @@ function closeNoteModal() {
 }
 
 function saveNoteForSelectedDay() {
-  if (!selectedDayKey) return;
+  if (!noteDayKey) return;
 
+  const dayKeyToSave = noteDayKey;
   const value = noteInput.value.trim();
 
   if (value) {
-    state.notes[selectedDayKey] = value;
+    state.notes[dayKeyToSave] = value;
   } else {
-    delete state.notes[selectedDayKey];
+    delete state.notes[dayKeyToSave];
   }
 
   saveState(state);
   scheduleSharePreparation();
+
+  noteDayKey = null;
   closeNoteModal();
   closeModal(true);
   render();
