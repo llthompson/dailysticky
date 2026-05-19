@@ -1158,6 +1158,14 @@ p[name="credits"] {
   }
 }
 
+h3 {
+  font-size: 0.99rem;
+  color: var(--accent-ink);
+  margin-bottom: 8px;
+  font-weight: 400;
+  text-decoration: none;
+}
+
 /* =========================
    Daily Sticky Blog Pages
 ========================= */
@@ -1338,6 +1346,31 @@ p[name="credits"] {
   line-height: 1.6;
   font-family: var(--font-alt);
   color: var(--muted);
+}
+
+.blog-card a.blog-category {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  margin: 0 auto 14px;
+  padding: 6px 11px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 16%, white);
+  color: var(--accent-ink);
+  font-family: var(--font-alt);
+  font-size: 1.02rem;
+  font-weight: 800;
+  text-align: center;
+  text-decoration: none;
+  text-underline-offset: 0;
+}
+
+.blog-category-small {
+  font-size: 0.68em;
+  font-weight: 600;
+  padding-top: 2px;
 }
 
 .blog-button {
