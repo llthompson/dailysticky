@@ -223,7 +223,7 @@ body::after {
 }
 
 .container {
-  padding: 14px;
+  padding: 8px;
   max-width: 980px;
   margin: 0 auto;
 }
@@ -732,7 +732,7 @@ body::after {
 
 @media (max-width: 550px) {
   .container {
-    padding: 10px;
+    padding: 1px;
   }
 
   .calendar {
@@ -1452,4 +1452,86 @@ h3 {
   /* font-family: Manjari, var(--font-main); */
   /* color: var(--muted); */
   /* font-style: italic; */
+}
+/* =========================
+   Homepage Tiny Tour
+========================= */
+
+.home-links {
+  width: min(100% - 28px, 820px);
+  margin: 6px auto 6px;
+  padding: 10px;
+  text-align: center;
+
+  background: rgba(255, 255, 255, 0.38);
+  border: 1px solid rgba(255, 255, 255, 0.62);
+  border-radius: 22px;
+  box-shadow: var(--shadow-soft), var(--inner-glow);
+
+  backdrop-filter: blur(18px) saturate(135%);
+  -webkit-backdrop-filter: blur(18px) saturate(135%);
+}
+
+.home-links .section-kicker {
+  display: inline-flex;
+  margin: 0 auto 4px;
+  padding: 4px 9px;
+  border-radius: 999px;
+
+  background: color-mix(in srgb, var(--accent) 16%, white);
+  color: var(--accent-ink);
+
+  font-family: var(--font-alt);
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.home-links h2 {
+  margin: 0 0 6px;
+  color: var(--accent-ink);
+  font-size: clamp(0.5rem, 3vw, 2rem);
+  line-height: 1;
+  font-size: 16px;
+}
+
+.home-links p:not(.section-kicker) {
+  /* max-width: 390px; */
+  margin: 0 auto 12px;
+  color: var(--muted);
+  font-family: var(--font-alt);
+  font-size: 0.68rem;
+  line-height: 1.15;
+}
+
+.home-link-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 7px;
+}
+
+.home-link-list a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 3px 6px;
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.54);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: var(--inner-glow);
+
+  color: var(--accent-ink);
+  font-family: var(--font-alt);
+  font-size: 0.82rem;
+  font-weight: 550;
+  text-decoration: none;
+}
+
+.home-link-list a:hover {
+  background: color-mix(in srgb, var(--accent) 10%, white);
+  transform: translateY(-1px);
 }
