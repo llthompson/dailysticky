@@ -68,15 +68,12 @@
 
       <header class="article-header">
         <p class="blog-kicker">But Wait, There’s More</p>
-        <h1>
-          But Wait, There’s More... Features: Two Features of Daily Sticky You
-          Need to Know About!
-        </h1>
-        <p class="article-description">
+        <h1>Two Features of Daily Sticky You Need to Know About!</h1>
+        <!-- <p class="article-description">
           Daily Sticky is simple on purpose, but there are two extra features
           that make it even more useful: sharing your weekly recap and saving
           your sticker journal data.
-        </p>
+        </p> -->
       </header>
 
       <article class="article-content">
@@ -120,7 +117,19 @@
           JSON file. Use <strong>Import</strong> to upload that file later and
           restore your stickers and notes.
         </p>
+        <div class="save-features">
+          <button id="homeExport" class="menu-item">Export Backup</button>
 
+          <label class="menu-item fileBtn">
+            Import Backup
+            <input
+              id="homeImportInput"
+              type="file"
+              accept="application/json"
+              hidden
+            />
+          </label>
+        </div>
         <p>Basically: share the cute stuff, save the important stuff.</p>
 
         <p>
