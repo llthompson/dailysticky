@@ -9,16 +9,42 @@
       name="description"
       content="Daily Sticky is a free digital journal that uses stickers to track your days, moods, memories, and tiny moments without writing long journal entries."
     />
-
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
     <link rel="stylesheet" href="../styles.css" />
   </head>
 
   <body>
+    <header class="topbar simple-topbar">
+      <div class="menu-wrap">
+        <button id="menuBtn" class="btn icon-btn" aria-label="Menu">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+
+        <div id="menuDropdown" class="menu-dropdown hidden" role="menu">
+          <a class="menu-item" href="/">Home</a>
+          <a class="menu-item" href="/about.html">About</a>
+          <a class="menu-item" href="/blog/">Sticky Notes</a>
+        </div>
+      </div>
+
+      <a href="/" class="simple-logo-link">
+        <img
+          src="/the-daily-sticky-logo.png"
+          alt="The Daily Sticky"
+          class="site-logo"
+        />
+      </a>
+      <a href="/" class="blog-nav-link">Open App</a>
+    </header>
+
     <main class="article-page">
-      <nav class="blog-nav">
+      <!-- <nav class="blog-nav">
         <a href="../index.html" class="blog-logo">Daily Sticky</a>
         <a href="index.html" class="blog-nav-link">Sticky Notes</a>
-      </nav>
+      </nav> -->
 
       <header class="article-header">
         <p class="blog-kicker">Digital Sticker Journal</p>
@@ -90,5 +116,6 @@
 
       <a href="index.html" class="article-back-link">← Back to Sticky Notes</a>
     </main>
+    <script src="/nav.js"></script>
   </body>
 </html>

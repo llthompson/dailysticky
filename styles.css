@@ -141,7 +141,7 @@ body::after {
 .site-logo,
 .share-site-logo {
   display: block;
-  width: min(430px, 90vw);
+  width: min(330px, 90vw);
   max-width: 100%;
   height: auto;
   filter: drop-shadow(0 10px 18px rgba(87, 52, 124, 0.16));
@@ -280,10 +280,10 @@ body::after {
   transform: translateY(1px);
 }
 
-.btn-primary {
+/* .btn-primary {
   border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
   background: color-mix(in srgb, var(--accent) 14%, var(--surface));
-}
+} */
 
 .btn-danger {
   border-color: color-mix(in srgb, var(--danger) 55%, var(--border));
@@ -920,6 +920,48 @@ body::after {
   color: var(--accent-ink);
 }
 
+/* Simple nav header for About + Blog pages */
+.simple-topbar {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+}
+
+.simple-topbar .menu-wrap {
+  grid-column: 1;
+  justify-self: start;
+}
+
+.simple-logo-link {
+  grid-column: 2;
+  justify-self: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.simple-topbar .site-logo {
+  width: min(150px, 45vw);
+}
+
+.simple-topbar .menu-dropdown {
+  top: calc(100% + 8px);
+  left: 0;
+}
+
+@media (min-width: 720px) {
+  .simple-topbar {
+    padding: 14px 24px;
+  }
+
+  .simple-topbar .site-logo {
+    width: min(180px, 35vw);
+  }
+}
+
 /* Weekly share */
 .weekly-share-card {
   width: 500px;
@@ -1152,7 +1194,7 @@ p[name="credits"] {
   .modal,
   .menu-dropdown,
   .about-card {
-    background: #fff7fb;
+    background: #f8f7ff;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
   }
@@ -1216,7 +1258,7 @@ h3 {
 
 .blog-nav-link {
   font-weight: 800;
-  padding: 9px 16px;
+  padding: 3px 6px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.34);
   border: 1px solid var(--border);
@@ -1250,7 +1292,6 @@ h3 {
   color: var(--accent-ink);
   text-shadow: 0 1px 12px rgba(255, 255, 255, 0.35);
   /* color: blue; */
-
 }
 
 .blog-hero p,

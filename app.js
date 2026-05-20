@@ -217,7 +217,7 @@ function wireEvents() {
     requestModalClose();
   });
 
-  wireMenuEvents();
+  // wireMenuEvents(); moving to nav.js for better separation of concerns and to avoid circular dependencies
 
   if (clearBtn) {
     clearBtn.addEventListener("click", clearCurrentYear);
@@ -231,38 +231,38 @@ function wireEvents() {
   if (searchInput) searchInput.value = "";
 }
 
-function wireMenuEvents() {
-  if (menuBtn && menuDropdown) {
-    menuBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      menuDropdown.classList.toggle("hidden");
-    });
+// function wireMenuEvents() { moving to nav.js for better separation of concerns and to avoid circular dependencies
+//   if (menuBtn && menuDropdown) {
+//     menuBtn.addEventListener("click", (e) => {
+//       e.stopPropagation();
+//       menuDropdown.classList.toggle("hidden");
+//     });
 
-    menuDropdown.addEventListener("click", (e) => {
-      e.stopPropagation();
-    });
+//     menuDropdown.addEventListener("click", (e) => {
+//       e.stopPropagation();
+//     });
 
-    document.addEventListener("click", () => {
-      menuDropdown.classList.add("hidden");
-    });
-  }
+//     document.addEventListener("click", () => {
+//       menuDropdown.classList.add("hidden");
+//     });
+//   }
 
-  // menuAbout.addEventListener("click", () => {
-  //   menuDropdown.classList.add("hidden");
-  //   window.location.href = "/about.html";
-  // });
+//   // menuAbout.addEventListener("click", () => {
+//   //   menuDropdown.classList.add("hidden");
+//   //   window.location.href = "/about.html";
+//   // });
 
-  if (menuExport) {
-    menuExport.addEventListener("click", () => {
-      if (menuDropdown) menuDropdown.classList.add("hidden");
-      exportJson();
-    });
-  }
+//   if (menuExport) {
+//     menuExport.addEventListener("click", () => {
+//       if (menuDropdown) menuDropdown.classList.add("hidden");
+//       exportJson();
+//     });
+//   }
 
-  if (menuImportInput) {
-    menuImportInput.addEventListener("change", importJson);
-  }
-}
+//   if (menuImportInput) {
+//     menuImportInput.addEventListener("change", importJson);
+//   }
+// }
 
 function handlePopState(e) {
   const historyState = e.state;
