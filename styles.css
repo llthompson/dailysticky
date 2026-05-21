@@ -272,6 +272,26 @@ body::after {
   line-height: 1;
 }
 
+.image-btn {
+  width: 46px;
+  height: 46px;
+  min-height: 46px;
+  padding: 0;
+
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.image-btn img {
+  width: 28px;
+  height: 28px;
+  display: block;
+  object-fit: contain;
+}
+
 .btn {
   cursor: pointer;
 }
