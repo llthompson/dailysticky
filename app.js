@@ -900,10 +900,15 @@ async function prepareShareImage() {
 
 function renderWeeklyShare() {
   const grid = document.getElementById("weeklyShareGrid");
+  const shareUrlEl = document.getElementById("weeklyShareUrl");
 
   if (!grid) return;
 
   grid.innerHTML = "";
+
+  if (shareUrlEl) {
+    shareUrlEl.textContent = "dailysticky.app";
+  }
 
   const now = new Date();
   now.setHours(12, 0, 0, 0);
@@ -1003,7 +1008,7 @@ function renderWeeklyShare() {
 }
 
 async function shareWeek() {
-  const shareText = "sticker your week @ ";
+  const shareText = "sticker your week at";
   const shareUrl = "https://dailysticky.app/share.html";
 
   if (
