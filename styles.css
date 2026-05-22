@@ -245,6 +245,7 @@ body::after {
   line-height: 1;
 }
 
+
 .modalDateRow {
   display: flex;
   align-items: center;
@@ -1647,4 +1648,26 @@ h3 {
 
 .save-features .fileBtn {
   gap: 0;
+}
+
+.btn:not(.image-btn) {
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  background: rgba(255, 255, 255, 0.34);
+  box-shadow:
+    0 6px 16px rgba(87, 52, 124, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72);
+}
+
+.btn:not(.image-btn):not(#todayBtn):not(#toggleViewBtn) {
+  color: #241039;
+}
+
+#todayBtn,
+#toggleViewBtn {
+  background: rgba(255, 255, 255, 0.42);
+  border-color: rgba(255, 255, 255, 0.82);
+  color: #241039;
+  box-shadow:
+    0 6px 18px rgba(87, 52, 124, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.78);
 }
