@@ -1,0 +1,358 @@
+const STORAGE_KEY = "stickerYear.v1";
+
+const notesList = document.getElementById("notesList");
+const notesYearNav = document.getElementById("notesYearNav");
+const toggleAllNotesBtn = document.getElementById("toggleAllNotesBtn");
+const notesYearSelect = document.getElementById("notesYearSelect");
+
+let selectedNotesYear = null;
+let stickers = [];
+let stickerById = new Map();
+
+const MONTHS = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
+const pad2 = (n) => String(n).padStart(2, "0");
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+
+    const parsed = JSON.parse(raw);
+
+    return {
+      year: parsed.year ?? new Date().getFullYear(),
+      month: parsed.month ?? new Date().getMonth(),
+      placements: parsed.placements ?? {},
+      notes: parsed.notes ?? {},
+    };
+  } catch (error) {
+    console.error("Could not load Daily Sticky notes:", error);
+    return null;
+  }
+}
+
+function getYearToShow(state) {
+  return state?.year || new Date().getFullYear();
+}
+
+function formatDate(dateKey) {
+  const [year, month, day] = dateKey.split("-").map(Number);
+  const date = new Date(year, month - 1, day);
+
+  return date.toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  });
+}
+
+function getNotesForMonth(notes, year, monthIndex) {
+  const monthNumber = pad2(monthIndex + 1);
+  const monthPrefix = `${year}-${monthNumber}`;
+
+  return Object.entries(notes)
+    .filter(([dateKey, note]) => {
+      return dateKey.startsWith(monthPrefix) && note && note.trim();
+    })
+    .sort(([dateA], [dateB]) => dateA.localeCompare(dateB));
+}
+
+function renderMonthJumpLinks(year) {
+  notesYearNav.innerHTML = "";
+
+  MONTHS.forEach((monthName, monthIndex) => {
+    const monthNumber = pad2(monthIndex + 1);
+
+    const link = document.createElement("a");
+    link.className = "notes-month-jump";
+    link.href = `#notes-${year}-${monthNumber}`;
+    link.textContent = monthName.slice(0, 3);
+
+    notesYearNav.appendChild(link);
+  });
+}
+
+function renderNoteCard(dateKey, note, placements) {
+  const card = document.createElement("article");
+  card.className = "note-card";
+
+  const date = document.createElement("p");
+  date.className = "note-date";
+  date.textContent = formatDate(dateKey);
+
+  const noteText = document.createElement("p");
+  noteText.className = "note-text";
+  noteText.textContent = note.trim();
+
+  const stickerId = placements[dateKey];
+  const sticker = stickerId ? stickerById.get(stickerId) : null;
+
+  if (sticker) {
+    const stickerWrap = document.createElement("div");
+    stickerWrap.className = "note-sticker";
+
+    const img = document.createElement("img");
+    img.src = `/stickers/${sticker.file}`;
+    img.alt = sticker.label || sticker.id;
+    img.loading = "lazy";
+
+    stickerWrap.appendChild(img);
+
+    card.append(date, stickerWrap, noteText);
+  } else {
+    card.append(date, noteText);
+  }
+
+  return card;
+}
+
+function updateToggleAllButtonText() {
+  if (!toggleAllNotesBtn) return;
+
+  const sections = [...document.querySelectorAll(".notes-month-section")];
+  const allExpanded = sections.every(
+    (section) => !section.classList.contains("is-collapsed"),
+  );
+
+  toggleAllNotesBtn.textContent = allExpanded
+    ? "Collapse all months"
+    : "Expand all months";
+}
+
+function toggleAllMonths() {
+  const sections = [...document.querySelectorAll(".notes-month-section")];
+  const shouldExpand = sections.some((section) =>
+    section.classList.contains("is-collapsed"),
+  );
+
+  sections.forEach((section) => {
+    section.classList.toggle("is-collapsed", !shouldExpand);
+
+    const button = section.querySelector(".notes-month-toggle");
+    if (button) {
+      button.setAttribute("aria-expanded", String(shouldExpand));
+    }
+  });
+
+  updateToggleAllButtonText();
+}
+
+function expandLinkedMonth() {
+  const hash = window.location.hash;
+  if (!hash) return;
+
+  const section = document.querySelector(hash);
+  if (!section) return;
+
+  section.classList.remove("is-collapsed");
+
+  const button = section.querySelector(".notes-month-toggle");
+  if (button) {
+    button.setAttribute("aria-expanded", "true");
+  }
+
+  setTimeout(() => {
+    section.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }, 50);
+}
+
+if (toggleAllNotesBtn) {
+  toggleAllNotesBtn.addEventListener("click", toggleAllMonths);
+}
+
+async function loadStickers() {
+  try {
+    const res = await fetch("/stickers.json");
+    const data = await res.json();
+
+    if (Array.isArray(data) && data.length && data[0].items) {
+      stickers = data.flatMap((group) =>
+        (group.items || []).map((item) => ({
+          ...item,
+          category: group.category || item.category || "Other",
+          file: item.file || item.src || "",
+        })),
+      );
+    } else {
+      stickers = data;
+    }
+
+    stickerById = new Map(stickers.map((sticker) => [sticker.id, sticker]));
+  } catch (error) {
+    console.error("Could not load stickers for notes page:", error);
+    stickers = [];
+    stickerById = new Map();
+  }
+}
+
+function renderNotesPage() {
+  const state = loadState();
+  const years = getAvailableYears(state);
+
+  const year =
+    selectedNotesYear ||
+    getYearFromHash() ||
+    (years.includes(state?.year) ? state.year : years[0]);
+
+  selectedNotesYear = Number(year);
+
+  const notes = state?.notes || {};
+  const placements = state?.placements || {};
+
+  populateNotesYearSelect(years, selectedNotesYear);
+
+  renderMonthJumpLinks(year);
+
+  notesList.innerHTML = "";
+
+  MONTHS.forEach((monthName, monthIndex) => {
+    const monthNumber = pad2(monthIndex + 1);
+    const monthNotes = getNotesForMonth(notes, year, monthIndex);
+    const sectionId = `notes-${year}-${monthNumber}`;
+
+    const section = document.createElement("section");
+    section.className = "notes-month-section is-collapsed";
+    section.id = sectionId;
+
+    const monthButton = document.createElement("button");
+    monthButton.className = "notes-month-toggle";
+    monthButton.type = "button";
+    monthButton.setAttribute("aria-expanded", "false");
+
+    const monthTitle = document.createElement("span");
+    monthTitle.textContent = `${monthName} ${year}`;
+
+    const noteCount = document.createElement("span");
+    noteCount.className = "notes-month-count";
+    noteCount.textContent =
+      monthNotes.length === 1 ? "1 note" : `${monthNotes.length} notes`;
+
+    monthButton.append(monthTitle, noteCount);
+
+    const content = document.createElement("div");
+    content.className = "notes-month-content";
+
+    if (!monthNotes.length) {
+      const emptyMessage = document.createElement("p");
+      emptyMessage.className = "notes-empty";
+      emptyMessage.textContent = "No notes for this month yet.";
+      content.appendChild(emptyMessage);
+    } else {
+      monthNotes.forEach(([dateKey, note]) => {
+        content.appendChild(renderNoteCard(dateKey, note, placements));
+      });
+    }
+
+    if (monthNotes.length) {
+      const collapseMonthBtn = document.createElement("button");
+      collapseMonthBtn.className = "btn notes-collapse-month-btn";
+      collapseMonthBtn.type = "button";
+      collapseMonthBtn.textContent = `Collapse ${monthName}`;
+
+      collapseMonthBtn.addEventListener("click", () => {
+        section.classList.add("is-collapsed");
+        monthButton.setAttribute("aria-expanded", "false");
+        updateToggleAllButtonText();
+
+        section.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      });
+
+      content.appendChild(collapseMonthBtn);
+    }
+
+    monthButton.addEventListener("click", () => {
+      const isCollapsed = section.classList.toggle("is-collapsed");
+      monthButton.setAttribute("aria-expanded", String(!isCollapsed));
+      updateToggleAllButtonText();
+    });
+
+    section.append(monthButton, content);
+    notesList.appendChild(section);
+  });
+
+  expandLinkedMonth();
+  updateToggleAllButtonText();
+}
+
+function getAvailableYears(state) {
+  const years = new Set();
+
+  if (state?.year) years.add(Number(state.year));
+
+  Object.keys(state?.notes || {}).forEach((dateKey) => {
+    const year = Number(dateKey.slice(0, 4));
+    if (year) years.add(year);
+  });
+
+  Object.keys(state?.placements || {}).forEach((dateKey) => {
+    const year = Number(dateKey.slice(0, 4));
+    if (year) years.add(year);
+  });
+
+  years.add(new Date().getFullYear());
+
+  return [...years].sort((a, b) => b - a);
+}
+
+function getYearFromHash() {
+  const match = window.location.hash.match(/notes-(\d{4})-\d{2}/);
+  return match ? Number(match[1]) : null;
+}
+
+function populateNotesYearSelect(years, selectedYear) {
+  if (!notesYearSelect) return;
+
+  notesYearSelect.innerHTML = "";
+
+  years.forEach((year) => {
+    const option = document.createElement("option");
+    option.value = String(year);
+    option.textContent = String(year);
+    notesYearSelect.appendChild(option);
+  });
+
+  notesYearSelect.value = String(selectedYear);
+}
+
+async function initNotesPage() {
+  await loadStickers();
+
+  const state = loadState();
+  const years = getAvailableYears(state);
+  const hashYear = getYearFromHash();
+
+  selectedNotesYear =
+    hashYear || (years.includes(state?.year) ? state.year : years[0]);
+
+  renderNotesPage();
+
+  if (notesYearSelect) {
+    notesYearSelect.addEventListener("change", () => {
+      selectedNotesYear = Number(notesYearSelect.value);
+      history.replaceState(null, "", window.location.pathname);
+      renderNotesPage();
+    });
+  }
+}
+
+initNotesPage();

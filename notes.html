@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Google tag (gtag.js) -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-MLBC6D0QGV"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "G-MLBC6D0QGV");
+    </script>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>All Notes | Daily Sticky</title>
+    <link rel="canonical" href="https://dailysticky.app/notes.html" />
+    <meta name="robots" content="noindex, follow" />
+    <meta
+      name="description"
+      content="View all of your saved Daily Sticky notes by month."
+    />
+    <meta
+      name="keywords"
+      content="Daily Sticky notes, digital sticker journal notes, sticker diary notes, daily journal notes, sticker journal"
+    />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="All Notes | Daily Sticky" />
+    <meta
+      property="og:description"
+      content="View your Daily Sticky notes by month."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://dailysticky.app/notes.html" />
+    <meta
+      property="og:image"
+      content="https://dailysticky.app/the-daily-sticky-logo.png"
+    />
+
+    <meta property="og:image:width" content="1080" />
+    <meta property="og:image:height" content="604" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="All Notes | Daily Sticky" />
+    <meta
+      name="twitter:description"
+      content="View your Daily Sticky notes by month."
+    />
+    <meta
+      name="twitter:image"
+      content="https://dailysticky.app/the-daily-sticky-logo.png"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body>
+    <header class="topbar simple-topbar">
+      <button id="menuBtn" class="btn icon-btn image-btn" aria-label="Menu">
+        <img src="/menu-icon.png" alt="" />
+      </button>
+
+      <div id="menuDropdown" class="menu-dropdown hidden" role="menu">
+        <a class="menu-item" href="/">Home</a>
+        <a class="menu-item" href="/notes.html">View All Notes</a>
+        <a class="menu-item" href="/about.html">About</a>
+        <a class="menu-item" href="/blog/">Sticky Notes</a>
+      </div>
+
+      <a href="/" class="simple-logo-link">
+        <img
+          src="/the-daily-sticky-logo.png"
+          alt="The Daily Sticky"
+          class="site-logo"
+        />
+      </a>
+
+      <a href="/" class="blog-nav-link">Open App</a>
+    </header>
+
+    <main class="about-container notes-container">
+      <section class="notes-page-header">
+        <p class="blog-kicker">Your Year In Notes</p>
+        <h1>All Notes</h1>
+        <p>
+          A month-by-month archive of the little memories you saved with your
+          stickers.
+        </p>
+
+        <div class="notes-toolbar">
+          <label class="notes-year-control" for="notesYearSelect">
+            <!-- <span>Viewing</span> -->
+            <select
+              id="notesYearSelect"
+              class="select"
+              aria-label="Notes year"
+            ></select>
+          </label>
+
+          <button id="toggleAllNotesBtn" class="btn btn-primary" type="button">
+            Expand all months
+          </button>
+        </div>
+      </section>
+
+      <section
+        id="notesYearNav"
+        class="notes-year-nav"
+        aria-label="Jump to month"
+      >
+        <!-- Month jump links will go here -->
+      </section>
+
+      <section id="notesList" class="notes-list">
+        <!-- Notes will go here -->
+      </section>
+    </main>
+
+    <script src="/nav.js"></script>
+    <script src="/notes.js"></script>
+  </body>
+</html>
