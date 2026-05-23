@@ -457,8 +457,26 @@ function renderMonth() {
 function renderYear() {
   const year = state.year;
 
+  const stickeredCount = Object.keys(state.placements).filter((key) =>
+    key.startsWith(`${year}-`),
+  ).length;
+
   const wrapper = document.createElement("div");
-  wrapper.className = "yearGrid";
+  wrapper.className = "yearViewWrap";
+
+  const header = document.createElement("div");
+  header.className = "yearHeader";
+  header.innerHTML = `
+  <h2>${year}</h2>
+  <span class="yearHeaderDivider">|</span>
+  <div class="small">${stickeredCount} days stickered</div>
+`;
+
+  const grid = document.createElement("div");
+  grid.className = "yearGrid";
+
+  wrapper.appendChild(header);
+  wrapper.appendChild(grid);
 
   for (let month = 0; month < 12; month++) {
     const card = document.createElement("div");
@@ -509,8 +527,8 @@ function renderYear() {
 
       cell.addEventListener("click", () => {
         state.month = month;
-        state.view =
-          "month"; /*this switches to month view when modifying in year view; currently ON*/
+        /*  state.view =
+          "month"; this switches to month view when modifying in year view; currently OFF*/
         saveState(state);
         render();
         openModal(key);
@@ -520,7 +538,7 @@ function renderYear() {
     }
 
     card.appendChild(cal);
-    wrapper.appendChild(card);
+    grid.appendChild(card);
   }
 
   yearViewEl.innerHTML = "";

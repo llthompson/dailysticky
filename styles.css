@@ -317,7 +317,7 @@ body::after {
 }
 
 .view {
-  margin-top: 14px;
+  margin-top: 4px;
 }
 
 .hidden {
@@ -520,8 +520,41 @@ body::after {
 
 @media (min-width: 720px) {
   .yearGrid {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
+}
+
+.yearHeader {
+  width: fit-content;
+  margin: 0 auto 10px;
+  padding: 0.25rem 0.45rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.34);
+  box-shadow:
+    0 6px 18px rgba(87, 52, 124, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.76);
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  color: #241039;
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.yearHeader h2 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1;
 }
 
 .miniMonth {
@@ -572,8 +605,12 @@ body::after {
 } */
 
 .miniDay img {
-  width: 90%;
+  width: auto;
+  height: auto;
+  max-width: 78%;
+  max-height: 34px;
   object-fit: contain;
+  display: block;
 }
 
 .miniDay.empty {
