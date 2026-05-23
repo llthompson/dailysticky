@@ -276,6 +276,40 @@
       </div>
     </div>
 
+    <!-- Weekly Recap Prompt -->
+    <div
+      id="weeklyRecapPromptOverlay"
+      class="overlay hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Weekly recap prompt"
+    >
+      <div class="modal weekly-recap-prompt">
+        <button
+          id="closeWeeklyRecapPromptBtn"
+          class="weekly-recap-close"
+          aria-label="Close weekly recap prompt"
+        >
+          ✕
+        </button>
+
+        <div class="weekly-recap-sparkle">💖</div>
+
+        <h2>Congrats!</h2>
+
+        <p>Your Weekly Recap is Ready to Share!</p>
+
+        <div class="weekly-recap-actions">
+          <button id="shareWeeklyRecapPromptBtn" class="btn btn-primary">
+            Share Recap
+          </button>
+
+          <button id="dismissWeeklyRecapPromptBtn" class="btn">Not Now</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Weekly Share Card -->
     <div id="weeklyShareCard" class="weekly-share-card" aria-hidden="true">
       <div class="title">
         <img

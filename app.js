@@ -45,6 +45,12 @@ const closeNoteModalBtn = el("closeNoteModalBtn");
 const saveNoteBtn = el("saveNoteBtn");
 const deleteNoteBtn = el("deleteNoteBtn");
 
+// Weekly recap prompt
+const weeklyRecapPromptOverlay = el("weeklyRecapPromptOverlay");
+const shareWeeklyRecapPromptBtn = el("shareWeeklyRecapPromptBtn");
+const dismissWeeklyRecapPromptBtn = el("dismissWeeklyRecapPromptBtn");
+const closeWeeklyRecapPromptBtn = el("closeWeeklyRecapPromptBtn");
+
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const MONTHS = [
   "January",
@@ -66,6 +72,8 @@ const ymd = (d) =>
   `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
 
 const today = new Date();
+// for testing Sunday prompt
+// const today = new Date("2026-05-24T12:00:00");
 
 let state = loadState() || {
   year: today.getFullYear(),
@@ -87,6 +95,7 @@ let stickerById = new Map();
 
 let selectedDayKey = null;
 let noteDayKey = null;
+let pendingWeeklyRecapDayKey = null;
 let stickerModalMode = "cats";
 let activeStickerCategory = null;
 let modalHistoryDepth = 0;
@@ -159,6 +168,30 @@ function wireEvents() {
   });
 
   shareWeekBtn.addEventListener("click", shareWeek);
+
+  if (shareWeeklyRecapPromptBtn) {
+    shareWeeklyRecapPromptBtn.addEventListener("click", () => {
+      hideWeeklyRecapPrompt();
+      shareWeek();
+    });
+  }
+
+  if (dismissWeeklyRecapPromptBtn) {
+    dismissWeeklyRecapPromptBtn.addEventListener(
+      "click",
+      hideWeeklyRecapPrompt,
+    );
+  }
+
+  if (closeWeeklyRecapPromptBtn) {
+    closeWeeklyRecapPromptBtn.addEventListener("click", hideWeeklyRecapPrompt);
+  }
+
+  if (weeklyRecapPromptOverlay) {
+    weeklyRecapPromptOverlay.addEventListener("click", (e) => {
+      if (e.target === weeklyRecapPromptOverlay) hideWeeklyRecapPrompt();
+    });
+  }
 
   toggleViewBtn.addEventListener("click", () => {
     state.view = state.view === "month" ? "year" : "month";
@@ -540,6 +573,51 @@ function requestModalClose() {
   if (overlay.classList.contains("hidden")) return;
 
   closePickerImmediately();
+  maybeShowWeeklyRecapPrompt();
+}
+
+function isSunday(dayKey) {
+  const date = new Date(`${dayKey}T12:00:00`);
+  return date.getDay() === 0;
+}
+
+function weeklyRecapPromptStorageKey(dayKey) {
+  return `weeklyRecapPromptShown.${dayKey}`;
+}
+
+function hasSeenWeeklyRecapPrompt(dayKey) {
+  return localStorage.getItem(weeklyRecapPromptStorageKey(dayKey)) === "true";
+}
+
+function markWeeklyRecapPromptSeen(dayKey) {
+  localStorage.setItem(weeklyRecapPromptStorageKey(dayKey), "true");
+}
+
+function queueWeeklyRecapPromptIfSunday(dayKey) {
+  if (!dayKey) return;
+
+  const todayKey = ymd(today);
+
+  if (dayKey !== todayKey) return;
+  if (!isSunday(dayKey)) return;
+  if (hasSeenWeeklyRecapPrompt(dayKey)) return;
+
+  pendingWeeklyRecapDayKey = dayKey;
+}
+
+function maybeShowWeeklyRecapPrompt() {
+  if (!pendingWeeklyRecapDayKey) return;
+  if (!weeklyRecapPromptOverlay) return;
+
+  markWeeklyRecapPromptSeen(pendingWeeklyRecapDayKey);
+  pendingWeeklyRecapDayKey = null;
+
+  weeklyRecapPromptOverlay.classList.remove("hidden");
+}
+
+function hideWeeklyRecapPrompt() {
+  if (!weeklyRecapPromptOverlay) return;
+  weeklyRecapPromptOverlay.classList.add("hidden");
 }
 
 function updateNoteButtonLabel() {
@@ -588,6 +666,7 @@ function saveNoteForSelectedDay() {
   closeNoteModal();
   closeModal(true);
   render();
+  maybeShowWeeklyRecapPrompt();
 }
 
 function resetStickerPickerScroll() {
@@ -718,6 +797,7 @@ function renderStickersForCategory(category, fromHistory = false) {
       saveState(state);
       scheduleSharePreparation();
       updateNoteButtonLabel();
+      queueWeeklyRecapPromptIfSunday(selectedDayKey);
       openNoteModal();
     });
 
