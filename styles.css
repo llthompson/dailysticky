@@ -427,6 +427,31 @@ body::after {
   font-size: 15px;
 }
 
+.monthHeaderMeta {
+  width: fit-content;
+  margin-top: 5px;
+  padding: 0.25rem 0.45rem;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.34);
+  box-shadow:
+    0 6px 18px rgba(87, 52, 124, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.76);
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  color: #241039;
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1;
+}
+
 .weekdays {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -2069,5 +2094,80 @@ h3 {
 
   .notes-month-content {
     padding: 0 12px 12px;
+  }
+}
+
+/* Main app notes links */
+
+.month-notes-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 30px;
+  padding: 0 10px;
+
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.miniMonthTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.miniMonthTop .miniMonthTitle {
+  margin-bottom: 0;
+}
+
+.miniMonthNotesLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 3px 7px;
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.54);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: var(--inner-glow);
+
+  color: var(--accent-ink);
+  font-family: var(--font-alt);
+  font-size: 0.74rem;
+  font-weight: 850;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.miniMonthNotesLink:hover {
+  background: color-mix(in srgb, var(--accent) 10%, white);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 440px) {
+  .monthHeader {
+    align-items: center;
+    gap: 10px;
+  }
+
+  .month-notes-link {
+    font-size: 0.85rem;
+    padding: 0 8px;
+  }
+
+  .miniMonthTop {
+    align-items: flex-start;
+  }
+
+  .miniMonthNotesLink {
+    font-size: 0.7rem;
+    padding: 3px 6px;
   }
 }

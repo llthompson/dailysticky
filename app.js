@@ -371,6 +371,9 @@ function renderMonth() {
   const gridCells = 42;
   const startDate = new Date(year, month, 1 - startDay);
 
+  const monthWrap = document.createElement("div");
+  monthWrap.className = "monthViewWrap";
+
   const wrapper = document.createElement("div");
   wrapper.className = "card";
 
@@ -378,14 +381,28 @@ function renderMonth() {
     key.startsWith(`${year}-${pad2(month + 1)}-`),
   ).length;
 
+  const monthNumber = pad2(month + 1);
+
+  const monthSummary = document.createElement("div");
+  monthSummary.className = "yearHeader monthSummaryHeader";
+  monthSummary.innerHTML = `
+    <h2>${MONTHS[month]}</h2>
+    <span class="yearHeaderDivider">|</span>
+    <div class="small">${stickeredCount} days stickered</div>
+  `;
+
+  monthWrap.appendChild(monthSummary);
+
   const header = document.createElement("div");
   header.className = "monthHeader";
   header.innerHTML = `
-    <div>
-      <h2>${MONTHS[month]} ${year}</h2>
-      <div class="small">${stickeredCount} days stickered</div>
-    </div>
+    <h2>${MONTHS[month]} ${year}</h2>
+
+    <a class="btn month-notes-link" href="/notes.html#notes-${year}-${monthNumber}">
+      View notes
+    </a>
   `;
+
   wrapper.appendChild(header);
 
   const weekdays = document.createElement("div");
@@ -443,6 +460,7 @@ function renderMonth() {
         saveState(state);
         render();
       }
+
       openModal(key);
     });
 
@@ -450,8 +468,10 @@ function renderMonth() {
   }
 
   wrapper.appendChild(cal);
+  monthWrap.appendChild(wrapper);
+
   monthViewEl.innerHTML = "";
-  monthViewEl.appendChild(wrapper);
+  monthViewEl.appendChild(monthWrap);
 }
 
 function renderYear() {
@@ -482,10 +502,22 @@ function renderYear() {
     const card = document.createElement("div");
     card.className = "miniMonth";
 
+    const monthNumber = pad2(month + 1);
+
+    const monthTop = document.createElement("div");
+    monthTop.className = "miniMonthTop";
+
     const title = document.createElement("div");
     title.className = "miniMonthTitle";
     title.textContent = `${MONTHS[month]} ${year}`;
-    card.appendChild(title);
+
+    const notesLink = document.createElement("a");
+    notesLink.className = "miniMonthNotesLink";
+    notesLink.href = `/notes.html#notes-${year}-${monthNumber}`;
+    notesLink.textContent = "View notes";
+
+    monthTop.append(title, notesLink);
+    card.appendChild(monthTop);
 
     const cal = document.createElement("div");
     cal.className = "miniCal";
