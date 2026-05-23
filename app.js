@@ -509,7 +509,8 @@ function renderYear() {
 
       cell.addEventListener("click", () => {
         state.month = month;
-        state.view = "month";
+        state.view =
+          "month"; /*this switches to month view when modifying in year view; currently ON*/
         saveState(state);
         render();
         openModal(key);
