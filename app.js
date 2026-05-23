@@ -910,7 +910,7 @@ function exportJson() {
 
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = `sticker-year-${state.year}.json`;
+  a.download = `sticker-year-${ymd(new Date())}.json`;
   document.body.appendChild(a);
   a.click();
   a.remove();
