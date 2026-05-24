@@ -1350,7 +1350,7 @@ h3 {
 }
 
 .blog-nav-link {
-  font-weight: 800;
+  font-weight: 700;
   padding: 3px 6px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.34);
@@ -1358,6 +1358,10 @@ h3 {
   box-shadow: var(--shadow-soft), var(--inner-glow);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
+  color: #fd6fc4;
+  font-size: 22px;
+  letter-spacing: 0.02em;
+  line-height: 1;
 }
 
 .blog-hero,
