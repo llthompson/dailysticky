@@ -231,7 +231,7 @@ function wireEvents() {
   });
 
   noteInput.addEventListener("input", () => {
-    noteCount.textContent = `${noteInput.value.length}/160`;
+    noteCount.textContent = `${noteInput.value.length}/300`;
   });
 
   saveNoteBtn.addEventListener("click", saveNoteForSelectedDay);
@@ -687,7 +687,7 @@ function openNoteModal() {
 
   noteModalDateEl.textContent = noteDayKey;
   noteInput.value = state.notes[noteDayKey] || "";
-  noteCount.textContent = `${noteInput.value.length}/160`;
+  noteCount.textContent = `${noteInput.value.length}/300`;
   deleteNoteBtn.textContent = state.notes[noteDayKey] ? "Delete Note" : "Skip";
 
   noteOverlay.classList.remove("hidden");
