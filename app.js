@@ -16,6 +16,8 @@ const secondaryControls = el("secondaryControls");
 
 const monthSelect = el("monthSelect");
 const yearSelect = el("yearSelect");
+const yearViewSelect = el("yearViewSelect");
+const monthViewSelect = el("monthViewSelect");
 
 // New menu elements
 const menuBtn = el("menuBtn");
@@ -84,6 +86,19 @@ let state = loadState() || {
 };
 
 if (!state.notes) state.notes = {};
+
+function getStickerYears(state) {
+  const years = new Set();
+
+  Object.keys(state?.placements || {}).forEach((dateKey) => {
+    const year = Number(dateKey.slice(0, 4));
+    if (year) years.add(year);
+  });
+
+  if (!years.size) years.add(today.getFullYear());
+
+  return [...years].sort((a, b) => b - a);
+}
 
 let shareState = "idle"; // "idle" | "preparing" | "ready"
 let preparedShareFile = null;
@@ -161,11 +176,15 @@ function wireEvents() {
   prevBtn.addEventListener("click", () => shiftMonth(-1));
   nextBtn.addEventListener("click", () => shiftMonth(1));
 
-  todayBtn.addEventListener("click", () => {
-    state.year = today.getFullYear();
-    state.month = today.getMonth();
-    saveAndRender();
-  });
+  // Today button is currently commented out in the HTML.
+  // Keeping this here so we can bring it back later if needed.
+  // if (todayBtn) {
+  //   todayBtn.addEventListener("click", () => {
+  //     state.year = today.getFullYear();
+  //     state.month = today.getMonth();
+  //     saveAndRender();
+  //   });
+  // }
 
   shareWeekBtn.addEventListener("click", shareWeek);
 
@@ -207,6 +226,20 @@ function wireEvents() {
     state.year = Number(yearSelect.value);
     saveAndRender();
   });
+
+  if (yearViewSelect) {
+    yearViewSelect.addEventListener("change", () => {
+      state.year = Number(yearViewSelect.value);
+      saveAndRender();
+    });
+  }
+
+  if (monthViewSelect) {
+    monthViewSelect.addEventListener("change", () => {
+      state.month = Number(monthViewSelect.value);
+      saveAndRender();
+    });
+  }
 
   closeModalBtn.addEventListener("click", requestModalClose);
 
@@ -349,6 +382,45 @@ function render() {
   toggleViewBtn.textContent =
     state.view === "month" ? "Year view" : "Month view";
 
+  if (monthViewSelect) {
+    monthViewSelect.classList.toggle("hidden", state.view !== "month");
+
+    monthViewSelect.innerHTML = "";
+
+    MONTHS.forEach((monthName, index) => {
+      const opt = document.createElement("option");
+      opt.value = String(index);
+      opt.textContent = monthName;
+      monthViewSelect.appendChild(opt);
+    });
+
+    monthViewSelect.value = String(state.month);
+  }
+
+  if (yearViewSelect) {
+    yearViewSelect.classList.toggle("hidden", state.view !== "year");
+
+    if (state.view === "year") {
+      const stickerYears = getStickerYears(state);
+
+      yearViewSelect.innerHTML = "";
+
+      stickerYears.forEach((year) => {
+        const opt = document.createElement("option");
+        opt.value = String(year);
+        opt.textContent = String(year);
+        yearViewSelect.appendChild(opt);
+      });
+
+      if (!stickerYears.includes(state.year)) {
+        state.year = stickerYears[0];
+        saveState(state);
+      }
+
+      yearViewSelect.value = String(state.year);
+    }
+  }
+
   if (state.view === "month") {
     yearViewEl.classList.add("hidden");
     monthViewEl.classList.remove("hidden");
@@ -383,25 +455,19 @@ function renderMonth() {
 
   const monthNumber = pad2(month + 1);
 
-  const monthSummary = document.createElement("div");
-  monthSummary.className = "yearHeader monthSummaryHeader";
-  monthSummary.innerHTML = `
-    <h2>${MONTHS[month]}</h2>
-    <span class="yearHeaderDivider">|</span>
-    <div class="small">${stickeredCount} days stickered</div>
-  `;
-
-  monthWrap.appendChild(monthSummary);
-
   const header = document.createElement("div");
   header.className = "monthHeader";
   header.innerHTML = `
-    <h2>${MONTHS[month]} ${year}</h2>
+  <h2>${MONTHS[month]} ${year}</h2>
 
-    <a class="btn month-notes-link" href="/notes.html#notes-${year}-${monthNumber}">
-      View notes
-    </a>
-  `;
+  <div class="month-sticker-count">
+    ${stickeredCount} days stickered
+  </div>
+
+  <a class="btn month-notes-link" href="/notes.html#notes-${year}-${monthNumber}">
+    View notes
+  </a>
+`;
 
   wrapper.appendChild(header);
 
@@ -495,7 +561,7 @@ function renderYear() {
   const grid = document.createElement("div");
   grid.className = "yearGrid";
 
-  wrapper.appendChild(header);
+  // wrapper.appendChild(header);
   wrapper.appendChild(grid);
 
   for (let month = 0; month < 12; month++) {

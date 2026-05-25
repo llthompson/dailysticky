@@ -122,7 +122,7 @@
           alt="The Daily Sticky — a sticker journal for your year"
           class="site-logo"
         />
-        <p class="subtitle">tap a day → choose a sticker → done</p>
+        <p class="subtitle">A journal for people who don’t want to journal.</p>
       </div>
 
       <div class="controls">
@@ -151,11 +151,25 @@
         <div class="nav-stack">
           <div class="navigate">
             <button id="prevBtn" class="btn">◀</button>
-            <button id="todayBtn" class="btn">Today</button>
+
+            <select
+              id="monthViewSelect"
+              class="select nav-view-select hidden"
+              aria-label="Month"
+            ></select>
+
+            <select
+              id="yearViewSelect"
+              class="select nav-view-select hidden"
+              aria-label="Year"
+            ></select>
+
+            <!-- <button id="todayBtn" class="btn">Today</button> -->
+            <button id="toggleViewBtn" class="btn btn-primary">
+              Year view
+            </button>
             <button id="nextBtn" class="btn">▶</button>
           </div>
-
-          <button id="toggleViewBtn" class="btn btn-primary">Year view</button>
         </div>
 
         <div class="topbar-actions">

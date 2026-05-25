@@ -1800,6 +1800,15 @@ h3 {
   padding: 0 14px;
 }
 
+.nav-view-select {
+  width: 112px;
+  text-align: center;
+}
+
+#toggleViewBtn {
+  width: 92px;
+}
+
 /* =========================
    Notes Page
 ========================= */
