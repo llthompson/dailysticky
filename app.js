@@ -82,7 +82,7 @@ let state = loadState() || {
   month: today.getMonth(),
   view: "month", // "month" | "year"
   placements: {}, // { "YYYY-MM-DD": "stickerId" }
-  notes: {}, // { "YYYY-MM-DD": "short note" }
+  notes: {}, // { "YYYY-MM-DD": "sticker stories" }
 };
 
 if (!state.notes) state.notes = {};
@@ -465,7 +465,7 @@ function renderMonth() {
   </div>
 
   <a class="btn month-notes-link" href="/notes.html#notes-${year}-${monthNumber}">
-    View notes
+    View Sticker Stories
   </a>
 `;
 
@@ -558,10 +558,16 @@ function renderYear() {
   <div class="small">${stickeredCount} days stickered</div>
 `;
 
+  const storiesLink = document.createElement("a");
+  storiesLink.className = "btn year-stories-link";
+  storiesLink.href = `/notes.html#notes-${year}-01`;
+  storiesLink.textContent = "View Sticker Stories";
+
   const grid = document.createElement("div");
   grid.className = "yearGrid";
 
   // wrapper.appendChild(header);
+  wrapper.appendChild(storiesLink);
   wrapper.appendChild(grid);
 
   for (let month = 0; month < 12; month++) {
@@ -577,12 +583,7 @@ function renderYear() {
     title.className = "miniMonthTitle";
     title.textContent = `${MONTHS[month]} ${year}`;
 
-    const notesLink = document.createElement("a");
-    notesLink.className = "miniMonthNotesLink";
-    notesLink.href = `/notes.html#notes-${year}-${monthNumber}`;
-    notesLink.textContent = "View notes";
-
-    monthTop.append(title, notesLink);
+    monthTop.appendChild(title);
     card.appendChild(monthTop);
 
     const cal = document.createElement("div");
@@ -739,11 +740,13 @@ function hideWeeklyRecapPrompt() {
 
 function updateNoteButtonLabel() {
   if (!selectedDayKey) {
-    noteBtn.textContent = "Add Note";
+    noteBtn.textContent = "Add a Story";
     return;
   }
 
-  noteBtn.textContent = state.notes[selectedDayKey] ? "View Note" : "Add Note";
+  noteBtn.textContent = state.notes[selectedDayKey]
+    ? "View Story"
+    : "Add a Story";
 }
 
 function openNoteModal() {
@@ -754,7 +757,9 @@ function openNoteModal() {
   noteModalDateEl.textContent = noteDayKey;
   noteInput.value = state.notes[noteDayKey] || "";
   noteCount.textContent = `${noteInput.value.length}/300`;
-  deleteNoteBtn.textContent = state.notes[noteDayKey] ? "Delete Note" : "Skip";
+  deleteNoteBtn.textContent = state.notes[noteDayKey]
+    ? "Delete Sticker Story"
+    : "Skip";
 
   noteOverlay.classList.remove("hidden");
   noteInput.focus();

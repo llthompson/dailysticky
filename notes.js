@@ -40,7 +40,7 @@ function loadState() {
       notes: parsed.notes ?? {},
     };
   } catch (error) {
-    console.error("Could not load Daily Sticky notes:", error);
+    console.error("Could not load Daily Sticky Sticker Stories:", error);
     return null;
   }
 }
@@ -196,7 +196,7 @@ async function loadStickers() {
 
     stickerById = new Map(stickers.map((sticker) => [sticker.id, sticker]));
   } catch (error) {
-    console.error("Could not load stickers for notes page:", error);
+    console.error("Could not load stickers for sticker story page:", error);
     stickers = [];
     stickerById = new Map();
   }
@@ -242,7 +242,7 @@ function renderNotesPage() {
     const noteCount = document.createElement("span");
     noteCount.className = "notes-month-count";
     noteCount.textContent =
-      monthNotes.length === 1 ? "1 note" : `${monthNotes.length} notes`;
+      monthNotes.length === 1 ? "1 story" : `${monthNotes.length} stories`;
 
     monthButton.append(monthTitle, noteCount);
 
@@ -252,7 +252,7 @@ function renderNotesPage() {
     if (!monthNotes.length) {
       const emptyMessage = document.createElement("p");
       emptyMessage.className = "notes-empty";
-      emptyMessage.textContent = "No notes for this month yet.";
+      emptyMessage.textContent = "No sticker stories for this month yet.";
       content.appendChild(emptyMessage);
     } else {
       monthNotes.forEach(([dateKey, note]) => {
