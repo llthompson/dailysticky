@@ -141,7 +141,7 @@ body::after {
 .site-logo,
 .share-site-logo {
   display: block;
-  width: min(330px, 90vw);
+  width: min(250px, 90vw);
   max-width: 100%;
   height: auto;
   filter: drop-shadow(0 10px 18px rgba(87, 52, 124, 0.16));
