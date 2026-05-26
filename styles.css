@@ -810,6 +810,7 @@ body::after {
 
   .subtitle {
     font-size: 16px;
+    max-width: 57%;
   }
 }
 
@@ -1811,7 +1812,8 @@ h3 {
 }
 
 .year-stories-link {
-  display: flex;
+  /* display: flex; */
+  display: none;
   width: fit-content;
   margin: 0 auto 12px;
 
