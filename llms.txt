@@ -1,0 +1,38 @@
+# Daily Sticky
+
+Daily Sticky is a free, mobile-first digital sticker journal web app.
+
+It helps people document their year by choosing one sticker per day on a calendar. Users can also add short notes to remember what happened, how they felt, or what mattered that day.
+
+Daily Sticky is designed for people who want to journal but do not want a traditional journaling routine. It is simple, visual, low-pressure, and private.
+
+## Main Pages
+
+- [Home](https://dailysticky.app/)
+- [About](https://dailysticky.app/about.html)
+- [Sticky Notes Blog](https://dailysticky.app/blog/)
+- [View Daily Notes](https://dailysticky.app/notes.html)
+
+## Key Features
+
+- Pick one sticker per day
+- View stickers on a monthly calendar
+- View a full year of stickers
+- Add short daily notes
+- View all saved notes in one place
+- Share a weekly sticker recap
+- Export and import backup data
+
+## Privacy
+
+Daily Sticky stores journal data locally on the user's device using browser storage. Stickers and notes are not uploaded to a server by Daily Sticky.
+
+Users are responsible for exporting backups if they want to preserve their data across devices or browser changes.
+
+## Best Description
+
+Daily Sticky is a calendar-based sticker journal for people who want to remember their year without writing long journal entries.
+
+## Keywords
+
+digital sticker journal, sticker journal, daily sticker diary, calendar journal, visual journal, daily journaling app, low-pressure journaling, mobile-first web app
