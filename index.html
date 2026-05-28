@@ -216,6 +216,82 @@
       </div>
     </section>
 
+    <!-- First Visit Welcome Card -->
+    <div
+      id="welcomeOverlay"
+      class="welcome-overlay hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="welcomeTitle"
+    >
+      <section class="welcome-card">
+        <button
+          id="welcomeCloseBtn"
+          class="welcome-close"
+          type="button"
+          aria-label="Close welcome card"
+        >
+          ✕
+        </button>
+
+        <div class="welcome-badge">Daily Sticky</div>
+
+        <h1 id="welcomeTitle">
+          The visual journal for people who don’t have time to journal.
+        </h1>
+
+        <p class="welcome-lede">
+          Pick one sticker for today. Add a few words if you want. Watch your
+          calendar turn into a tiny visual record of your life.
+        </p>
+
+        <div class="welcome-preview" aria-hidden="true">
+          <div class="welcome-mini-calendar">
+            <div>Mon</div>
+            <div>Tue</div>
+            <div>Wed</div>
+            <div>Thu</div>
+            <div>Fri</div>
+            <div>☕</div>
+            <div>🌧️</div>
+            <div>📚</div>
+            <div>✨</div>
+            <div>🍜</div>
+          </div>
+        </div>
+
+        <div class="welcome-points">
+          <div>
+            <span>01</span>
+            <p>Tap today’s date.</p>
+          </div>
+
+          <div>
+            <span>02</span>
+            <p>Choose the sticker that fits.</p>
+          </div>
+
+          <div>
+            <span>03</span>
+            <p>Add a Sticker Story when the day needs context.</p>
+          </div>
+        </div>
+
+        <div class="welcome-note">
+          No blank page. No pressure to write paragraphs. Just a simple way to
+          remember what your days actually felt like.
+        </div>
+
+        <button id="welcomeStartBtn" class="welcome-cta" type="button">
+          Choose Today’s Sticker
+        </button>
+
+        <button id="welcomeSkipBtn" class="welcome-skip" type="button">
+          I’ll explore first
+        </button>
+      </section>
+    </div>
+
     <!-- Sticker Picker Modal -->
     <div
       id="modalOverlay"
@@ -285,7 +361,9 @@
 
           <div class="noteActions">
             <button id="deleteNoteBtn" class="btn">Delete Sticker Story</button>
-            <button id="saveNoteBtn" class="btn btn-primary">Save Sticker Story</button>
+            <button id="saveNoteBtn" class="btn btn-primary">
+              Save Sticker Story
+            </button>
           </div>
         </div>
       </div>

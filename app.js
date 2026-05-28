@@ -1,6 +1,7 @@
 /* Sticker Year — minimal, mobile-first, GitHub Pages friendly */
 
 const STORAGE_KEY = "stickerYear.v1";
+const WELCOME_CARD_KEY = "dailySticky.welcomeCardSeen.v1";
 
 const el = (id) => document.getElementById(id);
 
@@ -27,6 +28,12 @@ const menuExport = el("menuExport");
 const menuImportInput = el("menuImportInput");
 
 const clearBtn = el("clearBtn");
+
+// First visit welcome card
+const welcomeOverlay = el("welcomeOverlay");
+const welcomeStartBtn = el("welcomeStartBtn");
+const welcomeSkipBtn = el("welcomeSkipBtn");
+const welcomeCloseBtn = el("welcomeCloseBtn");
 
 const overlay = el("modalOverlay");
 const closeModalBtn = el("closeModalBtn");
@@ -173,6 +180,7 @@ async function loadStickers() {
 }
 
 function wireEvents() {
+  wireWelcomeCard();
   prevBtn.addEventListener("click", () => shiftMonth(-1));
   nextBtn.addEventListener("click", () => shiftMonth(1));
 
@@ -295,6 +303,52 @@ function wireEvents() {
   yearSelect.value = String(state.year);
 
   if (searchInput) searchInput.value = "";
+}
+
+function shouldShowWelcomeCard() {
+  return localStorage.getItem(WELCOME_CARD_KEY) !== "true";
+}
+
+function markWelcomeCardSeen() {
+  localStorage.setItem(WELCOME_CARD_KEY, "true");
+}
+
+function showWelcomeCard() {
+  if (!welcomeOverlay) return;
+  welcomeOverlay.classList.remove("hidden");
+}
+
+function hideWelcomeCard() {
+  if (!welcomeOverlay) return;
+  welcomeOverlay.classList.add("hidden");
+  markWelcomeCardSeen();
+}
+
+function wireWelcomeCard() {
+  if (!welcomeOverlay) return;
+
+  if (shouldShowWelcomeCard()) {
+    showWelcomeCard();
+  }
+
+  if (welcomeStartBtn) {
+    welcomeStartBtn.addEventListener("click", () => {
+      hideWelcomeCard();
+      openModal(ymd(today));
+    });
+  }
+
+  if (welcomeSkipBtn) {
+    welcomeSkipBtn.addEventListener("click", hideWelcomeCard);
+  }
+
+  if (welcomeCloseBtn) {
+    welcomeCloseBtn.addEventListener("click", hideWelcomeCard);
+  }
+
+  welcomeOverlay.addEventListener("click", (e) => {
+    if (e.target === welcomeOverlay) hideWelcomeCard();
+  });
 }
 
 // function wireMenuEvents() { moving to nav.js for better separation of concerns and to avoid circular dependencies
