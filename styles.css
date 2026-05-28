@@ -1602,16 +1602,16 @@ h3 {
 .home-links {
   width: min(100% - 28px, 820px);
   margin: 6px auto 6px;
-  padding: 10px;
+  /* padding: 10px; */
   text-align: center;
+  /* making this section less visible */
+  /* background: rgba(255, 255, 255, 0.38); */
+  /* border: 1px solid rgba(255, 255, 255, 0.62); */
+  /* border-radius: 22px; */
+  /* box-shadow: var(--shadow-soft), var(--inner-glow); */
 
-  background: rgba(255, 255, 255, 0.38);
-  border: 1px solid rgba(255, 255, 255, 0.62);
-  border-radius: 22px;
-  box-shadow: var(--shadow-soft), var(--inner-glow);
-
-  backdrop-filter: blur(18px) saturate(135%);
-  -webkit-backdrop-filter: blur(18px) saturate(135%);
+  /* backdrop-filter: blur(18px) saturate(135%); */
+  /* -webkit-backdrop-filter: blur(18px) saturate(135%); */
 }
 
 .home-links .section-kicker {
@@ -1622,7 +1622,6 @@ h3 {
 
   background: color-mix(in srgb, var(--accent) 16%, white);
   color: var(--accent-ink);
-
   font-family: var(--font-alt);
   font-size: 0.68rem;
   font-weight: 900;
@@ -1631,6 +1630,7 @@ h3 {
 }
 
 .home-links h2 {
+  /* display: none; */
   margin: 0 0 6px;
   color: var(--accent-ink);
   font-size: clamp(0.5rem, 3vw, 2rem);
@@ -1662,21 +1662,21 @@ h3 {
   padding: 3px 6px;
   border-radius: 999px;
 
-  background: rgba(255, 255, 255, 0.54);
+  /* background: rgba(255, 255, 255, 0.54);
   border: 1px solid rgba(255, 255, 255, 0.7);
-  box-shadow: var(--inner-glow);
+  box-shadow: var(--inner-glow); */
 
   color: var(--accent-ink);
   font-family: var(--font-alt);
-  font-size: 0.82rem;
+  font-size: 0.77rem;
   font-weight: 550;
   text-decoration: none;
 }
 
-.home-link-list a:hover {
+/* .home-link-list a:hover {
   background: color-mix(in srgb, var(--accent) 10%, white);
   transform: translateY(-1px);
-}
+} */
 
 .save-features {
   display: flex;
@@ -2131,18 +2131,22 @@ h3 {
 
 /* Main app notes links */
 
-.month-notes-link {
+.btn.month-notes-link {
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
-  min-height: 30px;
-  padding: 0 10px;
+  min-height: 25px;
+  padding: 0 7px;
 
-  font-size: 0.95rem;
-  font-weight: 700;
+  font-size: 0.85rem;
+  font-weight: 400;
   text-decoration: none;
   white-space: nowrap;
+  background: none;
+  backdrop-filter: none;
+  /* box-shadow: none; */
+  border: none;
 }
 
 .miniMonthTop {
