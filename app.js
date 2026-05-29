@@ -518,9 +518,9 @@ function renderMonth() {
     ${stickeredCount} days stickered
   </div>
 
-  <a class="btn month-notes-link" href="/notes.html#notes-${year}-${monthNumber}">
-    View Sticker Stories
-  </a>
+  <a class="btn month-notes-link" href="/notes.html">
+  View Sticker Stories
+</a>
 `;
 
   wrapper.appendChild(header);

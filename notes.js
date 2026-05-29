@@ -158,6 +158,8 @@ function expandLinkedMonth() {
   const section = document.querySelector(hash);
   if (!section) return;
 
+  collapseOtherMonths(section);
+
   section.classList.remove("is-collapsed");
 
   const button = section.querySelector(".notes-month-toggle");
@@ -171,6 +173,21 @@ function expandLinkedMonth() {
       block: "start",
     });
   }, 50);
+}
+
+function collapseOtherMonths(openSection) {
+  const sections = [...document.querySelectorAll(".notes-month-section")];
+
+  sections.forEach((section) => {
+    if (section === openSection) return;
+
+    section.classList.add("is-collapsed");
+
+    const button = section.querySelector(".notes-month-toggle");
+    if (button) {
+      button.setAttribute("aria-expanded", "false");
+    }
+  });
 }
 
 if (toggleAllNotesBtn) {
@@ -271,9 +288,9 @@ function renderNotesPage() {
         monthButton.setAttribute("aria-expanded", "false");
         updateToggleAllButtonText();
 
-        section.scrollIntoView({
+        window.scrollTo({
+          top: 2,
           behavior: "smooth",
-          block: "start",
         });
       });
 
@@ -354,5 +371,10 @@ async function initNotesPage() {
     });
   }
 }
+
+window.addEventListener("hashchange", () => {
+  expandLinkedMonth();
+  updateToggleAllButtonText();
+});
 
 initNotesPage();
