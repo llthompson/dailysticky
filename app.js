@@ -1043,9 +1043,9 @@ function clearCurrentYear() {
   saveAndRender();
 }
 
-// Demo reel feature to place one sticker per day in year view. Run in browser console with this command: playYearStickerReel(state.year, 35);
+// Demo reel feature to place one sticker per day in year view. Run in browser console with this command: playYearStickerReel(state.year, 235);
 
-async function playYearStickerReel(year = state.year, delay = 35) {
+async function playYearStickerReel(year = state.year, delay = 235) {
   const originalPlacements = { ...state.placements };
   const originalYear = state.year;
   const originalView = state.view;
@@ -1059,7 +1059,7 @@ async function playYearStickerReel(year = state.year, delay = 35) {
       return (
         dateKey.startsWith(yearPrefix) &&
         monthNumber >= 1 &&
-        monthNumber <= 2 &&
+        monthNumber <= 3 &&
         stickerById.has(stickerId)
       );
     })
