@@ -1043,6 +1043,60 @@ function clearCurrentYear() {
   saveAndRender();
 }
 
+// Demo reel feature to place one sticker per day in year view. Run in browser console with this command: playYearStickerReel(state.year, 35);
+
+async function playYearStickerReel(year = state.year, delay = 35) {
+  const originalPlacements = { ...state.placements };
+  const originalYear = state.year;
+  const originalView = state.view;
+
+  const yearPrefix = `${year}-`;
+
+  const yearPlacements = Object.entries(originalPlacements)
+    .filter(([dateKey, stickerId]) => {
+      const monthNumber = Number(dateKey.slice(5, 7));
+
+      return (
+        dateKey.startsWith(yearPrefix) &&
+        monthNumber >= 1 &&
+        monthNumber <= 2 &&
+        stickerById.has(stickerId)
+      );
+    })
+    .sort(([a], [b]) => a.localeCompare(b));
+
+  if (!yearPlacements.length) {
+    alert("No stickers found for this year.");
+    return;
+  }
+
+  state.year = year;
+  state.view = "year";
+
+  state.placements = Object.fromEntries(
+    Object.entries(originalPlacements).filter(
+      ([dateKey]) => !dateKey.startsWith(yearPrefix),
+    ),
+  );
+
+  monthViewEl.classList.add("hidden");
+  yearViewEl.classList.remove("hidden");
+  renderYear();
+
+  for (const [dateKey, stickerId] of yearPlacements) {
+    state.placements[dateKey] = stickerId;
+    renderYear();
+
+    await new Promise((resolve) => setTimeout(resolve, delay));
+  }
+
+  state.placements = originalPlacements;
+  state.year = originalYear;
+  state.view = originalView;
+}
+
+// end demo reel
+
 function loadState() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
