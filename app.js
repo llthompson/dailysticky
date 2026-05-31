@@ -82,7 +82,7 @@ const ymd = (d) =>
 
 const today = new Date();
 // for testing Sunday prompt
-// const today = new Date("2026-05-24T12:00:00");
+// const today = new Date("2026-05-31T12:00:00");
 
 let state = loadState() || {
   year: today.getFullYear(),
@@ -746,6 +746,7 @@ function requestModalClose() {
 
   closePickerImmediately();
   maybeShowWeeklyRecapPrompt();
+  maybeShowInstallPromptAfterNoteFlow();
 }
 
 function isSunday(dayKey) {
@@ -790,6 +791,21 @@ function maybeShowWeeklyRecapPrompt() {
 function hideWeeklyRecapPrompt() {
   if (!weeklyRecapPromptOverlay) return;
   weeklyRecapPromptOverlay.classList.add("hidden");
+
+  maybeShowInstallPromptAfterNoteFlow();
+}
+
+function maybeShowInstallPromptAfterNoteFlow() {
+  const weeklyRecapIsShowing =
+    weeklyRecapPromptOverlay &&
+    !weeklyRecapPromptOverlay.classList.contains("hidden");
+
+  if (pendingWeeklyRecapDayKey) return;
+  if (weeklyRecapIsShowing) return;
+
+  if (typeof window.showDailyStickyInstallPrompt === "function") {
+    window.showDailyStickyInstallPrompt();
+  }
 }
 
 function updateNoteButtonLabel() {
@@ -843,6 +859,7 @@ function saveNoteForSelectedDay() {
   closeModal(true);
   render();
   maybeShowWeeklyRecapPrompt();
+  maybeShowInstallPromptAfterNoteFlow();
 }
 
 function resetStickerPickerScroll() {

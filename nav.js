@@ -59,3 +59,100 @@ function normalizePath(path) {
 }
 
 document.addEventListener("DOMContentLoaded", wireNavMenu);
+
+let deferredInstallPrompt = null;
+
+const INSTALL_PROMPT_DISMISSED_KEY =
+  "dailySticky.installPromptDismissedUntil.v1";
+
+function isInstallPromptDismissed() {
+  const dismissedUntil = Number(
+    localStorage.getItem(INSTALL_PROMPT_DISMISSED_KEY),
+  );
+
+  if (!dismissedUntil) return false;
+
+  return Date.now() < dismissedUntil;
+}
+
+function dismissInstallPrompt() {
+  const sevenDaysFromNow = Date.now() + 7 * 24 * 60 * 60 * 1000;
+
+  localStorage.setItem(INSTALL_PROMPT_DISMISSED_KEY, String(sevenDaysFromNow));
+
+  const installPrompt = document.getElementById("installPrompt");
+  if (installPrompt) installPrompt.classList.add("hidden");
+}
+
+function isDailyStickyInstalled() {
+  return (
+    window.matchMedia("(display-mode: standalone)").matches ||
+    window.navigator.standalone === true
+  );
+}
+
+function showInstallPromptBanner() {
+  if (isInstallPromptDismissed()) return;
+  if (isDailyStickyInstalled()) return;
+
+  const installPrompt = document.getElementById("installPrompt");
+  if (!installPrompt) return;
+
+  installPrompt.classList.remove("hidden");
+}
+
+window.addEventListener("beforeinstallprompt", (event) => {
+  event.preventDefault();
+  deferredInstallPrompt = event;
+});
+
+window.addEventListener("appinstalled", () => {
+  deferredInstallPrompt = null;
+  dismissInstallPrompt();
+});
+
+const installPromptBtn = document.getElementById("installPromptBtn");
+
+if (installPromptBtn) {
+  installPromptBtn.addEventListener("click", async () => {
+    const isIOS =
+      /iphone|ipad|ipod/i.test(window.navigator.userAgent) && !window.MSStream;
+
+    if (isIOS) {
+      alert(
+        "To add Daily Sticky to your Home Screen: tap the Share button in Safari, then tap Add to Home Screen.",
+      );
+      return;
+    }
+
+    if (!deferredInstallPrompt) {
+      alert(
+        "To add Daily Sticky to your Home Screen, open your browser menu and look for Install App or Add to Home Screen.",
+      );
+      return;
+    }
+
+    deferredInstallPrompt.prompt();
+
+    await deferredInstallPrompt.userChoice;
+    deferredInstallPrompt = null;
+
+    dismissInstallPrompt();
+  });
+}
+
+const dismissInstallPromptBtn = document.getElementById(
+  "dismissInstallPromptBtn",
+);
+
+if (dismissInstallPromptBtn) {
+  dismissInstallPromptBtn.addEventListener("click", dismissInstallPrompt);
+}
+
+window.showDailyStickyInstallPrompt = showInstallPromptBanner;
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js");
+  });
+}

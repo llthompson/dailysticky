@@ -1,0 +1,18 @@
+{
+  "name": "Daily Sticky",
+  "short_name": "Daily Sticky",
+  "description": "A digital sticker journal where you pick one sticker a day and add a few words.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f7d9ef",
+  "theme_color": "#f7d9ef",
+  "icons": [
+    {
+      "src": "/pwa-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
