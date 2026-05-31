@@ -2464,6 +2464,7 @@ h3 {
 }
 
 .install-prompt-card {
+  position: relative;
   width: min(100%, 460px);
   margin: 0 auto;
   padding: 14px 14px 12px;
@@ -2519,7 +2520,8 @@ h3 {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 
-.install-prompt-main-btn {
+.install-prompt-main-btn,
+#installPromptBtn {
   width: 100%;
   min-height: 38px;
   border: 0;
@@ -2536,6 +2538,7 @@ h3 {
 }
 
 .install-prompt-main-btn:active,
+#installPromptBtn:active,
 .install-prompt-close:active {
   transform: translateY(1px);
 }
