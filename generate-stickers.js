@@ -45,7 +45,9 @@ const output = Object.entries(groups)
   .sort(([a], [b]) => a.localeCompare(b))
   .map(([category, items]) => ({
     category: formatCategoryName(category),
-    items: items.sort((a, b) => a.id.localeCompare(b.id)),
+    items: items.sort((a, b) =>
+      a.id.localeCompare(b.id, undefined, { numeric: true }),
+    ),
   }));
 
 fs.writeFileSync("stickers.json", JSON.stringify(output, null, 2));

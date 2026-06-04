@@ -953,7 +953,7 @@ function renderStickersForCategory(category, fromHistory = false) {
   const group = getGroups().find((g) => g.category === category);
   const items = (group?.items || [])
     .filter((sticker) => sticker.active !== false)
-    .sort((a, b) => a.id.localeCompare(b.id));
+    .sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true }));
 
   stickerGrid.innerHTML = "";
 
@@ -1040,7 +1040,9 @@ function getGroups() {
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([category, items]) => ({
       category,
-      items: items.slice().sort((a, b) => a.id.localeCompare(b.id)),
+      items: items
+        .slice()
+        .sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true })),
     }));
 }
 
