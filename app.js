@@ -566,6 +566,7 @@ function renderMonth() {
       const img = document.createElement("img");
       img.alt = sticker.label || sticker.id;
       img.loading = "lazy";
+      img.draggable = false;
       img.src = `./stickers/${sticker.file}`;
       slot.appendChild(img);
     }
@@ -675,6 +676,7 @@ function renderYear() {
         img.alt = sticker.label || sticker.id;
         img.loading = "lazy";
         img.src = `./stickers/${sticker.file}`;
+        img.draggable = false;
         cell.appendChild(img);
       }
 
@@ -905,6 +907,7 @@ function renderStickerCategories() {
       img.alt = "";
       img.loading = "lazy";
       img.src = `./stickers/${sticker.file}`;
+      img.draggable = false;
       preview.appendChild(img);
     });
 
@@ -998,7 +1001,7 @@ function renderStickersForCategory(category, fromHistory = false) {
     img.alt = sticker.label || sticker.id;
     img.loading = "lazy";
     img.src = `./stickers/${sticker.file}`;
-
+    img.draggable = false;
     const label = document.createElement("div");
     label.className = "stickerLabel";
     label.textContent = sticker.label || sticker.id;
@@ -1292,6 +1295,7 @@ function renderWeeklyShare() {
       const img = document.createElement("img");
       img.src = `./stickers/${sticker.file}`;
       img.alt = sticker.label || sticker.id;
+      img.draggable = false;
       el.appendChild(img);
     } else {
       el.classList.add("is-empty");
@@ -1308,6 +1312,7 @@ function renderWeeklyShare() {
     const img = document.createElement("img");
     img.src = "./the-daily-sticky-words.png";
     img.alt = "The Daily Sticky — a sticker journal for your year";
+    img.draggable = false;
     el.appendChild(img);
 
     return el;

@@ -2542,3 +2542,16 @@ h3 {
 .install-prompt-close:active {
   transform: translateY(1px);
 }
+
+/* Make sticker images harder to casually save/drag */
+.stickerBtn img,
+.stickerSlot img,
+.catPreview img,
+.miniDay img,
+.note-sticker img,
+.share-sticker-cell img {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  pointer-events: none;
+}
