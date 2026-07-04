@@ -1,5 +1,3 @@
-const STORAGE_KEY = "stickerYear.v1";
-
 const notesList = document.getElementById("notesList");
 const notesYearNav = document.getElementById("notesYearNav");
 const toggleAllNotesBtn = document.getElementById("toggleAllNotesBtn");
@@ -27,22 +25,7 @@ const MONTHS = [
 const pad2 = (n) => String(n).padStart(2, "0");
 
 function loadState() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return null;
-
-    const parsed = JSON.parse(raw);
-
-    return {
-      year: parsed.year ?? new Date().getFullYear(),
-      month: parsed.month ?? new Date().getMonth(),
-      placements: parsed.placements ?? {},
-      notes: parsed.notes ?? {},
-    };
-  } catch (error) {
-    console.error("Could not load Daily Sticky Sticker Stories:", error);
-    return null;
-  }
+  return loadDailyStickyState();
 }
 
 function getYearToShow(state) {

@@ -1,6 +1,5 @@
 /* Sticker Year — minimal, mobile-first, GitHub Pages friendly */
 
-const STORAGE_KEY = "stickerYear.v1";
 const WELCOME_CARD_KEY = "dailySticky.welcomeCardSeen.v1";
 
 const el = (id) => document.getElementById(id);
@@ -1120,20 +1119,11 @@ async function playYearStickerReel(year = state.year, delay = 235) {
 // end demo reel
 
 function loadState() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return null;
-
-    const parsed = JSON.parse(raw);
-    if (!parsed.notes) parsed.notes = {};
-    return parsed;
-  } catch {
-    return null;
-  }
+  return loadDailyStickyState();
 }
 
 function saveState(next) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+  saveDailyStickyState(next);
 }
 
 function exportJson() {
