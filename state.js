@@ -1,6 +1,6 @@
 const STICKER_YEAR_STORAGE_KEY = "stickerYear.v1";
 const STICKER_YEAR_VERSION = 1;
-
+// test
 function loadDailyStickyState() {
   try {
     const raw = localStorage.getItem(STICKER_YEAR_STORAGE_KEY);
