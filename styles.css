@@ -408,7 +408,7 @@ body::after {
 .monthHeader {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: center;
   padding: 14px 14px 10px;
   border-bottom: 1px solid var(--border);
   background: rgba(255, 255, 255, 0.18);
@@ -2554,4 +2554,170 @@ h3 {
   user-select: none;
   -webkit-touch-callout: none;
   pointer-events: none;
+}
+
+.export-card {
+  width: 1000px;
+  height: 1400px;
+  position: fixed;
+  left: -99999px;
+  top: 0;
+  z-index: 99999;
+  padding: 40px;
+  box-sizing: border-box;
+  font-family: "Truculenta", sans-serif;
+  background: linear-gradient(
+    135deg,
+    #ffd7e7 0%,
+    #edccff 38%,
+    #c7dcff 68%,
+    #c5f7e2 100%
+  );
+  display: flex;
+  flex-direction: column;
+}
+
+.export-header {
+  height: 140px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.export-title {
+  font-size: 48px;
+  font-weight: 700;
+  color: #241039;
+}
+
+.export-count {
+  font-size: 24px;
+  padding: 10px 20px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.5);
+  color: #241039;
+}
+
+.export-footer {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: rgba(36, 16, 57, 0.55);
+}
+
+.export-weekdays {
+  height: 50px;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  font-size: 20px;
+  font-weight: 700;
+  color: rgba(36, 16, 57, 0.6);
+  align-items: center;
+  text-align: center;
+}
+
+.export-month-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(6, 1fr);
+  gap: 10px;
+}
+
+.export-month-day {
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 16px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.export-month-day.outside {
+  opacity: 0.25;
+}
+
+.export-month-day .num {
+  position: absolute;
+  top: 8px;
+  left: 10px;
+  font-size: 18px;
+  color: rgba(36, 16, 57, 0.55);
+}
+
+.export-month-day img {
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
+}
+
+.export-year-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.export-year-month {
+  background: rgba(255, 255, 255, 0.35);
+  border-radius: 16px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+}
+
+.export-year-month-label {
+  font-size: 18px;
+  font-weight: 700;
+  color: #241039;
+  margin-bottom: 4px;
+  text-align: center;
+}
+
+.export-year-mini-cal {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(6, 1fr);
+  gap: 2px;
+}
+
+.export-year-mini-day {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.export-year-mini-day img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.header-icon-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.year-header-actions {
+  justify-content: center;
+  margin: 0 auto 12px;
+}
+
+.icon-btn-labeled {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.icon-btn-labeled span {
+  font-size: 10px;
+  color: var(--muted);
+  line-height: 1;
+  text-decoration: underline;
 }
