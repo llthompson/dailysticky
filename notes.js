@@ -7,23 +7,6 @@ let selectedNotesYear = null;
 let stickers = [];
 let stickerById = new Map();
 
-const MONTHS = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
-
-const pad2 = (n) => String(n).padStart(2, "0");
-
 function loadState() {
   return loadDailyStickyState();
 }
@@ -179,22 +162,9 @@ if (toggleAllNotesBtn) {
 
 async function loadStickers() {
   try {
-    const res = await fetch("/stickers.json");
-    const data = await res.json();
-
-    if (Array.isArray(data) && data.length && data[0].items) {
-      stickers = data.flatMap((group) =>
-        (group.items || []).map((item) => ({
-          ...item,
-          category: group.category || item.category || "Other",
-          file: item.file || item.src || "",
-        })),
-      );
-    } else {
-      stickers = data;
-    }
-
-    stickerById = new Map(stickers.map((sticker) => [sticker.id, sticker]));
+    const data = await fetchStickerData();
+    stickers = data.stickers;
+    stickerById = data.stickerById;
   } catch (error) {
     console.error("Could not load stickers for sticker story page:", error);
     stickers = [];

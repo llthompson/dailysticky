@@ -60,24 +60,6 @@ const dismissWeeklyRecapPromptBtn = el("dismissWeeklyRecapPromptBtn");
 const closeWeeklyRecapPromptBtn = el("closeWeeklyRecapPromptBtn");
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-const MONTHS = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
-
-const pad2 = (n) => String(n).padStart(2, "0");
-const ymd = (d) =>
-  `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
 
 const today = new Date();
 // for testing Sunday prompt
@@ -158,24 +140,10 @@ function populateMonthYearSelects() {
 }
 
 async function loadStickers() {
-  const res = await fetch("./stickers.json");
-  const data = await res.json();
-
-  if (Array.isArray(data) && data.length && data[0].items) {
-    stickerGroups = data;
-    stickers = data.flatMap((group) =>
-      (group.items || []).map((item) => ({
-        ...item,
-        category: group.category || item.category || "Other",
-        file: item.file || item.src || "",
-      })),
-    );
-  } else {
-    stickerGroups = [];
-    stickers = data;
-  }
-
-  stickerById = new Map(stickers.map((sticker) => [sticker.id, sticker]));
+  const data = await fetchStickerData();
+  stickerGroups = data.stickerGroups;
+  stickers = data.stickers;
+  stickerById = data.stickerById;
 }
 
 function wireEvents() {
