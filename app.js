@@ -28,6 +28,13 @@ const menuImportInput = el("menuImportInput");
 
 const clearBtn = el("clearBtn");
 
+const monthExportOverlay = el("monthExportOverlay");
+const yearExportOverlay = el("yearExportOverlay");
+const closeMonthExportBtn = el("closeMonthExportBtn");
+const closeYearExportBtn = el("closeYearExportBtn");
+const downloadMonthImageBtn = el("downloadMonthImageBtn");
+const downloadYearImageBtn = el("downloadYearImageBtn");
+
 // First visit welcome card
 const welcomeOverlay = el("welcomeOverlay");
 const welcomeStartBtn = el("welcomeStartBtn");
@@ -217,9 +224,34 @@ function wireEvents() {
   }
 
   document.addEventListener("click", (e) => {
-    if (e.target.closest("#downloadMonthBtn")) downloadMonthImage();
-    if (e.target.closest("#downloadYearBtn")) downloadYearImage();
+    if (e.target.closest("#openMonthExportBtn")) openMonthExportPreview();
+    if (e.target.closest("#openYearExportBtn")) openYearExportPreview();
   });
+
+  if (closeMonthExportBtn) {
+    closeMonthExportBtn.addEventListener("click", closeMonthExportPreview);
+  }
+  if (closeYearExportBtn) {
+    closeYearExportBtn.addEventListener("click", closeYearExportPreview);
+  }
+
+  if (monthExportOverlay) {
+    monthExportOverlay.addEventListener("click", (e) => {
+      if (e.target === monthExportOverlay) closeMonthExportPreview();
+    });
+  }
+  if (yearExportOverlay) {
+    yearExportOverlay.addEventListener("click", (e) => {
+      if (e.target === yearExportOverlay) closeYearExportPreview();
+    });
+  }
+
+  if (downloadMonthImageBtn) {
+    downloadMonthImageBtn.addEventListener("click", downloadMonthImage);
+  }
+  if (downloadYearImageBtn) {
+    downloadYearImageBtn.addEventListener("click", downloadYearImage);
+  }
 
   closeModalBtn.addEventListener("click", requestModalClose);
 
@@ -493,7 +525,7 @@ function renderMonth() {
 
 
   <div class="header-icon-actions">
- <button id="downloadMonthBtn" class="btn icon-btn image-btn icon-btn-labeled" aria-label="Download month image">
+ <button id="openMonthExportBtn" class="btn icon-btn image-btn icon-btn-labeled" aria-label="View month export">
   <img src="/calendar-download.svg" alt="" />
   <span>Month</span>
 </button>
@@ -607,7 +639,7 @@ function renderYear() {
   const storiesLink = document.createElement("div");
   storiesLink.className = "header-icon-actions year-header-actions";
   storiesLink.innerHTML = `
-  <button id="downloadYearBtn" class="btn icon-btn image-btn icon-btn-labeled" aria-label="Download month image">
+  <button id="openYearExportBtn" class="btn icon-btn image-btn icon-btn-labeled" aria-label="View year export">
   <img src="/calendar-download.svg" alt="" />
   <span>Year</span>
   </button>
@@ -616,15 +648,6 @@ function renderYear() {
   <span>Stories</span>
   </a>
 `;
-
-  //   storiesLink.innerHTML = `
-  //   <button id="downloadYearBtn" class="btn icon-btn image-btn" aria-label="Download year image">
-  //     <img src="/calendar-download.svg" alt="" />
-  //   </button>
-  //   <a class="btn icon-btn image-btn" href="/notes.html#notes-${year}-01" aria-label="View sticker stories">
-  //     <img src="/open-book-round.svg" alt="" />
-  //   </a>
-  // `;
 
   const grid = document.createElement("div");
   grid.className = "yearGrid";
@@ -708,24 +731,39 @@ function renderYear() {
   yearViewEl.appendChild(wrapper);
 }
 
-function renderMonthExportCard() {
+function renderMonthExportCard(target = "download") {
   const year = state.year;
   const month = state.month;
 
-  document.getElementById("monthExportTitle").textContent =
-    `${MONTHS[month]} ${year}`;
+  const ids =
+    target === "preview"
+      ? {
+          title: "monthExportPreviewTitle",
+          count: "monthExportPreviewCount",
+          weekdays: "monthExportPreviewWeekdays",
+          grid: "monthExportPreviewGrid",
+        }
+      : {
+          title: "monthExportTitle",
+          count: "monthExportCount",
+          weekdays: "monthExportWeekdays",
+          grid: "monthExportGrid",
+        };
+
+  document.getElementById(ids.title).textContent = `${MONTHS[month]} ${year}`;
 
   const stickeredCount = Object.keys(state.placements).filter((key) =>
     key.startsWith(`${year}-${pad2(month + 1)}-`),
   ).length;
-  document.getElementById("monthExportCount").textContent =
+
+  document.getElementById(ids.count).textContent =
     `${stickeredCount} days stickered`;
 
-  document.getElementById("monthExportWeekdays").innerHTML = WEEKDAYS.map(
+  document.getElementById(ids.weekdays).innerHTML = WEEKDAYS.map(
     (d) => `<div>${d}</div>`,
   ).join("");
 
-  const grid = document.getElementById("monthExportGrid");
+  const grid = document.getElementById(ids.grid);
   grid.innerHTML = "";
 
   const first = new Date(year, month, 1);
@@ -763,9 +801,12 @@ function renderMonthExportCard() {
 async function downloadMonthImage() {
   if (typeof html2canvas === "undefined") return;
 
-  renderMonthExportCard();
+  renderMonthExportCard("download");
 
-  const canvas = await html2canvas(document.getElementById("monthExportCard"), {
+  const card = document.getElementById("monthExportCard");
+  if (!card) return;
+
+  const canvas = await html2canvas(card, {
     scale: 2,
     useCORS: true,
     logging: false,
@@ -786,70 +827,70 @@ async function downloadMonthImage() {
   URL.revokeObjectURL(url);
 }
 
-function renderYearExportCard() {
+function renderYearExportCard(target = "download") {
   const year = state.year;
 
-  document.getElementById("yearExportTitle").textContent = String(year);
+  const ids =
+    target === "preview"
+      ? {
+          title: "yearExportPreviewTitle",
+          count: "yearExportPreviewCount",
+          grid: "yearExportPreviewGrid",
+        }
+      : {
+          title: "yearExportTitle",
+          count: "yearExportCount",
+          grid: "yearExportGrid",
+        };
+
+  document.getElementById(ids.title).textContent = String(year);
 
   const stickeredCount = Object.keys(state.placements).filter((key) =>
     key.startsWith(`${year}-`),
   ).length;
-  document.getElementById("yearExportCount").textContent =
+
+  document.getElementById(ids.count).textContent =
     `${stickeredCount} days stickered`;
 
-  const grid = document.getElementById("yearExportGrid");
+  const grid = document.getElementById(ids.grid);
   grid.innerHTML = "";
 
-  for (let month = 0; month < 12; month++) {
-    const monthBox = document.createElement("div");
-    monthBox.className = "export-year-month";
+  const isLeap = (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+  const daysInYear = isLeap ? 366 : 365;
 
-    const label = document.createElement("div");
-    label.className = "export-year-month-label";
-    label.textContent = MONTHS[month].slice(0, 3);
-    monthBox.appendChild(label);
+  for (let dayOfYear = 0; dayOfYear < daysInYear; dayOfYear++) {
+    const date = new Date(year, 0, 1 + dayOfYear);
+    const key = ymd(date);
 
-    const miniCal = document.createElement("div");
-    miniCal.className = "export-year-mini-cal";
+    const cell = document.createElement("div");
+    cell.className = "export-year-flat-day";
 
-    const first = new Date(year, month, 1);
-    const startDay = first.getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const stickerId = state.placements[key];
 
-    for (let i = 0; i < startDay; i++) {
-      miniCal.appendChild(document.createElement("div")).className =
-        "export-year-mini-day";
+    if (stickerId && stickerById.has(stickerId)) {
+      const sticker = stickerById.get(stickerId);
+      const img = document.createElement("img");
+      img.src = `./stickers/${sticker.file}`;
+      img.alt = "";
+      cell.appendChild(img);
+    } else {
+      cell.classList.add("is-empty");
     }
 
-    for (let day = 1; day <= daysInMonth; day++) {
-      const key = ymd(new Date(year, month, day));
-      const cell = document.createElement("div");
-      cell.className = "export-year-mini-day";
-
-      const stickerId = state.placements[key];
-      if (stickerId && stickerById.has(stickerId)) {
-        const sticker = stickerById.get(stickerId);
-        const img = document.createElement("img");
-        img.src = `./stickers/${sticker.file}`;
-        img.alt = "";
-        cell.appendChild(img);
-      }
-
-      miniCal.appendChild(cell);
-    }
-
-    monthBox.appendChild(miniCal);
-    grid.appendChild(monthBox);
+    grid.appendChild(cell);
   }
 }
 
 async function downloadYearImage() {
   if (typeof html2canvas === "undefined") return;
 
-  renderYearExportCard();
+  renderYearExportCard("download");
 
-  const canvas = await html2canvas(document.getElementById("yearExportCard"), {
-    scale: 1.5,
+  const card = document.getElementById("yearExportCard");
+  if (!card) return;
+
+  const canvas = await html2canvas(card, {
+    scale: 2,
     useCORS: true,
     logging: false,
   });
@@ -889,6 +930,24 @@ function openModal(dayKey) {
   );
 
   modalHistoryDepth = 1;
+}
+
+function openMonthExportPreview() {
+  renderMonthExportCard("preview");
+  monthExportOverlay.classList.remove("hidden");
+}
+
+function closeMonthExportPreview() {
+  monthExportOverlay.classList.add("hidden");
+}
+
+function openYearExportPreview() {
+  renderYearExportCard("preview");
+  yearExportOverlay.classList.remove("hidden");
+}
+
+function closeYearExportPreview() {
+  yearExportOverlay.classList.add("hidden");
 }
 
 function closeModal(fromHistory = false) {

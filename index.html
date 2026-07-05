@@ -130,7 +130,7 @@
           alt="The Daily Sticky — a sticker journal for your year"
           class="site-logo"
         />
-        <p class="subtitle">A journal for people who don’t want to journal.</p>
+        <p class="subtitle">One sticker a day for memories that stick.</p>
       </div>
 
       <div class="controls">
@@ -424,8 +424,49 @@
       <div id="weeklyShareGrid" class="weekly-share-grid"></div>
     </div>
 
-    <!-- Monthly Export Card -->
-    <div id="monthExportCard" class="export-card" aria-hidden="true">
+    <!-- Monthly Export Preview -->
+    <div
+      id="monthExportOverlay"
+      class="overlay hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Month export preview"
+    >
+      <div class="modal">
+        <div class="month-preview-header">
+          <div class="month-preview-title">Preview</div>
+
+          <div class="month-preview-actions">
+            <button id="downloadMonthImageBtn" class="btn btn-primary">
+              Download Image
+            </button>
+
+            <button id="closeMonthExportBtn" class="month-preview-close">
+              ✕
+            </button>
+          </div>
+        </div>
+
+        <div class="export-preview-scroll">
+          <div id="monthExportPreviewCard" class="export-card">
+            <div class="export-header">
+              <div id="monthExportPreviewTitle" class="export-title"></div>
+              <div id="monthExportPreviewCount" class="export-count"></div>
+            </div>
+            <div id="monthExportPreviewWeekdays" class="export-weekdays"></div>
+            <div id="monthExportPreviewGrid" class="export-month-grid"></div>
+            <div class="export-footer">dailysticky.app</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Monthly Export Download Card -->
+    <div
+      id="monthExportCard"
+      class="export-card export-card-download"
+      aria-hidden="true"
+    >
       <div class="export-header">
         <div id="monthExportTitle" class="export-title"></div>
         <div id="monthExportCount" class="export-count"></div>
@@ -435,13 +476,57 @@
       <div class="export-footer">dailysticky.app</div>
     </div>
 
-    <!-- Yearly Export Card -->
-    <div id="yearExportCard" class="export-card" aria-hidden="true">
+    <!-- Yearly Export Preview -->
+    <div
+      id="yearExportOverlay"
+      class="overlay hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Year export preview"
+    >
+      <div class="modal">
+        <div class="month-preview-header">
+          <div class="month-preview-title">Preview</div>
+
+          <div class="month-preview-actions">
+            <button id="downloadYearImageBtn" class="btn btn-primary">
+              Download Image
+            </button>
+
+            <button id="closeYearExportBtn" class="month-preview-close">
+              ✕
+            </button>
+          </div>
+        </div>
+
+        <div class="export-preview-scroll">
+          <div id="yearExportPreviewCard" class="export-card">
+            <div class="export-header">
+              <div id="yearExportPreviewTitle" class="export-title"></div>
+              <div id="yearExportPreviewCount" class="export-count"></div>
+            </div>
+
+            <div id="yearExportPreviewGrid" class="export-year-flat-grid"></div>
+
+            <div class="export-footer">dailysticky.app</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Yearly Export Download Card -->
+    <div
+      id="yearExportCard"
+      class="export-card export-card-download"
+      aria-hidden="true"
+    >
       <div class="export-header">
         <div id="yearExportTitle" class="export-title"></div>
         <div id="yearExportCount" class="export-count"></div>
       </div>
-      <div id="yearExportGrid" class="export-year-grid"></div>
+
+      <div id="yearExportGrid" class="export-year-flat-grid"></div>
+
       <div class="export-footer">dailysticky.app</div>
     </div>
 
