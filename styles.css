@@ -913,7 +913,7 @@ body::after {
   );
   display: grid;
   place-items: start center;
-  padding: 14px;
+  padding: 7px;
   overflow-y: auto;
   z-index: 9999;
 }
@@ -2565,8 +2565,21 @@ h3 {
 }
 
 .year-header-actions {
-  justify-content: center;
-  margin: 0 auto 12px;
+  justify-content: right;
+
+  display: flex;
+  /* justify-content: space-between; */
+  align-items: center;
+  /* background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px); */
+
+  margin: 0 auto 4px;
+    border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px;
+  background: var(--surface);
+  box-shadow: var(--shadow-soft);
 }
 
 .icon-btn-labeled {
@@ -2592,7 +2605,11 @@ h3 {
   background: rgba(36, 16, 57, 0.38);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  padding: 18px;
+  /* padding: 18px; */
+}
+
+#monthExportOverlay.overlay {
+  place-items: center;
 }
 
 #monthExportOverlay .modal,
@@ -2656,7 +2673,7 @@ h3 {
 
 .month-preview-header {
   margin: 0 0 2px;
-  padding: 10px;
+  padding: 7px;
 
   display: flex;
   align-items: center;
@@ -2682,7 +2699,7 @@ h3 {
   margin: 0;
 
   color: var(--accent-ink);
-  font-size: 14px;
+  font-size: 17px;
   font-weight: 800;
   line-height: 1;
 
@@ -2791,7 +2808,7 @@ h3 {
 
 .export-title {
   color: #241039;
-  font-size: 15px;
+  font-size: 20px;
   font-weight: 800;
   line-height: 1;
 }
@@ -2879,6 +2896,8 @@ h3 {
   font-size: 8px;
   font-weight: 800;
   line-height: 1;
+  display: flex;
+  justify-content: center;
 }
 
 /* =========================
@@ -2918,7 +2937,7 @@ h3 {
 
 #monthExportCard .export-title {
   color: #241039;
-  font-size: 15px;
+  font-size: 20px;
   font-weight: 800;
   line-height: 1;
 }
@@ -2932,7 +2951,7 @@ h3 {
 
   color: rgba(36, 16, 57, 0.52);
   font-family: var(--font-alt);
-  font-size: 8px;
+  font-size: 12px;
   font-weight: 800;
   line-height: 1;
 }
@@ -3159,7 +3178,7 @@ h3 {
   aspect-ratio: auto;
 
   margin: 0 auto;
-  padding: 10px;
+  padding: 7px;
 
   border-radius: 18px;
 
@@ -3168,7 +3187,7 @@ h3 {
   box-shadow:
     0 14px 30px rgba(36, 16, 57, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.86);
-
+  position: relative;
   overflow: hidden;
   font-family: var(--font-main);
 }
@@ -3184,7 +3203,7 @@ h3 {
 
 #yearExportPreviewCard .export-title {
   color: #241039;
-  font-size: 15px;
+  font-size: 22px;
   font-weight: 800;
   line-height: 1;
 }
@@ -3198,7 +3217,7 @@ h3 {
 
   color: rgba(36, 16, 57, 0.52);
   font-family: var(--font-alt);
-  font-size: 8px;
+  font-size: 13px;
   font-weight: 800;
   line-height: 1;
 }
@@ -3217,16 +3236,12 @@ h3 {
   align-items: center;
   justify-content: center;
 
-  background: rgba(255, 255, 255, 0.34);
-  border: 1px solid rgba(255, 255, 255, 0.52);
-
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.56);
+  background: rgba(255, 255, 255, 0.32);
   overflow: hidden;
 }
 
 #yearExportPreviewCard .export-year-flat-day.is-empty {
   background: rgba(255, 255, 255, 0.12);
-  border: 1px dashed rgba(36, 16, 57, 0.12);
 }
 
 #yearExportPreviewCard .export-year-flat-day img {
@@ -3236,14 +3251,23 @@ h3 {
 }
 
 #yearExportPreviewCard .export-footer {
+  position: absolute;
+  left: 50%;
+  right: auto;
+  bottom: 9px;
+  transform: translateX(-50%);
+
   height: auto;
-  margin-top: 7px;
+  margin: 0;
+
+  display: block;
 
   color: rgba(36, 16, 57, 0.46);
   font-family: var(--font-alt);
-  font-size: 8px;
+  font-size: 13px;
   font-weight: 800;
   line-height: 1;
+  white-space: nowrap;
 }
 
 /* Hidden full-size year download source */
@@ -3259,7 +3283,7 @@ h3 {
   z-index: -1;
 
   margin: 0;
-  padding: 40px;
+  padding: 16px 16px 6px 16px;
   box-sizing: border-box;
 
   border-radius: 0;
@@ -3276,11 +3300,13 @@ h3 {
   display: flex;
   flex-direction: column;
   font-family: "Truculenta", sans-serif;
+
+  overflow: hidden;
 }
 
 #yearExportCard.export-card-download .export-header {
-  height: 140px;
-  margin-bottom: 0;
+  height: auto;
+  margin-bottom: 14px;
 
   display: flex;
   justify-content: space-between;
@@ -3288,23 +3314,23 @@ h3 {
 }
 
 #yearExportCard.export-card-download .export-title {
-  font-size: 64px;
+  font-size: 52px;
   font-weight: 800;
   color: #241039;
   line-height: 1;
 }
 
 #yearExportCard.export-card-download .export-count {
-  font-size: 24px;
-  padding: 10px 20px;
+  font-size: 28px;
+  padding: 7px 14px;
 
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.5);
-  border: none;
+  background: rgba(255, 255, 255, 0.36);
+  border: 1px solid rgba(255, 255, 255, 0.5);
 
-  color: #241039;
-  font-family: "Truculenta", sans-serif;
-  font-weight: 500;
+  color: rgba(36, 16, 57, 0.52);
+  font-family: var(--font-alt);
+  font-weight: 800;
   line-height: 1;
 }
 
@@ -3326,13 +3352,12 @@ h3 {
   justify-content: center;
 
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.32);
   overflow: hidden;
 }
 
 #yearExportCard.export-card-download .export-year-flat-day.is-empty {
   background: rgba(255, 255, 255, 0.12);
-  border: 2px dashed rgba(36, 16, 57, 0.12);
 }
 
 #yearExportCard.export-card-download .export-year-flat-day img {
@@ -3342,14 +3367,38 @@ h3 {
 }
 
 #yearExportCard.export-card-download .export-footer {
-  height: 60px;
-  margin-top: 0;
+  position: absolute;
+  left: 39%;
+  right: auto;
+  bottom: 22px;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  height: auto;
+  margin: 0;
 
-  font-size: 20px;
-  font-weight: 500;
-  color: rgba(36, 16, 57, 0.55);
+  display: block;
+
+  padding: 0;
+
+  color: rgba(36, 16, 57, 0.46);
+  font-family: var(--font-alt);
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
 }
+
+/* =========================
+   TEMP: Show year download card for styling
+   Remove or comment out when done
+========================= */
+
+/* body.debug-year-export #yearExportCard.export-card-download {
+  position: relative;
+  left: auto;
+  top: auto;
+  z-index: 1;
+  margin: 24px auto;
+  transform: scale(0.35);
+  transform-origin: top center;
+  margin-bottom: -850px;
+} */

@@ -123,6 +123,7 @@ async function init() {
   await loadStickers();
   wireEvents();
   render();
+  // renderYearExportCard("download"); for testing/styling only
   scheduleSharePreparation();
 }
 
