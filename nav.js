@@ -91,9 +91,16 @@ function isDailyStickyInstalled() {
   );
 }
 
-function showInstallPromptBanner() {
+function showInstallPromptBanner(options = {}) {
   if (isInstallPromptDismissed()) return;
   if (isDailyStickyInstalled()) return;
+
+  const minStickeredDays = options.minStickeredDays || 0;
+  const stickeredDays = Number(options.stickeredDays || 0);
+  const isReturningVisitor = options.isReturningVisitor === true;
+
+  if (!isReturningVisitor) return;
+  if (stickeredDays < minStickeredDays) return;
 
   const installPrompt = document.getElementById("installPrompt");
   if (!installPrompt) return;

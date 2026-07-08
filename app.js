@@ -1034,8 +1034,16 @@ function maybeShowInstallPromptAfterNoteFlow() {
   if (pendingWeeklyRecapDayKey) return;
   if (weeklyRecapIsShowing) return;
 
+  const hasSeenWelcomeCard = localStorage.getItem(WELCOME_CARD_KEY) === "true";
+
+  const stickeredDays = Object.keys(state.placements || {}).length;
+
   if (typeof window.showDailyStickyInstallPrompt === "function") {
-    window.showDailyStickyInstallPrompt();
+    window.showDailyStickyInstallPrompt({
+      isReturningVisitor: hasSeenWelcomeCard,
+      stickeredDays,
+      minStickeredDays: 2,
+    });
   }
 }
 
