@@ -629,39 +629,41 @@ function renderYear() {
   const wrapper = document.createElement("div");
   wrapper.className = "yearViewWrap";
 
-  const header = document.createElement("div");
-  header.className = "yearHeader";
-  header.innerHTML = `
-  <h2>${year}</h2>
-  <span class="yearHeaderDivider">|</span>
-  <div class="small">${stickeredCount} days stickered</div>
-`;
+  const yearCard = document.createElement("div");
+  yearCard.className = "card yearCard";
 
-  const storiesLink = document.createElement("div");
-  storiesLink.className = "header-icon-actions year-header-actions";
-  storiesLink.innerHTML = `
-  <button id="openYearExportBtn" class="btn icon-btn image-btn icon-btn-labeled" aria-label="View year export">
-  <img src="/calendar-download.svg" alt="" />
-  <span>Year</span>
-  </button>
-<a class="btn icon-btn image-btn icon-btn-labeled" href="/notes.html" aria-label="View sticker stories">
-  <img src="/open-book-round.svg" alt="" />
-  <span>Stories</span>
-  </a>
-`;
+  const header = document.createElement("div");
+  header.className = "header-icon-actions year-header-actions";
+  header.innerHTML = `
+    <h2>${year}</h2>
+
+    <div class="year-sticker-count">
+      ${stickeredCount} days stickered
+    </div>
+
+    <div class="year-action-buttons">
+      <button id="openYearExportBtn" class="btn icon-btn image-btn icon-btn-labeled" aria-label="View year export">
+        <img src="/calendar-download.svg" alt="" />
+        <span>Year</span>
+      </button>
+
+      <a class="btn icon-btn image-btn icon-btn-labeled" href="/notes.html" aria-label="View sticker stories">
+        <img src="/open-book-round.svg" alt="" />
+        <span>Stories</span>
+      </a>
+    </div>
+  `;
 
   const grid = document.createElement("div");
   grid.className = "yearGrid";
 
-  // wrapper.appendChild(header);
-  wrapper.appendChild(storiesLink);
-  wrapper.appendChild(grid);
+  yearCard.appendChild(header);
+  yearCard.appendChild(grid);
+  wrapper.appendChild(yearCard);
 
   for (let month = 0; month < 12; month++) {
     const card = document.createElement("div");
     card.className = "miniMonth";
-
-    const monthNumber = pad2(month + 1);
 
     const monthTop = document.createElement("div");
     monthTop.className = "miniMonthTop";
@@ -702,6 +704,7 @@ function renderYear() {
       cell.appendChild(num);
 
       const stickerId = state.placements[key];
+
       if (stickerId && stickerById.has(stickerId)) {
         const sticker = stickerById.get(stickerId);
         const img = document.createElement("img");
@@ -714,8 +717,6 @@ function renderYear() {
 
       cell.addEventListener("click", () => {
         state.month = month;
-        /*  state.view =
-          "month"; this switches to month view when modifying in year view; currently OFF*/
         saveState(state);
         render();
         openModal(key);
