@@ -122,6 +122,7 @@ async function init() {
   populateMonthYearSelects();
   await loadStickers();
   wireEvents();
+  wireYearPreviewBulge();
   render();
   // renderYearExportCard("download"); for testing/styling only
   scheduleSharePreparation();
@@ -953,6 +954,303 @@ function openYearExportPreview() {
 
 function closeYearExportPreview() {
   yearExportOverlay.classList.add("hidden");
+}
+
+function wireYearPreviewBulge() {
+  const grid = document.getElementById("yearExportPreviewGrid");
+
+  if (!grid) return;
+
+  const BULGE_RADIUS = 80;
+  const MAX_SCALE = 2.9;
+  const MAX_PUSH = 18;
+
+  // Higher = the bubble trail hangs around longer.
+  const FADE_DURATION = 300;
+
+  // Lower = smoother but slightly more delayed.
+  const POINTER_SMOOTHING = 0.22;
+
+  // Prevents the main sticker from switching too easily.
+  const FOCUS_SWITCH_MARGIN = 6;
+
+  let pointerX = 0;
+  let pointerY = 0;
+  let targetPointerX = 0;
+  let targetPointerY = 0;
+
+  let pointerActive = false;
+  let animationFrame = null;
+  let previousTime = performance.now();
+  let cellMeasurements = [];
+  let focusedCell = null;
+
+  const cellStates = new WeakMap();
+
+  function getCellState(cell) {
+    if (!cellStates.has(cell)) {
+      cellStates.set(cell, {
+        strength: 0,
+        pushX: 0,
+        pushY: 0,
+      });
+    }
+
+    return cellStates.get(cell);
+  }
+
+  function smoothstep(edgeStart, edgeEnd, value) {
+    const normalized = Math.min(
+      1,
+      Math.max(0, (value - edgeStart) / (edgeEnd - edgeStart)),
+    );
+
+    return normalized * normalized * (3 - 2 * normalized);
+  }
+
+  function getZoneMultiplier(normalizedDistance) {
+    /*
+     * Smoothly transitions from:
+     * center: 1
+     * immediate surroundings: 0.72
+     * outer area: 0.5
+     *
+     * There are no abrupt threshold changes.
+     */
+
+    const centerToMiddle = smoothstep(0.08, 0.42, normalizedDistance);
+
+    const middleToOuter = smoothstep(0.42, 1, normalizedDistance);
+
+    const middleMultiplier = 1 + (0.72 - 1) * centerToMiddle;
+
+    return middleMultiplier + (0.5 - middleMultiplier) * middleToOuter;
+  }
+
+  function measureCells() {
+    cellMeasurements = Array.from(
+      grid.querySelectorAll(".export-year-flat-day"),
+    ).map((cell) => {
+      const rect = cell.getBoundingClientRect();
+
+      return {
+        cell,
+        centerX: rect.left + rect.width / 2,
+        centerY: rect.top + rect.height / 2,
+      };
+    });
+  }
+
+  function updateFocusedCell() {
+    if (!cellMeasurements.length) return;
+
+    let nearestMeasurement = null;
+    let nearestDistance = Infinity;
+
+    cellMeasurements.forEach((measurement) => {
+      const distance = Math.hypot(
+        measurement.centerX - pointerX,
+        measurement.centerY - pointerY,
+      );
+
+      if (distance < nearestDistance) {
+        nearestDistance = distance;
+        nearestMeasurement = measurement;
+      }
+    });
+
+    if (!nearestMeasurement) return;
+
+    if (!focusedCell) {
+      focusedCell = nearestMeasurement.cell;
+      return;
+    }
+
+    const currentMeasurement = cellMeasurements.find(
+      ({ cell }) => cell === focusedCell,
+    );
+
+    if (!currentMeasurement) {
+      focusedCell = nearestMeasurement.cell;
+      return;
+    }
+
+    const currentDistance = Math.hypot(
+      currentMeasurement.centerX - pointerX,
+      currentMeasurement.centerY - pointerY,
+    );
+
+    /*
+     * Only switch focus when the new cell is clearly closer.
+     * This prevents rapid back-and-forth switching near boundaries.
+     */
+    if (
+      nearestMeasurement.cell !== focusedCell &&
+      nearestDistance + FOCUS_SWITCH_MARGIN < currentDistance
+    ) {
+      focusedCell = nearestMeasurement.cell;
+    }
+  }
+
+  function startAnimation() {
+    if (animationFrame) return;
+
+    previousTime = performance.now();
+    animationFrame = requestAnimationFrame(updateBulge);
+  }
+
+  function updateBulge(currentTime) {
+    animationFrame = null;
+
+    const elapsed = Math.min(currentTime - previousTime, 40);
+    previousTime = currentTime;
+
+    if (pointerActive) {
+      pointerX += (targetPointerX - pointerX) * POINTER_SMOOTHING;
+
+      pointerY += (targetPointerY - pointerY) * POINTER_SMOOTHING;
+
+      updateFocusedCell();
+    }
+
+    const decay = Math.exp(-elapsed / FADE_DURATION);
+
+    let anythingStillBulging = false;
+
+    cellMeasurements.forEach(({ cell, centerX, centerY }) => {
+      const state = getCellState(cell);
+
+      const deltaX = centerX - pointerX;
+      const deltaY = centerY - pointerY;
+      const distance = Math.hypot(deltaX, deltaY);
+
+      let targetStrength = 0;
+      let targetPushX = 0;
+      let targetPushY = 0;
+
+      if (pointerActive && distance < BULGE_RADIUS) {
+        const normalizedDistance = distance / BULGE_RADIUS;
+
+        const baseStrength = Math.pow(1 - normalizedDistance, 2);
+
+        const zoneMultiplier = getZoneMultiplier(normalizedDistance);
+
+        targetStrength = baseStrength * zoneMultiplier;
+
+        /*
+         * Keep the selected main sticker slightly more pronounced,
+         * without abruptly changing all nearby sticker strengths.
+         */
+        if (cell === focusedCell) {
+          targetStrength = Math.min(1, targetStrength * 1.12);
+        }
+
+        if (distance > 0) {
+          targetPushX = (deltaX / distance) * MAX_PUSH * targetStrength;
+
+          targetPushY = (deltaY / distance) * MAX_PUSH * targetStrength;
+        }
+      }
+
+      if (targetStrength >= state.strength) {
+        state.strength = targetStrength;
+        state.pushX = targetPushX;
+        state.pushY = targetPushY;
+      } else {
+        state.strength *= decay;
+        state.pushX *= decay;
+        state.pushY *= decay;
+      }
+
+      if (state.strength < 0.002) {
+        state.strength = 0;
+        state.pushX = 0;
+        state.pushY = 0;
+      }
+
+      const scale = 1 + (MAX_SCALE - 1) * state.strength;
+
+      cell.style.transform = `
+        translate3d(${state.pushX}px, ${state.pushY}px, 0)
+        scale(${scale})
+      `;
+
+      /*
+       * Fewer z-index levels means less frame-to-frame
+       * reordering of overlapping stickers.
+       */
+      cell.style.zIndex = String(Math.max(1, Math.round(state.strength * 20)));
+
+      cell.style.setProperty("--bulge-strength", state.strength.toFixed(3));
+
+      if (state.strength > 0) {
+        anythingStillBulging = true;
+      }
+    });
+
+    if (pointerActive || anythingStillBulging) {
+      animationFrame = requestAnimationFrame(updateBulge);
+    } else {
+      grid.classList.remove("is-bulging");
+      cellMeasurements = [];
+      focusedCell = null;
+    }
+  }
+
+  function updatePointer(event) {
+    targetPointerX = event.clientX;
+    targetPointerY = event.clientY - 42;
+
+    startAnimation();
+  }
+
+  grid.addEventListener("pointerdown", (event) => {
+    pointerActive = true;
+    focusedCell = null;
+
+    grid.classList.add("is-bulging");
+
+    measureCells();
+
+    pointerX = event.clientX;
+    pointerY = event.clientY - 42;
+
+    targetPointerX = pointerX;
+    targetPointerY = pointerY;
+
+    updateFocusedCell();
+
+    grid.setPointerCapture?.(event.pointerId);
+
+    updatePointer(event);
+    event.preventDefault();
+  });
+
+  grid.addEventListener("pointermove", (event) => {
+    if (!pointerActive) return;
+
+    updatePointer(event);
+    event.preventDefault();
+  });
+
+  function endPointer(event) {
+    if (!pointerActive) return;
+
+    pointerActive = false;
+
+    if (
+      event?.pointerId !== undefined &&
+      grid.hasPointerCapture?.(event.pointerId)
+    ) {
+      grid.releasePointerCapture(event.pointerId);
+    }
+
+    startAnimation();
+  }
+
+  grid.addEventListener("pointerup", endPointer);
+  grid.addEventListener("pointercancel", endPointer);
+  grid.addEventListener("lostpointercapture", endPointer);
 }
 
 function closeModal(fromHistory = false) {

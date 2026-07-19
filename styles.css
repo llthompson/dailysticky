@@ -3444,3 +3444,100 @@ h3 {
   transform-origin: top center;
   margin-bottom: -850px;
 } */
+
+/* =========================
+   Year Preview Touch Bulge
+========================= */
+
+#yearExportPreviewGrid {
+  position: relative;
+  isolation: isolate;
+
+  /*
+   * Prevent the browser from scrolling or selecting content
+   * while the user drags across the year preview.
+   */
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  cursor: grab;
+}
+
+#yearExportPreviewGrid.is-bulging {
+  cursor: grabbing;
+}
+
+#yearExportPreviewGrid .export-year-flat-day {
+  position: relative;
+  z-index: 1;
+
+  /*
+   * The transform origin stays centered so each day appears
+   * to rise toward the user rather than stretching sideways.
+   */
+  transform-origin: center;
+  transform: translate3d(0, 0, 0) scale(1);
+
+  /*
+   * This transition creates the soft settling motion
+   * when the user's finger is released.
+   */
+  transition:
+    transform 900ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 900ms ease;
+
+  will-change: transform;
+}
+
+/*
+ * While the finger is moving, transforms update immediately.
+ * The transition returns only when the interaction ends.
+ */
+#yearExportPreviewGrid.is-bulging .export-year-flat-day {
+  /* transition:
+    transform 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 300ms ease; */
+  transition: none;
+}
+
+/*
+ * Subtle depth underneath the enlarged cells.
+ * There is no visible circular lens or bubble border.
+ */
+#yearExportPreviewGrid.is-bulging .export-year-flat-day {
+  filter: drop-shadow(
+    0 calc(1px + (var(--bulge-strength, 0) * 5px))
+      calc(1px + (var(--bulge-strength, 0) * 7px))
+      rgba(36, 16, 57, calc(var(--bulge-strength, 0) * 0.24))
+  );
+}
+
+#yearExportPreviewGrid .export-year-flat-day img {
+  pointer-events: none;
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+/*
+ * Allow enlarged days to overlap their neighbors instead of
+ * being clipped inside their original tiny squares.
+ */
+#yearExportPreviewCard .export-year-flat-grid,
+#yearExportPreviewCard .export-year-flat-day {
+  overflow: visible;
+}
+
+/*
+ * The outer card still contains the overall interaction so
+ * the preview cannot spill far outside the card.
+ */
+#yearExportPreviewCard {
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #yearExportPreviewGrid .export-year-flat-day {
+    transition: none;
+  }
+}
