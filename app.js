@@ -968,11 +968,17 @@ function wireYearPreviewBulge() {
   // Higher = the bubble trail hangs around longer.
   const FADE_DURATION = 300;
 
+  // Higher = growth ramps in more gradually instead of snapping.
+  const RISE_DURATION = 90;
+
   // Lower = smoother but slightly more delayed.
   const POINTER_SMOOTHING = 0.22;
 
   // Prevents the main sticker from switching too easily.
   const FOCUS_SWITCH_MARGIN = 6;
+
+  // Minimum time between focus switches, prevents flicker near boundaries.
+  const FOCUS_SWITCH_COOLDOWN = 120;
 
   let pointerX = 0;
   let pointerY = 0;
@@ -984,6 +990,7 @@ function wireYearPreviewBulge() {
   let previousTime = performance.now();
   let cellMeasurements = [];
   let focusedCell = null;
+  let lastFocusSwitchTime = 0;
 
   const cellStates = new WeakMap();
 
@@ -1079,16 +1086,18 @@ function wireYearPreviewBulge() {
       currentMeasurement.centerX - pointerX,
       currentMeasurement.centerY - pointerY,
     );
-
     /*
-     * Only switch focus when the new cell is clearly closer.
+     * Only switch focus when the new cell is clearly closer,
+     * and enough time has passed since the last switch.
      * This prevents rapid back-and-forth switching near boundaries.
      */
     if (
       nearestMeasurement.cell !== focusedCell &&
-      nearestDistance + FOCUS_SWITCH_MARGIN < currentDistance
+      nearestDistance + FOCUS_SWITCH_MARGIN < currentDistance &&
+      performance.now() - lastFocusSwitchTime > FOCUS_SWITCH_COOLDOWN
     ) {
       focusedCell = nearestMeasurement.cell;
+      lastFocusSwitchTime = performance.now();
     }
   }
 
@@ -1113,7 +1122,8 @@ function wireYearPreviewBulge() {
       updateFocusedCell();
     }
 
-    const decay = Math.exp(-elapsed / FADE_DURATION);
+    const riseDecay = Math.exp(-elapsed / RISE_DURATION);
+    const fallDecay = Math.exp(-elapsed / FADE_DURATION);
 
     let anythingStillBulging = false;
 
@@ -1152,15 +1162,19 @@ function wireYearPreviewBulge() {
         }
       }
 
-      if (targetStrength >= state.strength) {
-        state.strength = targetStrength;
-        state.pushX = targetPushX;
-        state.pushY = targetPushY;
-      } else {
-        state.strength *= decay;
-        state.pushX *= decay;
-        state.pushY *= decay;
-      }
+      /*
+       * Always ease toward the target instead of snapping. Growth
+       * uses a short time constant (responsive), shrinking uses a
+       * longer one (lingering trail). Neither path ever jumps
+       * instantly, which is what caused the flicker.
+       */
+      const isGrowing = targetStrength >= state.strength;
+      const smoothing = isGrowing ? riseDecay : fallDecay;
+
+      state.strength =
+        targetStrength + (state.strength - targetStrength) * smoothing;
+      state.pushX = targetPushX + (state.pushX - targetPushX) * smoothing;
+      state.pushY = targetPushY + (state.pushY - targetPushY) * smoothing;
 
       if (state.strength < 0.002) {
         state.strength = 0;
@@ -1168,18 +1182,21 @@ function wireYearPreviewBulge() {
         state.pushY = 0;
       }
 
-      const scale = 1 + (MAX_SCALE - 1) * state.strength;
+      const scale = +(1 + (MAX_SCALE - 1) * state.strength).toFixed(2);
+      const pushX = +state.pushX.toFixed(1);
+      const pushY = +state.pushY.toFixed(1);
 
       cell.style.transform = `
-        translate3d(${state.pushX}px, ${state.pushY}px, 0)
+        translate3d(${pushX}px, ${pushY}px, 0)
         scale(${scale})
       `;
 
       /*
-       * Fewer z-index levels means less frame-to-frame
-       * reordering of overlapping stickers.
+       * Z-index is tied only to focus state, not the continuously
+       * fluctuating strength value. This prevents overlapping stickers
+       * from flickering as their stacking order flips every frame.
        */
-      cell.style.zIndex = String(Math.max(1, Math.round(state.strength * 20)));
+      cell.style.zIndex = cell === focusedCell ? "30" : "1";
 
       cell.style.setProperty("--bulge-strength", state.strength.toFixed(3));
 
@@ -1198,8 +1215,15 @@ function wireYearPreviewBulge() {
   }
 
   function updatePointer(event) {
-    targetPointerX = event.clientX;
-    targetPointerY = event.clientY - 42;
+    const newX = event.clientX;
+    const newY = event.clientY - 42;
+
+    if (Math.hypot(newX - targetPointerX, newY - targetPointerY) < 1.5) {
+      return;
+    }
+
+    targetPointerX = newX;
+    targetPointerY = newY;
 
     startAnimation();
   }
