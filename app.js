@@ -122,7 +122,8 @@ async function init() {
   populateMonthYearSelects();
   await loadStickers();
   wireEvents();
-  wireYearPreviewBulge();
+  wireGridBulge("yearExportPreviewGrid", ".export-year-flat-day");
+  wireGridBulge("monthExportPreviewGrid", ".export-month-day");
   render();
   // renderYearExportCard("download"); for testing/styling only
   scheduleSharePreparation();
@@ -956,8 +957,8 @@ function closeYearExportPreview() {
   yearExportOverlay.classList.add("hidden");
 }
 
-function wireYearPreviewBulge() {
-  const grid = document.getElementById("yearExportPreviewGrid");
+function wireGridBulge(gridId, cellSelector) {
+  const grid = document.getElementById(gridId);
 
   if (!grid) return;
 
@@ -1016,15 +1017,6 @@ function wireYearPreviewBulge() {
   }
 
   function getZoneMultiplier(normalizedDistance) {
-    /*
-     * Smoothly transitions from:
-     * center: 1
-     * immediate surroundings: 0.72
-     * outer area: 0.5
-     *
-     * There are no abrupt threshold changes.
-     */
-
     const centerToMiddle = smoothstep(0.08, 0.42, normalizedDistance);
 
     const middleToOuter = smoothstep(0.42, 1, normalizedDistance);
@@ -1035,17 +1027,17 @@ function wireYearPreviewBulge() {
   }
 
   function measureCells() {
-    cellMeasurements = Array.from(
-      grid.querySelectorAll(".export-year-flat-day"),
-    ).map((cell) => {
-      const rect = cell.getBoundingClientRect();
+    cellMeasurements = Array.from(grid.querySelectorAll(cellSelector)).map(
+      (cell) => {
+        const rect = cell.getBoundingClientRect();
 
-      return {
-        cell,
-        centerX: rect.left + rect.width / 2,
-        centerY: rect.top + rect.height / 2,
-      };
-    });
+        return {
+          cell,
+          centerX: rect.left + rect.width / 2,
+          centerY: rect.top + rect.height / 2,
+        };
+      },
+    );
   }
 
   function updateFocusedCell() {
@@ -1086,6 +1078,7 @@ function wireYearPreviewBulge() {
       currentMeasurement.centerX - pointerX,
       currentMeasurement.centerY - pointerY,
     );
+
     /*
      * Only switch focus when the new cell is clearly closer,
      * and enough time has passed since the last switch.
@@ -1147,10 +1140,6 @@ function wireYearPreviewBulge() {
 
         targetStrength = baseStrength * zoneMultiplier;
 
-        /*
-         * Keep the selected main sticker slightly more pronounced,
-         * without abruptly changing all nearby sticker strengths.
-         */
         if (cell === focusedCell) {
           targetStrength = Math.min(1, targetStrength * 1.12);
         }
@@ -1162,12 +1151,6 @@ function wireYearPreviewBulge() {
         }
       }
 
-      /*
-       * Always ease toward the target instead of snapping. Growth
-       * uses a short time constant (responsive), shrinking uses a
-       * longer one (lingering trail). Neither path ever jumps
-       * instantly, which is what caused the flicker.
-       */
       const isGrowing = targetStrength >= state.strength;
       const smoothing = isGrowing ? riseDecay : fallDecay;
 
@@ -1191,11 +1174,6 @@ function wireYearPreviewBulge() {
         scale(${scale})
       `;
 
-      /*
-       * Z-index is tied only to focus state, not the continuously
-       * fluctuating strength value. This prevents overlapping stickers
-       * from flickering as their stacking order flips every frame.
-       */
       cell.style.zIndex = cell === focusedCell ? "30" : "1";
 
       cell.style.setProperty("--bulge-strength", state.strength.toFixed(3));
