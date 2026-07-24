@@ -1,0 +1,134 @@
+[
+  {
+    "id": "emoticon-a67",
+    "name": "Really shocked face",
+    "tags": ["shocked", "surprised", "wow", "omg", "stunned"],
+    "primaryCategory": "Stressed & Anxious",
+    "secondaryCategory": null,
+    "needsReview": true
+  },
+  {
+    "id": "emoticon-b30",
+    "name": "Smug mustache face",
+    "tags": ["smug", "satisfied", "cool", "confident", "mustache"],
+    "primaryCategory": "Joy & Fun",
+    "secondaryCategory": null,
+    "needsReview": true
+  },
+  {
+    "id": "emoticon-c57",
+    "name": "open smile",
+    "tags": ["happy", "smile", "joyful", "cheerful", "open mouth"],
+    "primaryCategory": "Joy & Fun",
+    "secondaryCategory": null,
+    "needsReview": true
+  },
+  {
+    "id": "emoticon-xtra3",
+    "name": "Flower blobs",
+    "tags": ["flowers", "abstract", "playful", "soft", "whimsical"],
+    "primaryCategory": "Joy & Fun",
+    "secondaryCategory": null,
+    "needsReview": true
+  },
+  {
+    "id": "emoticon-xtra18",
+    "name": "Exclamation mark black",
+    "tags": ["exclamation", "emphasis", "attention", "important", "omg"],
+    "primaryCategory": "Confused & Mixed",
+    "secondaryCategory": null,
+    "needsReview": true
+  },
+  {
+    "id": "emoticon-xtra27",
+    "name": "OK",
+    "tags": ["ok", "fine", "sure", "meh", "mixed"],
+    "primaryCategory": "Confused & Mixed",
+    "secondaryCategory": null,
+    "needsReview": true
+  },
+  {
+    "id": "emoticon-xtra59",
+    "name": "OK speech bubble",
+    "tags": ["ok", "fine", "sure", "meh", "mixed", "speech bubble"],
+    "primaryCategory": "Confused & Mixed",
+    "secondaryCategory": null,
+    "needsReview": true
+  },
+  {
+    "id": "emoticon-xtra60",
+    "name": "NG speech bubble",
+    "tags": ["ng", "no good", "speech bubble", "text", "negative"],
+    "primaryCategory": "Confused & Mixed",
+    "secondaryCategory": null,
+    "needsReview": true
+  },
+  {
+    "id": "exercise19",
+    "name": "Exercise towel",
+    "tags": ["exercise", "towel", "fitness", "workout", "gym"],
+    "primaryCategory": "Objects",
+    "secondaryCategory": null,
+    "needsReview": true
+  },
+  {
+    "id": "fun16",
+    "name": "Inner tubes",
+    "tags": ["swimming", "floaties", "playful", "pool", "beach"],
+    "primaryCategory": "Objects",
+    "secondaryCategory": null,
+    "needsReview": true
+  },
+  {
+    "id": "words7",
+    "name": "Plan",
+    "tags": ["plan", "planning", "organization", "you got this", "motivation"],
+    "primaryCategory": "Joy & Fun",
+    "secondaryCategory": null,
+    "needsReview": true
+  },
+  {
+    "id": "words13",
+    "name": "It Always Seems Impossible",
+    "tags": [
+      "motivational",
+      "inspirational",
+      "perseverance",
+      "quote",
+      "encouragement"
+    ],
+    "primaryCategory": "Joy & Fun",
+    "secondaryCategory": null,
+    "needsReview": true
+  },
+  {
+    "id": "words32",
+    "name": "Girls just wanna have human rights",
+    "tags": ["feminism", "women's rights", "empowerment", "activist", "quote"],
+    "primaryCategory": "Joy & Fun",
+    "secondaryCategory": null,
+    "needsReview": true
+  },
+  {
+    "id": "words55",
+    "name": "Not bossy",
+    "tags": ["leadership", "confidence", "humor", "empowerment", "attitude"],
+    "primaryCategory": "Joy & Fun",
+    "secondaryCategory": null,
+    "needsReview": true
+  },
+  {
+    "id": "words68",
+    "name": "Your vibe attracts your tribe",
+    "tags": [
+      "positivity",
+      "motivation",
+      "friendship",
+      "community",
+      "good vibes"
+    ],
+    "primaryCategory": "Joy & Fun",
+    "secondaryCategory": null,
+    "needsReview": true
+  }
+]
