@@ -1,3 +1,10 @@
+<!-- Admin interface for managing the Daily Sticky database including stickers and artists -->
+<!-- To prevent html from reloading with every change, run 
+ python3 -m http.server 8000
+ in the terminal and then load 
+  http://localhost:8000/sticker-admin-v3.html
+ in your browser. -->
+
 <!doctype html>
 <html lang="en">
   <head>
@@ -146,6 +153,22 @@
 
       .filter-row select {
         width: auto;
+        flex: 1;
+      }
+
+      .bulk-select-row {
+        align-items: center;
+      }
+
+      .select-all-label {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 13px;
+        white-space: nowrap;
+      }
+
+      .bulk-select-row #bulkEditSelectedBtn {
         flex: 1;
       }
 
@@ -580,6 +603,15 @@
               <option value="artist">Artist stickers</option>
             </select>
           </div>
+          <div class="filter-row bulk-select-row">
+            <label class="select-all-label">
+              <input type="checkbox" id="selectAllVisibleCheck" /> All
+            </label>
+            <button id="bulkEditSelectedBtn" disabled>
+              Bulk edit selected (0)
+            </button>
+            <button id="clearBulkEditBtn" disabled>Clear</button>
+          </div>
         </div>
         <div class="sticker-list" id="stickerList"></div>
       </div>
@@ -623,6 +655,29 @@
       let stickerCache = [];
       let artistCache = [];
       let bulkRows = [];
+      let bulkEditIds = new Set();
+      let bulkEditRows = [];
+
+      let visibleStickerIds = [];
+
+      function updateBulkEditButton() {
+        const btn = $("bulkEditSelectedBtn");
+        const clearBtn = $("clearBulkEditBtn");
+        const selectAll = $("selectAllVisibleCheck");
+        if (!btn) return;
+
+        btn.textContent = `Bulk edit selected (${bulkEditIds.size})`;
+        btn.disabled = bulkEditIds.size === 0;
+
+        if (clearBtn) clearBtn.disabled = bulkEditIds.size === 0;
+
+        if (selectAll) {
+          const allVisibleSelected =
+            visibleStickerIds.length > 0 &&
+            visibleStickerIds.every((id) => bulkEditIds.has(id));
+          selectAll.checked = allVisibleSelected;
+        }
+      }
       let stickerDirHandle = null;
       const supportsFSAccess = "showDirectoryPicker" in window;
 
@@ -723,6 +778,8 @@
 
         $("statusText").textContent =
           `${filtered.length} of ${stickerCache.length} stickers`;
+        visibleStickerIds = filtered.map((s) => s.id);
+        updateBulkEditButton();
 
         const list = $("stickerList");
         list.innerHTML = "";
@@ -732,6 +789,7 @@
           row.className =
             "sticker-row" + (s.id === selectedStickerId ? " active" : "");
           row.innerHTML = `
+      <input type="checkbox" class="bulk-edit-check" data-id="${s.id}" ${bulkEditIds.has(s.id) ? "checked" : ""} />
       <div class="thumb"><img src="./stickers/${s.file}" onerror="this.style.display='none'" /></div>
       <div class="meta">
         <div class="name">${s.name || s.id}</div>
@@ -740,6 +798,14 @@
       ${s.needs_review ? '<span class="badge review">review</span>' : ""}
       ${!s.active ? '<span class="badge inactive">off</span>' : ""}
     `;
+          row
+            .querySelector(".bulk-edit-check")
+            .addEventListener("click", (e) => {
+              e.stopPropagation();
+              if (e.target.checked) bulkEditIds.add(s.id);
+              else bulkEditIds.delete(s.id);
+              updateBulkEditButton();
+            });
           row.addEventListener("click", () => selectSticker(s.id));
           list.appendChild(row);
         });
@@ -1002,10 +1068,11 @@
         const main = $("mainPanel");
         main.innerHTML = `
     <div class="form-card">
-      <h2>Artists</h2>
+      <h2>Daily Sticky Artists</h2>
       <div id="artistList"></div>
       <div id="artistPanel">
         <div class="field">
+          <h2>Add New Artist</h2>
           <label>Name</label>
           <input type="text" id="a_name" placeholder="Artist name" />
         </div>
@@ -1023,6 +1090,8 @@
           <label>Website URL</label>
           <input type="text" id="a_web" placeholder="https://..." />
         </div>
+        <label>Artist Bio</label>
+        <textarea id="a_bio" placeholder="Write a short bio for the artist..."></textarea>
         <div class="form-actions">
           <div></div>
           <div class="right">
@@ -1077,6 +1146,10 @@
       <div class="field">
         <label>Website URL</label>
         <div>${artist.website_url ? `<a href="${artist.website_url}" target="_blank">${artist.website_url}</a>` : "—"}</div>
+      </div>
+      <div class="field">
+        <label>Bio</label>
+        <div>${artist.bio || "—"}</div>
       </div>
 
       <div class="field">
@@ -1285,7 +1358,7 @@
       </div>
 
       <div class="bulk-toolbar">
-        <label><input type="checkbox" id="bulkSelectAll" /> Select all</label>
+        <label><input type="checkbox" id="bulkSelectAll" />All</label>
         <span class="sep">|</span>
         <span>Apply to selected:</span>
 
@@ -1561,6 +1634,199 @@
         }
       }
 
+      function renderBulkEditView() {
+        selectedStickerId = null;
+
+        bulkEditRows = stickerCache
+          .filter((s) => bulkEditIds.has(s.id))
+          .map((s) => ({
+            id: s.id,
+            file: s.file,
+            name: s.name || "",
+            tags: s.tag_list || "",
+            primary: s.primary_category || "",
+            secondary: s.secondary_category || "",
+            artist: s.artist_id || "",
+            active: !!s.active,
+            selected: false,
+          }));
+
+        renderBulkEditTable();
+      }
+
+      function renderBulkEditTable() {
+        const main = $("mainPanel");
+
+        const artistOptions = (selected) => `
+    <option value="">— Artist —</option>
+    ${artistCache.map((a) => `<option value="${a.id}" ${a.id === selected ? "selected" : ""}>${a.name}</option>`).join("")}
+  `;
+
+        const rowsHtml = bulkEditRows
+          .map(
+            (r, i) => `
+    <tr>
+      <td><input type="checkbox" data-idx="${i}" class="be-select" ${r.selected ? "checked" : ""} /></td>
+      <td><div class="thumb"><img src="./stickers/${r.file}" onerror="this.style.display='none'" /></div></td>
+      <td>${r.id}</td>
+      <td><input type="text" data-idx="${i}" data-field="name" value="${r.name}" /></td>
+      <td><input type="text" data-idx="${i}" data-field="tags" value="${r.tags}" /></td>
+      <td><select data-idx="${i}" data-field="primary">${categoryOptionsHtml(r.primary)}</select></td>
+      <td><select data-idx="${i}" data-field="secondary">${categoryOptionsHtml(r.secondary)}</select></td>
+      <td><select data-idx="${i}" data-field="artist">${artistOptions(r.artist)}</select></td>
+      <td><input type="checkbox" data-idx="${i}" data-field="active" ${r.active ? "checked" : ""} /></td>
+      <td><button class="remove-row" data-idx="${i}">Remove</button></td>
+    </tr>
+  `,
+          )
+          .join("");
+
+        main.innerHTML = `
+    <div class="bulk-wrap">
+      <div class="bulk-toolbar">
+        <label><input type="checkbox" id="beSelectAll" /> Select all</label>
+        <span class="sep">|</span>
+        <span>Apply to selected:</span>
+<select id="beApplyPrimary">
+          <option value="__nochange__" selected>Primary</option>
+          ${categoryOptionsHtml("")}
+        </select>
+        <select id="beApplySecondary">
+          <option value="__nochange__" selected>Secondary</option>
+          ${categoryOptionsHtml("")}
+        </select>
+        <select id="beApplyArtist">
+          <option value="__nochange__" selected>Artist</option>
+          ${artistOptions("")}
+        </select>
+        <input type="text" id="beApplyTag" placeholder="add tag" style="width:120px" />
+        <button id="beApplyAllBtn" class="primary">Apply all to selected</button>
+      </div>
+
+      <div class="bulk-table-wrap">
+        <table class="bulk-table">
+          <thead>
+            <tr>
+              <th></th><th></th><th>ID</th><th>Name</th><th>Tags</th>
+              <th>Primary</th><th>Secondary</th><th>Artist</th><th>Active</th><th></th>
+            </tr>
+          </thead>
+          <tbody>${rowsHtml}</tbody>
+        </table>
+      </div>
+
+      <div class="form-actions">
+        <button id="beCancelBtn">Cancel</button>
+        <div class="right">
+          <span class="hint" style="align-self:center">${bulkEditRows.length} sticker(s) in batch</span>
+          <button class="primary" id="beCommitBtn">Save all changes</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+        document.querySelectorAll("[data-field]").forEach((el) => {
+          const evt =
+            el.type === "checkbox" || el.tagName === "SELECT"
+              ? "change"
+              : "input";
+          el.addEventListener(evt, () => {
+            const idx = Number(el.dataset.idx);
+            bulkEditRows[idx][el.dataset.field] =
+              el.type === "checkbox" ? el.checked : el.value;
+          });
+        });
+
+        document.querySelectorAll(".be-select").forEach((el) => {
+          el.addEventListener("change", () => {
+            bulkEditRows[Number(el.dataset.idx)].selected = el.checked;
+          });
+        });
+
+        document.querySelectorAll(".remove-row").forEach((el) => {
+          el.addEventListener("click", () => {
+            const idx = Number(el.dataset.idx);
+            bulkEditIds.delete(bulkEditRows[idx].id);
+            bulkEditRows.splice(idx, 1);
+            renderBulkEditTable();
+          });
+        });
+
+        $("beSelectAll").addEventListener("change", (e) => {
+          bulkEditRows.forEach((r) => (r.selected = e.target.checked));
+          renderBulkEditTable();
+        });
+
+        $("beApplyAllBtn").addEventListener("click", () => {
+          const primary = $("beApplyPrimary").value;
+          const secondary = $("beApplySecondary").value;
+          const artist = $("beApplyArtist").value;
+          const tag = $("beApplyTag").value.trim();
+
+          bulkEditRows.forEach((r) => {
+            if (!r.selected) return;
+            if (primary !== "__nochange__") r.primary = primary;
+            if (secondary !== "__nochange__") r.secondary = secondary;
+            if (artist !== "__nochange__") r.artist = artist;
+            if (tag) {
+              const existing = r.tags
+                .split(",")
+                .map((t) => t.trim())
+                .filter(Boolean);
+              if (!existing.includes(tag)) existing.push(tag);
+              r.tags = existing.join(", ");
+            }
+          });
+
+          renderBulkEditTable();
+        });
+
+        $("beCancelBtn").addEventListener("click", () => {
+          bulkEditIds.clear();
+          bulkEditRows = [];
+          renderList();
+          renderEditForm();
+        });
+
+        $("beCommitBtn").addEventListener("click", commitBulkEdit);
+      }
+
+      function commitBulkEdit() {
+        const missingPrimary = bulkEditRows.some((r) => !r.primary);
+        if (missingPrimary) {
+          showToast("Every sticker needs a primary category");
+          return;
+        }
+
+        bulkEditRows.forEach((r) => {
+          exec(
+            `
+      UPDATE stickers SET name = ?, primary_category = ?, secondary_category = ?,
+        artist_id = ?, active = ?
+      WHERE id = ?
+    `,
+            [
+              r.name,
+              r.primary,
+              r.secondary || null,
+              r.artist || null,
+              r.active ? 1 : 0,
+              r.id,
+            ],
+          );
+          upsertTags(r.id, r.tags);
+        });
+
+        const count = bulkEditRows.length;
+        bulkEditIds.clear();
+        bulkEditRows = [];
+
+        loadCaches();
+        renderList();
+        renderEditForm();
+        showToast(`Updated ${count} sticker(s) — remember to download the .db`);
+      }
+
       function downloadDb() {
         const data = db.export();
         const blob = new Blob([data], { type: "application/octet-stream" });
@@ -1613,6 +1879,23 @@
       $("addStickerBtn").addEventListener("click", renderAddForm);
       $("manageArtistsBtn").addEventListener("click", renderArtistPanel);
       $("bulkImportBtn").addEventListener("click", renderBulkImportView);
+      $("bulkEditSelectedBtn").addEventListener("click", renderBulkEditView);
+
+      $("selectAllVisibleCheck").addEventListener("change", (e) => {
+        if (e.target.checked) {
+          visibleStickerIds.forEach((id) => bulkEditIds.add(id));
+        } else {
+          visibleStickerIds.forEach((id) => bulkEditIds.delete(id));
+        }
+        renderList();
+        updateBulkEditButton();
+      });
+
+      $("clearBulkEditBtn").addEventListener("click", () => {
+        bulkEditIds.clear();
+        renderList();
+        updateBulkEditButton();
+      });
       $("downloadBtn").addEventListener("click", downloadDb);
 
       initSql();
