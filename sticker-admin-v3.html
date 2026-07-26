@@ -227,7 +227,7 @@
       .main {
         flex: 1;
         overflow-y: auto;
-        padding: 22px 28px;
+        padding: 9px 9px;
       }
 
       .main .empty {
@@ -283,8 +283,47 @@
         background: var(--panel);
         border: 1px solid var(--border);
         border-radius: var(--radius);
-        padding: 22px;
+        padding: 14px;
         max-width: 640px;
+        flex-shrink: 0;
+      }
+
+      .edit-layout {
+        display: flex;
+        gap: 9px;
+        align-items: flex-start;
+      }
+
+      .sticker-preview {
+        position: sticky;
+        top: 22px;
+        flex: 1;
+        min-width: 0;
+        text-align: center;
+      }
+
+      .sticker-preview-img {
+        width: 100%;
+        height: calc(100vh - 190px);
+        border-radius: var(--radius);
+        background: var(--panel);
+        border: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px;
+      }
+
+      .sticker-preview-img img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+      }
+
+      .sticker-preview-label {
+        margin-top: 8px;
+        font-size: 12px;
+        color: var(--muted);
       }
 
       .form-card h2 {
@@ -345,6 +384,53 @@
       .artist-row button {
         padding: 4px 10px;
         font-size: 12px;
+      }
+
+      .artist-name-link {
+        cursor: pointer;
+        color: var(--accent-ink);
+        font-weight: 500;
+      }
+
+      .artist-name-link:hover {
+        text-decoration: underline;
+      }
+
+      .artist-sticker-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
+        gap: 10px;
+      }
+
+      .artist-sticker-tile {
+        cursor: pointer;
+        text-align: center;
+      }
+
+      .artist-sticker-tile .thumb {
+        width: 100%;
+        aspect-ratio: 1;
+        border-radius: 8px;
+        background: var(--bg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+
+      .artist-sticker-tile .thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      .artist-sticker-name {
+        font-size: 10px;
+        color: var(--muted);
+        margin-top: 3px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       .bulk-wrap {
@@ -675,6 +761,7 @@
         }
 
         main.innerHTML = `
+    <div class="edit-layout">
     <div class="form-card">
       <h2>Edit sticker</h2>
 
@@ -729,7 +816,13 @@
           <button id="cancelBtn">Cancel</button>
           <button class="primary" id="saveBtn">Save changes</button>
         </div>
-      </div>
+</div>
+    </div>
+
+    <div class="sticker-preview">
+      <div class="sticker-preview-img"><img src="./stickers/${s.file}" onerror="this.style.display='none'" /></div>
+      <p class="sticker-preview-label">${s.name || s.id}</p>
+    </div>
     </div>
   `;
 
@@ -944,14 +1037,78 @@
         artistCache.forEach((a) => {
           const row = document.createElement("div");
           row.className = "artist-row";
-          row.innerHTML = `<span>${a.name}</span><button data-id="${a.id}">Remove</button>`;
+          row.innerHTML = `
+      <span class="artist-name-link" data-id="${a.id}">${a.name}</span>
+      <button data-id="${a.id}" class="remove-artist-btn">Remove</button>
+    `;
           row
-            .querySelector("button")
+            .querySelector(".artist-name-link")
+            .addEventListener("click", () => renderArtistDetail(a.id));
+          row
+            .querySelector(".remove-artist-btn")
             .addEventListener("click", () => removeArtist(a.id));
           listEl.appendChild(row);
         });
 
         $("addArtistBtn").addEventListener("click", addArtist);
+      }
+
+      function renderArtistDetail(artistId) {
+        const artist = artistCache.find((a) => a.id === artistId);
+        if (!artist) return;
+
+        const linkedStickers = stickerCache.filter(
+          (s) => s.artist_id === artistId,
+        );
+
+        const main = $("mainPanel");
+        main.innerHTML = `
+    <div class="form-card">
+      <h2>${artist.name}</h2>
+
+      <div class="field">
+        <label>Store URL</label>
+        <div>${artist.store_url ? `<a href="${artist.store_url}" target="_blank">${artist.store_url}</a>` : "—"}</div>
+      </div>
+      <div class="field">
+        <label>Instagram URL</label>
+        <div>${artist.instagram_url ? `<a href="${artist.instagram_url}" target="_blank">${artist.instagram_url}</a>` : "—"}</div>
+      </div>
+      <div class="field">
+        <label>Website URL</label>
+        <div>${artist.website_url ? `<a href="${artist.website_url}" target="_blank">${artist.website_url}</a>` : "—"}</div>
+      </div>
+
+      <div class="field">
+        <label>Stickers (${linkedStickers.length})</label>
+        <div class="artist-sticker-grid">
+          ${
+            linkedStickers
+              .map(
+                (s) => `
+            <div class="artist-sticker-tile" data-id="${s.id}" title="${s.name || s.id}">
+              <div class="thumb"><img src="./stickers/${s.file}" onerror="this.style.display='none'" /></div>
+              <div class="artist-sticker-name">${s.name || s.id}</div>
+            </div>
+          `,
+              )
+              .join("") || `<div class="hint">No stickers linked yet.</div>`
+          }
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button id="backToArtistsBtn">← Back to artists</button>
+        <div></div>
+      </div>
+    </div>
+  `;
+
+        $("backToArtistsBtn").addEventListener("click", renderArtistPanel);
+
+        document.querySelectorAll(".artist-sticker-tile").forEach((tile) => {
+          tile.addEventListener("click", () => selectSticker(tile.dataset.id));
+        });
       }
 
       function addArtist() {
@@ -1131,14 +1288,23 @@
         <label><input type="checkbox" id="bulkSelectAll" /> Select all</label>
         <span class="sep">|</span>
         <span>Apply to selected:</span>
-        <select id="bulkApplyPrimary">${categoryOptionsHtml("")}</select>
+
         <button id="bulkApplyPrimaryBtn">Set primary</button>
-        <select id="bulkApplySecondary">${categoryOptionsHtml("")}</select>
+
+        <select id="bulkApplyPrimary">${categoryOptionsHtml("")}</select>
+
         <button id="bulkApplySecondaryBtn">Set secondary</button>
-        <select id="bulkApplyArtist">${artistOptions("")}</select>
+
+        <select id="bulkApplySecondary">${categoryOptionsHtml("")}</select>
+
         <button id="bulkApplyArtistBtn">Set artist</button>
+        <select id="bulkApplyArtist">${artistOptions("")}</select>
+
+     <button id="bulkApplyTagBtn">Add tag</button>
         <input type="text" id="bulkApplyTag" placeholder="add tag" style="width:120px" />
-        <button id="bulkApplyTagBtn">Add tag</button>
+
+        <span class="sep">|</span>
+        <button id="bulkApplyAllBtn" class="primary">Apply all to selected</button>
       </div>
 
       <div class="bulk-table-wrap">
@@ -1240,6 +1406,30 @@
             if (!existing.includes(tag)) existing.push(tag);
             r.tags = existing.join(", ");
           });
+          renderBulkTable();
+        });
+
+        $("bulkApplyAllBtn").addEventListener("click", () => {
+          const primary = $("bulkApplyPrimary").value;
+          const secondary = $("bulkApplySecondary").value;
+          const artist = $("bulkApplyArtist").value;
+          const tag = $("bulkApplyTag").value.trim();
+
+          bulkRows.forEach((r) => {
+            if (!r.selected) return;
+            if (primary) r.primary = primary;
+            r.secondary = secondary;
+            r.artist = artist;
+            if (tag) {
+              const existing = r.tags
+                .split(",")
+                .map((t) => t.trim())
+                .filter(Boolean);
+              if (!existing.includes(tag)) existing.push(tag);
+              r.tags = existing.join(", ");
+            }
+          });
+
           renderBulkTable();
         });
 
