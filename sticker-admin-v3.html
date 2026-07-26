@@ -1,0 +1,1438 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin Sticky</title>
+    <style>
+      :root {
+        --bg: #f7f3f6;
+        --panel: #ffffff;
+        --border: #e2e0da;
+        --ink: #26231c;
+        --muted: #857f72;
+        --accent: #7f77dd;
+        --accent-ink: #3c3489;
+        --danger: #d85a30;
+        --radius: 10px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+        font-size: 14px;
+      }
+
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 18px;
+        background: var(--panel);
+        border-bottom: 1px solid var(--border);
+      }
+
+      header h1 {
+        font-size: 16px;
+        margin: 0;
+        font-weight: 600;
+      }
+
+      header .status {
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .toolbar {
+        display: flex;
+        gap: 8px;
+      }
+
+      button {
+        font: inherit;
+        padding: 7px 14px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: var(--panel);
+        cursor: pointer;
+      }
+
+      button:hover {
+        background: #f0efe9;
+      }
+
+      button.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: white;
+      }
+
+      button.primary:hover {
+        background: var(--accent-ink);
+      }
+
+      button.danger {
+        color: var(--danger);
+        border-color: var(--danger);
+      }
+
+      button:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+
+      #dropzone {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 70vh;
+        gap: 12px;
+        color: var(--muted);
+      }
+
+      #dropzone input[type="file"] {
+        display: none;
+      }
+
+      #app {
+        display: none;
+        height: calc(100vh - 49px);
+      }
+      #app.visible {
+        display: flex;
+      }
+
+      .sidebar {
+        width: 340px;
+        min-width: 340px;
+        border-right: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        background: var(--panel);
+      }
+
+      .sidebar-controls {
+        padding: 10px 12px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      input[type="text"],
+      input[type="search"],
+      select,
+      textarea {
+        font: inherit;
+        padding: 7px 10px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: white;
+        width: 100%;
+      }
+
+      .filter-row {
+        display: flex;
+        gap: 6px;
+      }
+
+      .filter-row select {
+        width: auto;
+        flex: 1;
+      }
+
+      .sticker-list {
+        flex: 1;
+        overflow-y: auto;
+      }
+
+      .sticker-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 12px;
+        border-bottom: 1px solid var(--border);
+        cursor: pointer;
+      }
+
+      .sticker-row:hover {
+        background: #f5f4f0;
+      }
+      .sticker-row.active {
+        background: #eeedfb;
+      }
+
+      .sticker-row .thumb {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        background: var(--bg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        color: var(--muted);
+        flex-shrink: 0;
+        overflow: hidden;
+      }
+
+      .sticker-row .thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      .sticker-row .meta {
+        min-width: 0;
+        flex: 1;
+      }
+      .sticker-row .meta .name {
+        font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .sticker-row .meta .sub {
+        font-size: 11px;
+        color: var(--muted);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .badge {
+        font-size: 10px;
+        padding: 2px 6px;
+        border-radius: 999px;
+        background: var(--accent);
+        color: white;
+        flex-shrink: 0;
+      }
+
+      .badge.review {
+        background: var(--danger);
+      }
+      .badge.inactive {
+        background: var(--muted);
+      }
+
+      .main {
+        flex: 1;
+        overflow-y: auto;
+        padding: 22px 28px;
+      }
+
+      .main .empty {
+        color: var(--muted);
+        text-align: center;
+        margin-top: 80px;
+      }
+
+      .field {
+        margin-bottom: 16px;
+      }
+
+      .field label {
+        display: block;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+        margin-bottom: 5px;
+      }
+
+      .field .hint {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+
+      .two-col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+
+      .toggles {
+        display: flex;
+        gap: 20px;
+      }
+
+      .toggles label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        cursor: pointer;
+      }
+
+      optgroup {
+        font-weight: 600;
+      }
+
+      .form-card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 22px;
+        max-width: 640px;
+      }
+
+      .form-card h2 {
+        font-size: 15px;
+        margin: 0 0 18px;
+      }
+
+      .form-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 22px;
+        padding-top: 16px;
+        border-top: 1px solid var(--border);
+      }
+
+      .form-actions .right {
+        display: flex;
+        gap: 8px;
+      }
+
+      .toast {
+        position: fixed;
+        bottom: 18px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--ink);
+        color: white;
+        padding: 9px 16px;
+        border-radius: 999px;
+        font-size: 13px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s ease;
+      }
+
+      .toast.show {
+        opacity: 1;
+      }
+
+      #artistPanel {
+        margin-top: 18px;
+        padding-top: 16px;
+        border-top: 1px solid var(--border);
+      }
+
+      .artist-row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+
+      .artist-row span {
+        flex: 1;
+        font-size: 13px;
+      }
+      .artist-row button {
+        padding: 4px 10px;
+        font-size: 12px;
+      }
+
+      .bulk-wrap {
+        max-width: 100%;
+      }
+
+      .bulk-dropzone {
+        border: 2px dashed var(--border);
+        border-radius: var(--radius);
+        padding: 40px;
+        text-align: center;
+        color: var(--muted);
+      }
+
+      .bulk-toolbar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        padding: 10px 0;
+        margin-bottom: 8px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .bulk-toolbar select {
+        width: auto;
+        min-width: 140px;
+      }
+      .bulk-toolbar .sep {
+        color: var(--border);
+      }
+
+      .bulk-folder-status {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 8px 0;
+      }
+
+      .bulk-folder-status button {
+        padding: 5px 12px;
+        font-size: 12px;
+      }
+
+      .bulk-table-wrap {
+        overflow-x: auto;
+      }
+
+      table.bulk-table {
+        border-collapse: collapse;
+        width: 100%;
+        background: var(--panel);
+      }
+
+      table.bulk-table th {
+        text-align: left;
+        font-size: 11px;
+        text-transform: uppercase;
+        color: var(--muted);
+        padding: 6px 8px;
+        border-bottom: 1px solid var(--border);
+        white-space: nowrap;
+      }
+
+      table.bulk-table td {
+        padding: 4px 6px;
+        border-bottom: 1px solid var(--border);
+        vertical-align: middle;
+      }
+
+      table.bulk-table input[type="text"],
+      table.bulk-table select {
+        padding: 5px 7px;
+        font-size: 13px;
+        min-width: 110px;
+      }
+
+      table.bulk-table .thumb {
+        width: 36px;
+        height: 36px;
+        border-radius: 6px;
+        overflow: hidden;
+        background: var(--bg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      table.bulk-table .thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      table.bulk-table .remove-row {
+        padding: 4px 9px;
+        font-size: 11px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Admin Sticky</h1>
+      <div class="toolbar">
+        <span class="status" id="statusText"></span>
+        <button id="addStickerBtn" disabled>+ Add sticker</button>
+        <button id="manageArtistsBtn" disabled>Artists</button>
+        <button id="bulkImportBtn" disabled>Bulk import</button>
+        <button class="primary" id="downloadBtn" disabled>Download .db</button>
+      </div>
+    </header>
+
+    <div id="dropzone">
+      <p>Load your stickers.db to get started</p>
+      <label>
+        <button onclick="document.getElementById('fileInput').click()">
+          Choose file
+        </button>
+        <input type="file" id="fileInput" accept=".db" />
+      </label>
+    </div>
+
+    <div id="app">
+      <div class="sidebar">
+        <div class="sidebar-controls">
+          <input
+            type="search"
+            id="searchInput"
+            placeholder="Search name, tag, or id"
+          />
+          <div class="filter-row">
+            <select id="tabFilter">
+              <option value="">All tabs</option>
+              <option value="feelings">My Feelings</option>
+              <option value="world">My World</option>
+            </select>
+            <select id="categoryFilter">
+              <option value="">All categories</option>
+            </select>
+          </div>
+          <div class="filter-row">
+            <select id="statusFilter">
+              <option value="">All stickers</option>
+              <option value="review">Needs review</option>
+              <option value="inactive">Inactive</option>
+              <option value="artist">Artist stickers</option>
+            </select>
+          </div>
+        </div>
+        <div class="sticker-list" id="stickerList"></div>
+      </div>
+
+      <div class="main" id="mainPanel">
+        <div class="empty">
+          Select a sticker from the list, or add a new one.
+        </div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sql.js@1.10.3/dist/sql-wasm.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+    <script>
+      const CATEGORIES = {
+        feelings: [
+          "Joy & Fun",
+          "Calm & Peace",
+          "Love & Connection",
+          "Sad & Down",
+          "Stressed & Anxious",
+          "Angry & Frustrated",
+          "Tired & Drained",
+          "Confused & Mixed",
+        ],
+        world: [
+          "People & Body",
+          "Animals & Nature",
+          "Food & Drink",
+          "Travel & Places",
+          "Activities",
+          "Objects",
+        ],
+      };
+
+      let SQL = null;
+      let db = null;
+      let selectedStickerId = null;
+      let stickerCache = [];
+      let artistCache = [];
+      let bulkRows = [];
+      let stickerDirHandle = null;
+      const supportsFSAccess = "showDirectoryPicker" in window;
+
+      const $ = (id) => document.getElementById(id);
+
+      function showToast(msg) {
+        const t = $("toast");
+        t.textContent = msg;
+        t.classList.add("show");
+        setTimeout(() => t.classList.remove("show"), 1600);
+      }
+
+      function tabForCategory(cat) {
+        if (CATEGORIES.feelings.includes(cat)) return "feelings";
+        if (CATEGORIES.world.includes(cat)) return "world";
+        return null;
+      }
+
+      function categoryOptionsHtml(selected) {
+        let html = `<option value="">— none —</option>`;
+        html += `<optgroup label="My Feelings">`;
+        CATEGORIES.feelings.forEach((c) => {
+          html += `<option value="${c}" ${c === selected ? "selected" : ""}>${c}</option>`;
+        });
+        html += `</optgroup><optgroup label="My World">`;
+        CATEGORIES.world.forEach((c) => {
+          html += `<option value="${c}" ${c === selected ? "selected" : ""}>${c}</option>`;
+        });
+        html += `</optgroup>`;
+        return html;
+      }
+
+      async function initSql() {
+        SQL = await initSqlJs({
+          locateFile: (f) =>
+            `https://cdn.jsdelivr.net/npm/sql.js@1.10.3/dist/${f}`,
+        });
+      }
+
+      function runQuery(sql, params = []) {
+        const stmt = db.prepare(sql);
+        stmt.bind(params);
+        const rows = [];
+        while (stmt.step()) rows.push(stmt.getAsObject());
+        stmt.free();
+        return rows;
+      }
+
+      function exec(sql, params = []) {
+        db.run(sql, params);
+      }
+
+      function loadCaches() {
+        stickerCache = runQuery(`
+    SELECT s.*, a.name AS artist_name,
+      (SELECT GROUP_CONCAT(t.name, ', ') FROM sticker_tags st JOIN tags t ON t.id = st.tag_id WHERE st.sticker_id = s.id) AS tag_list
+    FROM stickers s
+    LEFT JOIN artists a ON a.id = s.artist_id
+    ORDER BY s.id
+  `);
+        artistCache = runQuery(`SELECT * FROM artists ORDER BY name`);
+      }
+
+      function populateCategoryFilter() {
+        const sel = $("categoryFilter");
+        sel.innerHTML =
+          `<option value="">All categories</option>` +
+          [...CATEGORIES.feelings, ...CATEGORIES.world]
+            .map((c) => `<option value="${c}">${c}</option>`)
+            .join("");
+      }
+
+      function renderList() {
+        const search = $("searchInput").value.trim().toLowerCase();
+        const tabFilter = $("tabFilter").value;
+        const catFilter = $("categoryFilter").value;
+        const statusFilter = $("statusFilter").value;
+
+        const filtered = stickerCache.filter((s) => {
+          if (search) {
+            const hay =
+              `${s.id} ${s.name || ""} ${s.tag_list || ""}`.toLowerCase();
+            if (!hay.includes(search)) return false;
+          }
+          if (tabFilter && tabForCategory(s.primary_category) !== tabFilter)
+            return false;
+          if (
+            catFilter &&
+            s.primary_category !== catFilter &&
+            s.secondary_category !== catFilter
+          )
+            return false;
+          if (statusFilter === "review" && !s.needs_review) return false;
+          if (statusFilter === "inactive" && s.active) return false;
+          if (statusFilter === "artist" && !s.artist_id) return false;
+          return true;
+        });
+
+        $("statusText").textContent =
+          `${filtered.length} of ${stickerCache.length} stickers`;
+
+        const list = $("stickerList");
+        list.innerHTML = "";
+
+        filtered.forEach((s) => {
+          const row = document.createElement("div");
+          row.className =
+            "sticker-row" + (s.id === selectedStickerId ? " active" : "");
+          row.innerHTML = `
+      <div class="thumb"><img src="./stickers/${s.file}" onerror="this.style.display='none'" /></div>
+      <div class="meta">
+        <div class="name">${s.name || s.id}</div>
+        <div class="sub">${s.primary_category || "uncategorized"}${s.artist_name ? " · " + s.artist_name : ""}</div>
+      </div>
+      ${s.needs_review ? '<span class="badge review">review</span>' : ""}
+      ${!s.active ? '<span class="badge inactive">off</span>' : ""}
+    `;
+          row.addEventListener("click", () => selectSticker(s.id));
+          list.appendChild(row);
+        });
+      }
+
+      function selectSticker(id) {
+        selectedStickerId = id;
+        renderList();
+        renderEditForm();
+      }
+
+      function renderEditForm() {
+        const s = stickerCache.find((x) => x.id === selectedStickerId);
+        const main = $("mainPanel");
+
+        if (!s) {
+          main.innerHTML = `<div class="empty">Select a sticker from the list, or add a new one.</div>`;
+          return;
+        }
+
+        main.innerHTML = `
+    <div class="form-card">
+      <h2>Edit sticker</h2>
+
+      <div class="two-col">
+        <div class="field">
+          <label>ID</label>
+          <input type="text" value="${s.id}" disabled />
+        </div>
+        <div class="field">
+          <label>File</label>
+          <input type="text" id="f_file" value="${s.file}" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Name</label>
+        <input type="text" id="f_name" value="${s.name || ""}" placeholder="e.g. steaming mug of tea" />
+      </div>
+
+      <div class="field">
+        <label>Tags <span class="hint">comma-separated</span></label>
+        <input type="text" id="f_tags" value="${s.tag_list || ""}" placeholder="cozy, calm, warm, tea" />
+      </div>
+
+      <div class="two-col">
+        <div class="field">
+          <label>Primary category</label>
+          <select id="f_primary">${categoryOptionsHtml(s.primary_category)}</select>
+        </div>
+        <div class="field">
+          <label>Secondary category</label>
+          <select id="f_secondary">${categoryOptionsHtml(s.secondary_category)}</select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Artist</label>
+        <select id="f_artist">
+          <option value="">— none —</option>
+          ${artistCache.map((a) => `<option value="${a.id}" ${a.id === s.artist_id ? "selected" : ""}>${a.name}</option>`).join("")}
+        </select>
+      </div>
+
+      <div class="field toggles">
+        <label><input type="checkbox" id="f_active" ${s.active ? "checked" : ""}/> Active</label>
+        <label><input type="checkbox" id="f_review" ${s.needs_review ? "checked" : ""}/> Needs review</label>
+      </div>
+
+      <div class="form-actions">
+        <button class="danger" id="deleteBtn">Delete sticker</button>
+        <div class="right">
+          <button id="cancelBtn">Cancel</button>
+          <button class="primary" id="saveBtn">Save changes</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+        $("saveBtn").addEventListener("click", () => saveSticker(s.id));
+        $("deleteBtn").addEventListener("click", () => deleteSticker(s.id));
+        $("cancelBtn").addEventListener("click", () => renderEditForm());
+      }
+
+      function upsertTags(stickerId, tagsInput) {
+        exec(`DELETE FROM sticker_tags WHERE sticker_id = ?`, [stickerId]);
+
+        const names = tagsInput
+          .split(",")
+          .map((t) => t.trim().toLowerCase())
+          .filter(Boolean);
+        names.forEach((name) => {
+          exec(`INSERT OR IGNORE INTO tags (name) VALUES (?)`, [name]);
+          const row = runQuery(`SELECT id FROM tags WHERE name = ?`, [name])[0];
+          exec(
+            `INSERT OR IGNORE INTO sticker_tags (sticker_id, tag_id) VALUES (?, ?)`,
+            [stickerId, row.id],
+          );
+        });
+      }
+
+      function saveSticker(id) {
+        const file = $("f_file").value.trim();
+        const name = $("f_name").value.trim();
+        const primary = $("f_primary").value || null;
+        const secondary = $("f_secondary").value || null;
+        const artist = $("f_artist").value || null;
+        const active = $("f_active").checked ? 1 : 0;
+        const review = $("f_review").checked ? 1 : 0;
+        const tags = $("f_tags").value;
+
+        if (!primary) {
+          showToast("Primary category is required");
+          return;
+        }
+
+        exec(
+          `
+    UPDATE stickers SET file = ?, name = ?, primary_category = ?, secondary_category = ?,
+      artist_id = ?, active = ?, needs_review = ?
+    WHERE id = ?
+  `,
+          [file, name, primary, secondary, artist, active, review, id],
+        );
+
+        upsertTags(id, tags);
+        loadCaches();
+        renderList();
+        renderEditForm();
+        showToast("Saved");
+      }
+
+      function deleteSticker(id) {
+        if (!confirm(`Delete sticker "${id}"? This can't be undone.`)) return;
+        exec(`DELETE FROM sticker_tags WHERE sticker_id = ?`, [id]);
+        exec(`DELETE FROM stickers WHERE id = ?`, [id]);
+        selectedStickerId = null;
+        loadCaches();
+        renderList();
+        renderEditForm();
+        showToast("Deleted");
+      }
+
+      function renderAddForm() {
+        selectedStickerId = null;
+        renderList();
+
+        const main = $("mainPanel");
+        main.innerHTML = `
+    <div class="form-card">
+      <h2>Add new sticker</h2>
+
+      <div class="two-col">
+        <div class="field">
+          <label>ID <span class="hint">unique, no spaces</span></label>
+          <input type="text" id="f_id" placeholder="e.g. cozy-mug1" />
+        </div>
+        <div class="field">
+          <label>File <span class="hint">must exist in /stickers</span></label>
+          <input type="text" id="f_file" placeholder="cozy-mug1.webp" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Name</label>
+        <input type="text" id="f_name" placeholder="e.g. steaming mug of tea" />
+      </div>
+
+      <div class="field">
+        <label>Tags <span class="hint">comma-separated</span></label>
+        <input type="text" id="f_tags" placeholder="cozy, calm, warm, tea" />
+      </div>
+
+      <div class="two-col">
+        <div class="field">
+          <label>Primary category</label>
+          <select id="f_primary">${categoryOptionsHtml("")}</select>
+        </div>
+        <div class="field">
+          <label>Secondary category</label>
+          <select id="f_secondary">${categoryOptionsHtml("")}</select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Artist</label>
+        <select id="f_artist">
+          <option value="">— none —</option>
+          ${artistCache.map((a) => `<option value="${a.id}">${a.name}</option>`).join("")}
+        </select>
+      </div>
+
+      <div class="field toggles">
+        <label><input type="checkbox" id="f_active" checked /> Active</label>
+        <label><input type="checkbox" id="f_review" /> Needs review</label>
+      </div>
+
+      <div class="form-actions">
+        <div></div>
+        <div class="right">
+          <button id="cancelAddBtn">Cancel</button>
+          <button class="primary" id="createBtn">Create sticker</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+        $("createBtn").addEventListener("click", createSticker);
+        $("cancelAddBtn").addEventListener("click", () => renderEditForm());
+      }
+
+      function createSticker() {
+        const id = $("f_id").value.trim();
+        const file = $("f_file").value.trim();
+        const name = $("f_name").value.trim();
+        const primary = $("f_primary").value || null;
+        const secondary = $("f_secondary").value || null;
+        const artist = $("f_artist").value || null;
+        const active = $("f_active").checked ? 1 : 0;
+        const review = $("f_review").checked ? 1 : 0;
+        const tags = $("f_tags").value;
+
+        if (!id || !file || !primary) {
+          showToast("ID, file, and primary category are required");
+          return;
+        }
+
+        const existing = runQuery(`SELECT id FROM stickers WHERE id = ?`, [id]);
+        if (existing.length) {
+          showToast("That ID already exists");
+          return;
+        }
+
+        exec(
+          `
+    INSERT INTO stickers (id, file, name, primary_category, secondary_category, active, needs_review, artist_id)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+  `,
+          [id, file, name, primary, secondary, active, review, artist],
+        );
+
+        upsertTags(id, tags);
+        loadCaches();
+        renderList();
+        selectSticker(id);
+        showToast("Sticker created");
+      }
+
+      function renderArtistPanel() {
+        selectedStickerId = null;
+        renderList();
+
+        const main = $("mainPanel");
+        main.innerHTML = `
+    <div class="form-card">
+      <h2>Artists</h2>
+      <div id="artistList"></div>
+      <div id="artistPanel">
+        <div class="field">
+          <label>Name</label>
+          <input type="text" id="a_name" placeholder="Artist name" />
+        </div>
+        <div class="two-col">
+          <div class="field">
+            <label>Store URL</label>
+            <input type="text" id="a_store" placeholder="https://..." />
+          </div>
+          <div class="field">
+            <label>Instagram URL</label>
+            <input type="text" id="a_ig" placeholder="https://..." />
+          </div>
+        </div>
+        <div class="field">
+          <label>Website URL</label>
+          <input type="text" id="a_web" placeholder="https://..." />
+        </div>
+        <div class="form-actions">
+          <div></div>
+          <div class="right">
+            <button class="primary" id="addArtistBtn">Add artist</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+        const listEl = $("artistList");
+        artistCache.forEach((a) => {
+          const row = document.createElement("div");
+          row.className = "artist-row";
+          row.innerHTML = `<span>${a.name}</span><button data-id="${a.id}">Remove</button>`;
+          row
+            .querySelector("button")
+            .addEventListener("click", () => removeArtist(a.id));
+          listEl.appendChild(row);
+        });
+
+        $("addArtistBtn").addEventListener("click", addArtist);
+      }
+
+      function addArtist() {
+        const name = $("a_name").value.trim();
+        if (!name) {
+          showToast("Artist name required");
+          return;
+        }
+
+        const id = name
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/(^-|-$)/g, "");
+        const store = $("a_store").value.trim() || null;
+        const ig = $("a_ig").value.trim() || null;
+        const web = $("a_web").value.trim() || null;
+
+        exec(
+          `INSERT OR REPLACE INTO artists (id, name, store_url, instagram_url, website_url) VALUES (?, ?, ?, ?, ?)`,
+          [id, name, store, ig, web],
+        );
+
+        loadCaches();
+        renderArtistPanel();
+        showToast("Artist added");
+      }
+
+      function removeArtist(id) {
+        if (
+          !confirm(
+            "Remove this artist? Stickers linked to them will become unlinked.",
+          )
+        )
+          return;
+        exec(`UPDATE stickers SET artist_id = NULL WHERE artist_id = ?`, [id]);
+        exec(`DELETE FROM artists WHERE id = ?`, [id]);
+        loadCaches();
+        renderArtistPanel();
+      }
+
+      function folderStatusText() {
+        if (!supportsFSAccess) {
+          return `<span class="hint">Your browser can't save straight to a folder — you'll get a ZIP to extract into /stickers.</span>`;
+        }
+        if (stickerDirHandle) {
+          return `<span class="hint">Saving webp files to: <strong>${stickerDirHandle.name}</strong></span>`;
+        }
+        return `<span class="hint">No folder chosen yet — you'll be asked when you commit.</span>`;
+      }
+
+      async function requestStickerDirectory() {
+        try {
+          stickerDirHandle = await window.showDirectoryPicker();
+          return true;
+        } catch {
+          return false;
+        }
+      }
+      async function convertToWebp(file, maxDim = 512, quality = 0.85) {
+        const bitmap = await createImageBitmap(file, {
+          resizeWidth: maxDim,
+          resizeQuality: "medium",
+        });
+
+        const canvas = document.createElement("canvas");
+        canvas.width = bitmap.width;
+        canvas.height = bitmap.height;
+        canvas.getContext("2d").drawImage(bitmap, 0, 0);
+        bitmap.close();
+
+        return new Promise((resolve) =>
+          canvas.toBlob(resolve, "image/webp", quality),
+        );
+      }
+
+      function slugify(filename) {
+        const base = filename.replace(/\.[^.]+$/, "");
+        return base
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/(^-+|-+$)/g, "");
+      }
+
+      function uniqueId(base) {
+        const taken = new Set([
+          ...stickerCache.map((s) => s.id),
+          ...bulkRows.map((r) => r.id),
+        ]);
+        let candidate = base;
+        let n = 2;
+        while (taken.has(candidate)) {
+          candidate = `${base}-${n}`;
+          n++;
+        }
+        return candidate;
+      }
+
+      function renderBulkImportView() {
+        selectedStickerId = null;
+        renderList();
+
+        const main = $("mainPanel");
+
+        if (!bulkRows.length) {
+          main.innerHTML = `
+      <div class="bulk-wrap">
+        <div class="bulk-dropzone">
+          <p>Select multiple images to add at once.</p>
+          <button onclick="document.getElementById('bulkFileInput').click()">Choose images</button>
+          <input type="file" id="bulkFileInput" accept="image/*" multiple style="display:none" />
+        </div>
+      </div>
+    `;
+          $("bulkFileInput").addEventListener("change", (e) => {
+            handleBulkFiles(e.target.files);
+          });
+          return;
+        }
+
+        renderBulkTable();
+      }
+
+      function handleBulkFiles(fileList) {
+        Array.from(fileList).forEach((file) => {
+          const base = slugify(file.name);
+          bulkRows.push({
+            file,
+            objectUrl: URL.createObjectURL(file),
+            id: uniqueId(base),
+            name: "",
+            tags: "",
+            primary: "",
+            secondary: "",
+            artist: "",
+            active: true,
+            selected: false,
+          });
+        });
+        renderBulkTable();
+      }
+
+      function renderBulkTable() {
+        const main = $("mainPanel");
+
+        const artistOptions = (selected) => `
+    <option value="">— none —</option>
+    ${artistCache.map((a) => `<option value="${a.id}" ${a.id === selected ? "selected" : ""}>${a.name}</option>`).join("")}
+  `;
+
+        const rowsHtml = bulkRows
+          .map(
+            (r, i) => `
+    <tr>
+      <td><input type="checkbox" data-idx="${i}" class="bulk-select" ${r.selected ? "checked" : ""} /></td>
+      <td><div class="thumb"><img src="${r.objectUrl}" /></div></td>
+      <td><input type="text" data-idx="${i}" data-field="id" value="${r.id}" /></td>
+      <td><input type="text" data-idx="${i}" data-field="name" value="${r.name}" placeholder="name" /></td>
+      <td><input type="text" data-idx="${i}" data-field="tags" value="${r.tags}" placeholder="tag, tag" /></td>
+      <td><select data-idx="${i}" data-field="primary">${categoryOptionsHtml(r.primary)}</select></td>
+      <td><select data-idx="${i}" data-field="secondary">${categoryOptionsHtml(r.secondary)}</select></td>
+      <td><select data-idx="${i}" data-field="artist">${artistOptions(r.artist)}</select></td>
+      <td><input type="checkbox" data-idx="${i}" data-field="active" ${r.active ? "checked" : ""} /></td>
+      <td><button class="remove-row" data-idx="${i}">Remove</button></td>
+    </tr>
+  `,
+          )
+          .join("");
+
+        main.innerHTML = `
+    <div class="bulk-wrap">
+      <div class="bulk-folder-status">
+        ${folderStatusText()}
+        ${supportsFSAccess ? '<button id="chooseFolderBtn">Choose folder</button>' : ""}
+      </div>
+
+      <div class="bulk-toolbar">
+        <label><input type="checkbox" id="bulkSelectAll" /> Select all</label>
+        <span class="sep">|</span>
+        <span>Apply to selected:</span>
+        <select id="bulkApplyPrimary">${categoryOptionsHtml("")}</select>
+        <button id="bulkApplyPrimaryBtn">Set primary</button>
+        <select id="bulkApplySecondary">${categoryOptionsHtml("")}</select>
+        <button id="bulkApplySecondaryBtn">Set secondary</button>
+        <select id="bulkApplyArtist">${artistOptions("")}</select>
+        <button id="bulkApplyArtistBtn">Set artist</button>
+        <input type="text" id="bulkApplyTag" placeholder="add tag" style="width:120px" />
+        <button id="bulkApplyTagBtn">Add tag</button>
+      </div>
+
+      <div class="bulk-table-wrap">
+        <table class="bulk-table">
+          <thead>
+            <tr>
+              <th></th><th></th><th>ID</th><th>Name</th><th>Tags</th>
+              <th>Primary</th><th>Secondary</th><th>Artist</th><th>Active</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="bulkTbody">${rowsHtml}</tbody>
+        </table>
+      </div>
+
+      <div class="form-actions">
+        <button id="bulkCancelBtn">Cancel import</button>
+        <div class="right">
+          <span class="hint" style="align-self:center">${bulkRows.length} sticker(s) ready</span>
+          <button class="primary" id="bulkCommitBtn">Add all to database</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+        document.querySelectorAll("[data-field]").forEach((el) => {
+          const evt =
+            el.type === "checkbox" || el.tagName === "SELECT"
+              ? "change"
+              : "input";
+          el.addEventListener(evt, () => {
+            const idx = Number(el.dataset.idx);
+            const field = el.dataset.field;
+            bulkRows[idx][field] =
+              el.type === "checkbox" ? el.checked : el.value;
+          });
+        });
+
+        document.querySelectorAll(".bulk-select").forEach((el) => {
+          el.addEventListener("change", () => {
+            bulkRows[Number(el.dataset.idx)].selected = el.checked;
+          });
+        });
+
+        document.querySelectorAll(".remove-row").forEach((el) => {
+          el.addEventListener("click", () => {
+            const idx = Number(el.dataset.idx);
+            URL.revokeObjectURL(bulkRows[idx].objectUrl);
+            bulkRows.splice(idx, 1);
+            renderBulkTable();
+          });
+        });
+
+        if (supportsFSAccess) {
+          $("chooseFolderBtn").addEventListener("click", async () => {
+            await requestStickerDirectory();
+            renderBulkTable();
+          });
+        }
+
+        $("bulkSelectAll").addEventListener("change", (e) => {
+          bulkRows.forEach((r) => (r.selected = e.target.checked));
+          renderBulkTable();
+        });
+
+        $("bulkApplyPrimaryBtn").addEventListener("click", () => {
+          const val = $("bulkApplyPrimary").value;
+          if (!val) return;
+          bulkRows.forEach((r) => {
+            if (r.selected) r.primary = val;
+          });
+          renderBulkTable();
+        });
+
+        $("bulkApplySecondaryBtn").addEventListener("click", () => {
+          const val = $("bulkApplySecondary").value;
+          bulkRows.forEach((r) => {
+            if (r.selected) r.secondary = val;
+          });
+          renderBulkTable();
+        });
+
+        $("bulkApplyArtistBtn").addEventListener("click", () => {
+          const val = $("bulkApplyArtist").value;
+          bulkRows.forEach((r) => {
+            if (r.selected) r.artist = val;
+          });
+          renderBulkTable();
+        });
+
+        $("bulkApplyTagBtn").addEventListener("click", () => {
+          const tag = $("bulkApplyTag").value.trim();
+          if (!tag) return;
+          bulkRows.forEach((r) => {
+            if (!r.selected) return;
+            const existing = r.tags
+              .split(",")
+              .map((t) => t.trim())
+              .filter(Boolean);
+            if (!existing.includes(tag)) existing.push(tag);
+            r.tags = existing.join(", ");
+          });
+          renderBulkTable();
+        });
+
+        $("bulkCancelBtn").addEventListener("click", () => {
+          bulkRows.forEach((r) => URL.revokeObjectURL(r.objectUrl));
+          bulkRows = [];
+          renderEditForm();
+        });
+
+        $("bulkCommitBtn").addEventListener("click", commitBulkImport);
+      }
+
+      async function commitBulkImport() {
+        const ids = bulkRows.map((r) => r.id);
+        const dupWithinBatch = ids.some((id, i) => ids.indexOf(id) !== i);
+
+        if (dupWithinBatch) {
+          showToast("Duplicate IDs in this batch — fix before adding");
+          return;
+        }
+
+        const missingPrimary = bulkRows.some((r) => !r.primary);
+        if (missingPrimary) {
+          showToast("Every sticker needs a primary category");
+          return;
+        }
+
+        const existingIds = new Set(stickerCache.map((s) => s.id));
+        const collidesWithDb = bulkRows.some((r) => existingIds.has(r.id));
+        if (collidesWithDb) {
+          showToast("An ID already exists in the database — fix before adding");
+          return;
+        }
+
+        const btn = $("bulkCommitBtn");
+        btn.disabled = true;
+        btn.textContent = "Converting and saving…";
+
+        let zip = null;
+
+        if (supportsFSAccess) {
+          if (!stickerDirHandle) {
+            const chose = await requestStickerDirectory();
+            if (!chose) {
+              btn.disabled = false;
+              btn.textContent = "Add all to database";
+              showToast("Folder selection cancelled");
+              return;
+            }
+          }
+        } else {
+          zip = new JSZip();
+        }
+
+        const succeeded = [];
+        const failed = [];
+
+        for (const r of bulkRows) {
+          try {
+            const webpBlob = await convertToWebp(r.file);
+            const filename = `${r.id}.webp`;
+
+            if (stickerDirHandle) {
+              const fileHandle = await stickerDirHandle.getFileHandle(
+                filename,
+                { create: true },
+              );
+              const writable = await fileHandle.createWritable();
+              await writable.write(webpBlob);
+              await writable.close();
+            } else {
+              zip.file(filename, webpBlob);
+            }
+
+            exec(
+              `
+        INSERT INTO stickers (id, file, name, primary_category, secondary_category, active, needs_review, artist_id)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      `,
+              [
+                r.id,
+                filename,
+                r.name,
+                r.primary,
+                r.secondary || null,
+                r.active ? 1 : 0,
+                0,
+                r.artist || null,
+              ],
+            );
+
+            upsertTags(r.id, r.tags);
+            succeeded.push(r);
+          } catch (err) {
+            console.error(`Failed on sticker "${r.id}":`, err);
+            failed.push({ id: r.id, message: err.message || String(err) });
+          }
+        }
+
+        if (zip && succeeded.length) {
+          const zipBlob = await zip.generateAsync({ type: "blob" });
+          const a = document.createElement("a");
+          a.href = URL.createObjectURL(zipBlob);
+          a.download = "stickers-export.zip";
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+        }
+
+        bulkRows = bulkRows.filter((r) => failed.some((f) => f.id === r.id));
+        succeeded.forEach((r) => URL.revokeObjectURL(r.objectUrl));
+
+        loadCaches();
+        renderList();
+
+        btn.disabled = false;
+        btn.textContent = "Add all to database";
+
+        if (failed.length) {
+          renderBulkTable();
+          showToast(
+            `Saved ${succeeded.length}, failed ${failed.length} — see console, failed rows kept below`,
+          );
+        } else {
+          renderEditForm();
+          showToast(
+            `Saved ${succeeded.length} sticker(s) — remember to download the .db`,
+          );
+        }
+      }
+
+      function downloadDb() {
+        const data = db.export();
+        const blob = new Blob([data], { type: "application/octet-stream" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "stickers.db";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        showToast("Downloaded");
+      }
+
+      async function handleFile(file) {
+        const buf = await file.arrayBuffer();
+        db = new SQL.Database(new Uint8Array(buf));
+
+        loadCaches();
+        populateCategoryFilter();
+        renderList();
+
+        document.getElementById("dropzone").style.display = "none";
+        document.getElementById("app").classList.add("visible");
+        document.getElementById("addStickerBtn").disabled = false;
+        document.getElementById("manageArtistsBtn").disabled = false;
+        document.getElementById("bulkImportBtn").disabled = false;
+        document.getElementById("downloadBtn").disabled = false;
+      }
+
+      $("fileInput").addEventListener("change", (e) => {
+        if (e.target.files[0]) handleFile(e.target.files[0]);
+      });
+
+      $("searchInput").addEventListener("input", renderList);
+      $("tabFilter").addEventListener("change", () => {
+        populateCategoryFilter();
+        const currentTab = $("tabFilter").value;
+        if (currentTab) {
+          const sel = $("categoryFilter");
+          sel.innerHTML =
+            `<option value="">All categories</option>` +
+            CATEGORIES[currentTab]
+              .map((c) => `<option value="${c}">${c}</option>`)
+              .join("");
+        }
+        renderList();
+      });
+      $("categoryFilter").addEventListener("change", renderList);
+      $("statusFilter").addEventListener("change", renderList);
+
+      $("addStickerBtn").addEventListener("click", renderAddForm);
+      $("manageArtistsBtn").addEventListener("click", renderArtistPanel);
+      $("bulkImportBtn").addEventListener("click", renderBulkImportView);
+      $("downloadBtn").addEventListener("click", downloadDb);
+
+      initSql();
+
+      window.addEventListener("beforeunload", (e) => {
+        if (db) {
+          e.preventDefault();
+          e.returnValue = "";
+        }
+      });
+    </script>
+  </body>
+</html>
