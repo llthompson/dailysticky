@@ -597,7 +597,7 @@
           </div>
           <div class="filter-row">
             <select id="statusFilter">
-              <option value="">All stickers</option>
+              <option value="">Active</option>
               <option value="review">Needs review</option>
               <option value="inactive">Inactive</option>
               <option value="artist">Artist stickers</option>
@@ -735,6 +735,22 @@
         db.run(sql, params);
       }
 
+      function ensureArtistSchema() {
+        const columns = new Set(
+          runQuery(`PRAGMA table_info(artists)`).map((column) => column.name),
+        );
+
+        if (!columns.has("bio")) {
+          exec(`ALTER TABLE artists ADD COLUMN bio TEXT`);
+        }
+
+        if (!columns.has("is_featured")) {
+          exec(
+            `ALTER TABLE artists ADD COLUMN is_featured INTEGER NOT NULL DEFAULT 0`,
+          );
+        }
+      }
+
       function loadCaches() {
         stickerCache = runQuery(`
     SELECT s.*, a.name AS artist_name,
@@ -778,6 +794,8 @@
         const artistFilter = $("artistFilter").value;
 
         const filtered = stickerCache.filter((s) => {
+          if (!statusFilter && !s.active) return false;
+
           if (search) {
             const hay =
               `${s.id} ${s.name || ""} ${s.tag_list || ""}`.toLowerCase();
@@ -794,7 +812,7 @@
           if (statusFilter === "review" && !s.needs_review) return false;
           if (statusFilter === "inactive" && s.active) return false;
           if (statusFilter === "artist" && !s.artist_id) return false;
-          if (artistFilter && s.artist_id !== parseInt(artistFilter))
+          if (artistFilter && String(s.artist_id) !== artistFilter)
             return false;
           return true;
         });
@@ -1089,36 +1107,59 @@
         renderList();
 
         const main = $("mainPanel");
+
         main.innerHTML = `
     <div class="form-card">
       <h2>Daily Sticky Artists</h2>
       <div id="artistList"></div>
+
       <div id="artistPanel">
         <div class="field">
           <h2>Add New Artist</h2>
+
           <label>Name</label>
           <input type="text" id="a_name" placeholder="Artist name" />
         </div>
+
         <div class="two-col">
           <div class="field">
             <label>Store URL</label>
             <input type="text" id="a_store" placeholder="https://..." />
           </div>
+
           <div class="field">
             <label>Instagram URL</label>
             <input type="text" id="a_ig" placeholder="https://..." />
           </div>
         </div>
+
         <div class="field">
           <label>Website URL</label>
           <input type="text" id="a_web" placeholder="https://..." />
         </div>
-        <label>Artist Bio</label>
-        <textarea id="a_bio" placeholder="Write a short bio for the artist..."></textarea>
+
+        <div class="field">
+          <label>Artist Bio</label>
+          <textarea
+            id="a_bio"
+            placeholder="Write a short bio for the artist..."
+          ></textarea>
+        </div>
+
+        <div class="field toggles">
+          <label>
+            <input type="checkbox" id="a_featured" />
+            Featured artist
+          </label>
+        </div>
+
         <div class="form-actions">
           <div></div>
+
           <div class="right">
-            <button class="primary" id="addArtistBtn">Add artist</button>
+            <button class="primary" id="addArtistBtn">
+              Add artist
+            </button>
           </div>
         </div>
       </div>
@@ -1126,23 +1167,43 @@
   `;
 
         const listEl = $("artistList");
-        artistCache.forEach((a) => {
+
+        artistCache.forEach((artist) => {
           const row = document.createElement("div");
           row.className = "artist-row";
+
           row.innerHTML = `
-      <span class="artist-name-link" data-id="${a.id}">${a.name}</span>
-      <button data-id="${a.id}" class="edit-artist-btn">Edit</button>
-      <button data-id="${a.id}" class="remove-artist-btn">Remove</button>
+      <span class="artist-name-link" data-id="${artist.id}">
+        ${artist.name}${artist.is_featured ? " ★ Featured" : ""}
+      </span>
+
+      <button
+        data-id="${artist.id}"
+        class="edit-artist-btn"
+      >
+        Edit
+      </button>
+
+      <button
+        data-id="${artist.id}"
+        class="remove-artist-btn"
+      >
+        Remove
+      </button>
     `;
+
           row
             .querySelector(".artist-name-link")
-            .addEventListener("click", () => renderArtistDetail(a.id));
+            .addEventListener("click", () => renderArtistDetail(artist.id));
+
           row
             .querySelector(".edit-artist-btn")
-            .addEventListener("click", () => renderArtistEditForm(a.id));
+            .addEventListener("click", () => renderArtistEditForm(artist.id));
+
           row
             .querySelector(".remove-artist-btn")
-            .addEventListener("click", () => removeArtist(a.id));
+            .addEventListener("click", () => removeArtist(artist.id));
+
           listEl.appendChild(row);
         });
 
@@ -1150,47 +1211,93 @@
       }
 
       function renderArtistDetail(artistId) {
-        const artist = artistCache.find((a) => a.id === artistId);
+        const artist = artistCache.find(
+          (candidate) => candidate.id === artistId,
+        );
+
         if (!artist) return;
 
         const linkedStickers = stickerCache.filter(
-          (s) => s.artist_id === artistId,
+          (sticker) => sticker.artist_id === artistId,
         );
 
         const main = $("mainPanel");
+
         main.innerHTML = `
     <div class="form-card">
       <h2>${artist.name}</h2>
 
       <div class="field">
         <label>Store URL</label>
-        <div>${artist.store_url ? `<a href="${artist.store_url}" target="_blank">${artist.store_url}</a>` : "—"}</div>
+
+        <div>
+          ${
+            artist.store_url
+              ? `<a href="${artist.store_url}" target="_blank">${artist.store_url}</a>`
+              : "—"
+          }
+        </div>
       </div>
+
       <div class="field">
         <label>Instagram URL</label>
-        <div>${artist.instagram_url ? `<a href="${artist.instagram_url}" target="_blank">${artist.instagram_url}</a>` : "—"}</div>
+
+        <div>
+          ${
+            artist.instagram_url
+              ? `<a href="${artist.instagram_url}" target="_blank">${artist.instagram_url}</a>`
+              : "—"
+          }
+        </div>
       </div>
+
       <div class="field">
         <label>Website URL</label>
-        <div>${artist.website_url ? `<a href="${artist.website_url}" target="_blank">${artist.website_url}</a>` : "—"}</div>
+
+        <div>
+          ${
+            artist.website_url
+              ? `<a href="${artist.website_url}" target="_blank">${artist.website_url}</a>`
+              : "—"
+          }
+        </div>
       </div>
+
       <div class="field">
         <label>Bio</label>
         <div>${artist.bio || "—"}</div>
       </div>
 
       <div class="field">
+        <label>Featured artist</label>
+        <div>${artist.is_featured ? "Yes" : "No"}</div>
+      </div>
+
+      <div class="field">
         <label>Stickers (${linkedStickers.length})</label>
+
         <div class="artist-sticker-grid">
           ${
             linkedStickers
               .map(
-                (s) => `
-            <div class="artist-sticker-tile" data-id="${s.id}" title="${s.name || s.id}">
-              <div class="thumb"><img src="./stickers/${s.file}" onerror="this.style.display='none'" /></div>
-              <div class="artist-sticker-name">${s.name || s.id}</div>
-            </div>
-          `,
+                (sticker) => `
+                  <div
+                    class="artist-sticker-tile"
+                    data-id="${sticker.id}"
+                    title="${sticker.name || sticker.id}"
+                  >
+                    <div class="thumb">
+                      <img
+                        src="./stickers/${sticker.file}"
+                        onerror="this.style.display='none'"
+                      />
+                    </div>
+
+                    <div class="artist-sticker-name">
+                      ${sticker.name || sticker.id}
+                    </div>
+                  </div>
+                `,
               )
               .join("") || `<div class="hint">No stickers linked yet.</div>`
           }
@@ -1198,15 +1305,24 @@
       </div>
 
       <div class="form-actions">
-        <button id="backToArtistsBtn">← Back to artists</button>
+        <button id="backToArtistsBtn">
+          ← Back to artists
+        </button>
+
         <div class="right">
-          <button class="primary" id="editArtistDetailBtn">Edit artist</button>
+          <button
+            class="primary"
+            id="editArtistDetailBtn"
+          >
+            Edit artist
+          </button>
         </div>
       </div>
     </div>
   `;
 
         $("backToArtistsBtn").addEventListener("click", renderArtistPanel);
+
         $("editArtistDetailBtn").addEventListener("click", () =>
           renderArtistEditForm(artistId),
         );
@@ -1218,6 +1334,7 @@
 
       function addArtist() {
         const name = $("a_name").value.trim();
+
         if (!name) {
           showToast("Artist name required");
           return;
@@ -1227,13 +1344,31 @@
           .toLowerCase()
           .replace(/[^a-z0-9]+/g, "-")
           .replace(/(^-|-$)/g, "");
+
         const store = $("a_store").value.trim() || null;
-        const ig = $("a_ig").value.trim() || null;
-        const web = $("a_web").value.trim() || null;
+        const instagram = $("a_ig").value.trim() || null;
+        const website = $("a_web").value.trim() || null;
+        const bio = $("a_bio").value.trim() || null;
+        const isFeatured = $("a_featured").checked ? 1 : 0;
+
+        if (isFeatured) {
+          exec(`UPDATE artists SET is_featured = 0`);
+        }
 
         exec(
-          `INSERT OR REPLACE INTO artists (id, name, store_url, instagram_url, website_url) VALUES (?, ?, ?, ?, ?)`,
-          [id, name, store, ig, web],
+          `
+      INSERT OR REPLACE INTO artists (
+        id,
+        name,
+        store_url,
+        instagram_url,
+        website_url,
+        bio,
+        is_featured
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `,
+          [id, name, store, instagram, website, bio, isFeatured],
         );
 
         loadCaches();
@@ -1243,47 +1378,98 @@
       }
 
       function renderArtistEditForm(artistId) {
-        const artist = artistCache.find((a) => a.id === artistId);
+        const artist = artistCache.find(
+          (candidate) => candidate.id === artistId,
+        );
+
         if (!artist) return;
 
         selectedStickerId = null;
         renderList();
 
         const main = $("mainPanel");
+
         main.innerHTML = `
     <div class="form-card">
       <h2>Edit Artist</h2>
 
       <div class="field">
         <label>Name</label>
-        <input type="text" id="a_name" value="${artist.name}" />
+        <input
+          type="text"
+          id="a_name"
+          value="${artist.name}"
+        />
       </div>
 
       <div class="two-col">
         <div class="field">
           <label>Store URL</label>
-          <input type="text" id="a_store" value="${artist.store_url || ""}" placeholder="https://..." />
+
+          <input
+            type="text"
+            id="a_store"
+            value="${artist.store_url || ""}"
+            placeholder="https://..."
+          />
         </div>
+
         <div class="field">
           <label>Instagram URL</label>
-          <input type="text" id="a_ig" value="${artist.instagram_url || ""}" placeholder="https://..." />
+
+          <input
+            type="text"
+            id="a_ig"
+            value="${artist.instagram_url || ""}"
+            placeholder="https://..."
+          />
         </div>
       </div>
 
       <div class="field">
         <label>Website URL</label>
-        <input type="text" id="a_web" value="${artist.website_url || ""}" placeholder="https://..." />
+
+        <input
+          type="text"
+          id="a_web"
+          value="${artist.website_url || ""}"
+          placeholder="https://..."
+        />
       </div>
 
       <div class="field">
         <label>Artist Bio</label>
-        <textarea id="a_bio" placeholder="Write a short bio for the artist...">${artist.bio || ""}</textarea>
+
+        <textarea
+          id="a_bio"
+          placeholder="Write a short bio for the artist..."
+        >${artist.bio || ""}</textarea>
+      </div>
+
+      <div class="field toggles">
+        <label>
+          <input
+            type="checkbox"
+            id="a_featured"
+            ${artist.is_featured ? "checked" : ""}
+          />
+
+          Featured artist
+        </label>
       </div>
 
       <div class="form-actions">
-        <button id="cancelEditArtistBtn">Cancel</button>
+        <button id="cancelEditArtistBtn">
+          Cancel
+        </button>
+
         <div class="right">
-          <button class="primary" id="saveArtistEditBtn">Save changes</button>
+          <button
+            class="primary"
+            id="saveArtistEditBtn"
+          >
+            Save changes
+          </button>
         </div>
       </div>
     </div>
@@ -1292,23 +1478,40 @@
         $("saveArtistEditBtn").addEventListener("click", () =>
           saveArtistEdit(artistId),
         );
+
         $("cancelEditArtistBtn").addEventListener("click", renderArtistPanel);
       }
 
       function saveArtistEdit(id) {
         const name = $("a_name").value.trim();
+
         if (!name) {
           showToast("Artist name required");
           return;
         }
 
         const store = $("a_store").value.trim() || null;
-        const ig = $("a_ig").value.trim() || null;
-        const web = $("a_web").value.trim() || null;
+        const instagram = $("a_ig").value.trim() || null;
+        const website = $("a_web").value.trim() || null;
+        const bio = $("a_bio").value.trim() || null;
+        const isFeatured = $("a_featured").checked ? 1 : 0;
+
+        if (isFeatured) {
+          exec(`UPDATE artists SET is_featured = 0`);
+        }
 
         exec(
-          `UPDATE artists SET name = ?, store_url = ?, instagram_url = ?, website_url = ? WHERE id = ?`,
-          [name, store, ig, web, id],
+          `
+      UPDATE artists
+      SET name = ?,
+          store_url = ?,
+          instagram_url = ?,
+          website_url = ?,
+          bio = ?,
+          is_featured = ?
+      WHERE id = ?
+    `,
+          [name, store, instagram, website, bio, isFeatured, id],
         );
 
         loadCaches();
@@ -1952,6 +2155,7 @@
         const buf = await file.arrayBuffer();
         db = new SQL.Database(new Uint8Array(buf));
 
+        ensureArtistSchema();
         loadCaches();
         populateCategoryFilter();
         populateArtistFilter();
