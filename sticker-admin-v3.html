@@ -603,6 +603,11 @@
               <option value="artist">Artist stickers</option>
             </select>
           </div>
+          <div class="filter-row">
+            <select id="artistFilter">
+              <option value="">All artists</option>
+            </select>
+          </div>
           <div class="filter-row bulk-select-row">
             <label class="select-all-label">
               <input type="checkbox" id="selectAllVisibleCheck" /> All
@@ -750,11 +755,27 @@
             .join("");
       }
 
+      function populateArtistFilter() {
+        const sel = $("artistFilter");
+        if (!sel) return;
+
+        const current = sel.value;
+
+        sel.innerHTML =
+          `<option value="">All artists</option>` +
+          artistCache
+            .map((a) => `<option value="${a.id}">${a.name}</option>`)
+            .join("");
+
+        if (artistCache.some((a) => a.id === current)) sel.value = current;
+      }
+
       function renderList() {
         const search = $("searchInput").value.trim().toLowerCase();
         const tabFilter = $("tabFilter").value;
         const catFilter = $("categoryFilter").value;
         const statusFilter = $("statusFilter").value;
+        const artistFilter = $("artistFilter").value;
 
         const filtered = stickerCache.filter((s) => {
           if (search) {
@@ -773,6 +794,8 @@
           if (statusFilter === "review" && !s.needs_review) return false;
           if (statusFilter === "inactive" && s.active) return false;
           if (statusFilter === "artist" && !s.artist_id) return false;
+          if (artistFilter && s.artist_id !== parseInt(artistFilter))
+            return false;
           return true;
         });
 
@@ -1108,11 +1131,15 @@
           row.className = "artist-row";
           row.innerHTML = `
       <span class="artist-name-link" data-id="${a.id}">${a.name}</span>
+      <button data-id="${a.id}" class="edit-artist-btn">Edit</button>
       <button data-id="${a.id}" class="remove-artist-btn">Remove</button>
     `;
           row
             .querySelector(".artist-name-link")
             .addEventListener("click", () => renderArtistDetail(a.id));
+          row
+            .querySelector(".edit-artist-btn")
+            .addEventListener("click", () => renderArtistEditForm(a.id));
           row
             .querySelector(".remove-artist-btn")
             .addEventListener("click", () => removeArtist(a.id));
@@ -1172,12 +1199,17 @@
 
       <div class="form-actions">
         <button id="backToArtistsBtn">← Back to artists</button>
-        <div></div>
+        <div class="right">
+          <button class="primary" id="editArtistDetailBtn">Edit artist</button>
+        </div>
       </div>
     </div>
   `;
 
         $("backToArtistsBtn").addEventListener("click", renderArtistPanel);
+        $("editArtistDetailBtn").addEventListener("click", () =>
+          renderArtistEditForm(artistId),
+        );
 
         document.querySelectorAll(".artist-sticker-tile").forEach((tile) => {
           tile.addEventListener("click", () => selectSticker(tile.dataset.id));
@@ -1205,8 +1237,84 @@
         );
 
         loadCaches();
+        populateArtistFilter();
         renderArtistPanel();
         showToast("Artist added");
+      }
+
+      function renderArtistEditForm(artistId) {
+        const artist = artistCache.find((a) => a.id === artistId);
+        if (!artist) return;
+
+        selectedStickerId = null;
+        renderList();
+
+        const main = $("mainPanel");
+        main.innerHTML = `
+    <div class="form-card">
+      <h2>Edit Artist</h2>
+
+      <div class="field">
+        <label>Name</label>
+        <input type="text" id="a_name" value="${artist.name}" />
+      </div>
+
+      <div class="two-col">
+        <div class="field">
+          <label>Store URL</label>
+          <input type="text" id="a_store" value="${artist.store_url || ""}" placeholder="https://..." />
+        </div>
+        <div class="field">
+          <label>Instagram URL</label>
+          <input type="text" id="a_ig" value="${artist.instagram_url || ""}" placeholder="https://..." />
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Website URL</label>
+        <input type="text" id="a_web" value="${artist.website_url || ""}" placeholder="https://..." />
+      </div>
+
+      <div class="field">
+        <label>Artist Bio</label>
+        <textarea id="a_bio" placeholder="Write a short bio for the artist...">${artist.bio || ""}</textarea>
+      </div>
+
+      <div class="form-actions">
+        <button id="cancelEditArtistBtn">Cancel</button>
+        <div class="right">
+          <button class="primary" id="saveArtistEditBtn">Save changes</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+        $("saveArtistEditBtn").addEventListener("click", () =>
+          saveArtistEdit(artistId),
+        );
+        $("cancelEditArtistBtn").addEventListener("click", renderArtistPanel);
+      }
+
+      function saveArtistEdit(id) {
+        const name = $("a_name").value.trim();
+        if (!name) {
+          showToast("Artist name required");
+          return;
+        }
+
+        const store = $("a_store").value.trim() || null;
+        const ig = $("a_ig").value.trim() || null;
+        const web = $("a_web").value.trim() || null;
+
+        exec(
+          `UPDATE artists SET name = ?, store_url = ?, instagram_url = ?, website_url = ? WHERE id = ?`,
+          [name, store, ig, web, id],
+        );
+
+        loadCaches();
+        populateArtistFilter();
+        renderArtistPanel();
+        showToast("Artist updated");
       }
 
       function removeArtist(id) {
@@ -1219,6 +1327,7 @@
         exec(`UPDATE stickers SET artist_id = NULL WHERE artist_id = ?`, [id]);
         exec(`DELETE FROM artists WHERE id = ?`, [id]);
         loadCaches();
+        populateArtistFilter();
         renderArtistPanel();
       }
 
@@ -1845,6 +1954,7 @@
 
         loadCaches();
         populateCategoryFilter();
+        populateArtistFilter();
         renderList();
 
         document.getElementById("dropzone").style.display = "none";
@@ -1875,6 +1985,7 @@
       });
       $("categoryFilter").addEventListener("change", renderList);
       $("statusFilter").addEventListener("change", renderList);
+      $("artistFilter").addEventListener("change", renderList);
 
       $("addStickerBtn").addEventListener("click", renderAddForm);
       $("manageArtistsBtn").addEventListener("click", renderArtistPanel);
