@@ -117,11 +117,19 @@ function toggleAllMonths() {
   updateToggleAllButtonText();
 }
 
-function expandLinkedMonth() {
-  const hash = window.location.hash;
-  if (!hash) return;
+function expandLinkedMonth(useCurrentMonthWhenNoHash = false) {
+  const now = new Date();
+  const hasLinkedMonth = Boolean(window.location.hash);
 
-  const section = document.querySelector(hash);
+  const targetSelector = hasLinkedMonth
+    ? window.location.hash
+    : useCurrentMonthWhenNoHash
+      ? `#notes-${now.getFullYear()}-${pad2(now.getMonth() + 1)}`
+      : null;
+
+  if (!targetSelector) return;
+
+  const section = document.querySelector(targetSelector);
   if (!section) return;
 
   collapseOtherMonths(section);
@@ -133,10 +141,25 @@ function expandLinkedMonth() {
     button.setAttribute("aria-expanded", "true");
   }
 
+  updateToggleAllButtonText();
+
+  const isCurrentMonthArrival = useCurrentMonthWhenNoHash && !hasLinkedMonth;
+
+  let scrollTarget = section;
+
+  if (isCurrentMonthArrival) {
+    const storyCards = section.querySelectorAll(".note-card");
+
+    scrollTarget =
+      storyCards[storyCards.length - 1] ||
+      section.querySelector(".notes-empty") ||
+      section;
+  }
+
   setTimeout(() => {
-    section.scrollIntoView({
+    scrollTarget.scrollIntoView({
       behavior: "smooth",
-      block: "start",
+      block: isCurrentMonthArrival ? "end" : "start",
     });
   }, 50);
 }
@@ -307,14 +330,16 @@ function populateNotesYearSelect(years, selectedYear) {
 async function initNotesPage() {
   await loadStickers();
 
-  const state = loadState();
-  const years = getAvailableYears(state);
   const hashYear = getYearFromHash();
+  const currentYear = new Date().getFullYear();
 
-  selectedNotesYear =
-    hashYear || (years.includes(state?.year) ? state.year : years[0]);
+  selectedNotesYear = hashYear || currentYear;
 
   renderNotesPage();
+
+  if (!window.location.hash) {
+    expandLinkedMonth(true);
+  }
 
   if (notesYearSelect) {
     notesYearSelect.addEventListener("change", () => {
