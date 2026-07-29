@@ -150,8 +150,10 @@ function populateMonthYearSelects() {
 }
 
 async function loadStickers() {
-  const data = await fetchStickerData();
-  stickerGroups = data.stickerGroups;
+  // const data = await fetchStickerData(); old picker
+
+ const data = await DailyStickyStickerData.load(); // new picker
+  // stickerGroups = data.stickerGroups; old picker
   stickers = data.stickers;
   stickerById = data.stickerById;
 }
@@ -924,7 +926,7 @@ function openModal(dayKey) {
   if (searchInput) searchInput.value = "";
 
   updateNoteButtonLabel();
-  DailyStickyStickerPicker.renderCategories();
+  DailyStickyStickerPickerV2.renderTabs();
   overlay.classList.remove("hidden");
 
   history.pushState(

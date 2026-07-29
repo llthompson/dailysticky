@@ -310,43 +310,46 @@
       </section>
     </div>
 
-    <!-- Sticker Picker Modal -->
-    <div
-      id="modalOverlay"
-      class="overlay hidden"
-      role="dialog"
-      aria-modal="true"
-      aria-label="Sticker picker"
-    >
-      <div class="modal">
-        <div class="modalHeader">
-          <div>
-            <div class="modalDateRow">
-              <div id="modalDate" class="modalDate">Date</div>
-              <button id="removeStickerBtn" class="btn">Remove Sticker</button>
-            </div>
-
-            <div class="modalHint">Choose a sticker (1 per day)</div>
+<!-- Sticker Picker Modal -->
+<div
+  id="modalOverlay"
+  class="overlay hidden"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Sticker picker"
+>
+  <div class="modal">
+    <div class="modalHeader stickerPickerHeader">
+      <div class="stickerPickerHeaderRow">
+        <div>
+          <div class="modalDateRow">
+            <div id="modalDate" class="modalDate">Date</div>
+            <button id="removeStickerBtn" class="btn">Remove Sticker</button>
           </div>
 
-          <div class="modalHeaderActions">
-            <button id="noteBtn" class="btn">Add a Sticker Story</button>
-            <button id="closeModalBtn" class="btn">✕</button>
-          </div>
+          <div class="modalHint">Choose a sticker (1 per day)</div>
         </div>
 
-        <div id="stickerGrid" class="grid"></div>
+        <div class="modalHeaderActions">
+          <button id="noteBtn" class="btn">Add a Sticker Story</button>
+          <button id="closeModalBtn" class="btn">✕</button>
+        </div>
       </div>
 
-      <div class="modalTools">
+      <div class="stickerPickerSearch">
         <input
           id="searchInput"
           class="search"
           type="search"
+          aria-label="Search stickers"
           placeholder="Search stickers (e.g., cat, coffee, book)"
         />
       </div>
     </div>
+
+    <div id="stickerGrid" class="grid"></div>
+  </div>
+</div>
 
     <!-- Note Modal -->
     <div
@@ -569,6 +572,8 @@
     <script src="/nav.js"></script>
     <script src="/state.js"></script>
     <script src="/sticker-picker.js"></script>
+    <script src="/sticker-data-v2.js"></script>
+    <script src="/sticker-picker-v2.js"></script>
     <script src="app.js"></script>
   </body>
 </html>

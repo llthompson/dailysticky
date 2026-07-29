@@ -185,7 +185,7 @@ if (toggleAllNotesBtn) {
 
 async function loadStickers() {
   try {
-    const data = await fetchStickerData();
+    const data = await DailyStickyStickerData.load();
     stickers = data.stickers;
     stickerById = data.stickerById;
   } catch (error) {

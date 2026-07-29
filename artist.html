@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Artist | Daily Sticky</title>
+    <link rel="canonical" href="https://dailysticky.app/artist.html" />
+    <meta name="robots" content="noindex, follow" />
+    <meta
+      name="description"
+      content="Meet the artists behind Daily Sticky's stickers."
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body>
+    <header class="topbar simple-topbar">
+      <button id="menuBtn" class="btn icon-btn image-btn" aria-label="Menu">
+        <img src="/menu-icon.png" alt="" />
+      </button>
+
+      <div id="menuDropdown" class="menu-dropdown hidden" role="menu">
+        <a class="menu-item" href="/">Home</a>
+        <a class="menu-item" href="/notes.html">View Sticker Stories</a>
+        <a class="menu-item" href="/about.html">About</a>
+        <a class="menu-item" href="/blog/">Sticky Notes</a>
+      </div>
+
+      <a href="/" class="simple-logo-link">
+        <img
+          src="/the-daily-sticky-logo.png"
+          alt="The Daily Sticky"
+          class="site-logo"
+        />
+      </a>
+
+      <a href="/" class="blog-nav-link">Home</a>
+    </header>
+
+    <main class="about-container">
+      <section id="artistNotFound" class="about-card hidden">
+        <h1>Artist not found</h1>
+        <p>
+          We couldn't find that artist. They may have been removed, or the link
+          might be incorrect.
+        </p>
+      </section>
+
+      <section id="artistContent" class="hidden">
+        <section class="about-card" id="artistHeader">
+          <h1 id="artistName"></h1>
+          <p id="artistBio" class="tagline hidden"></p>
+          <div id="artistLinks" class="save-features"></div>
+        </section>
+
+        <section class="about-card" id="artistStickersSection">
+          <h2 id="artistStickerHeading"></h2>
+          <p id="artistStickerCount" class="slogan"></p>
+
+          <div id="artistGallery" class="catGrid"></div>
+        </section>
+      </section>
+
+      <p class="back-link"><a href="/">← Back to Daily Sticky</a></p>
+    </main>
+
+    <script src="/nav.js"></script>
+    <script src="/sticker-data-v2.js"></script>
+    <script src="/artist.js"></script>
+  </body>
+</html>
