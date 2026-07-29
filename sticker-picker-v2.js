@@ -277,7 +277,7 @@
 
     const back = document.createElement("button");
     back.type = "button";
-    back.className = "btn catBack";
+    back.className = "btn Tab catBack";
     back.textContent = "← Tabs";
     back.addEventListener("click", renderTabs);
 

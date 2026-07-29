@@ -365,6 +365,10 @@ body::after {
   font-size: 18px;
 }
 
+#artistHeader {
+  margin-bottom: 16px;
+}
+
 .tagline {
   font-weight: 600;
   font-size: 1.1rem;
@@ -1006,46 +1010,99 @@ body::after {
   z-index: 5;
 
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   padding: 8px;
 
   border-bottom: 1px solid var(--border);
-  background: var(--surface-2);
-  backdrop-filter: blur(6px);
+  background: rgba(255, 255, 255, 0.32);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
 }
 
 .modalHeaderActions {
   display: flex;
-  gap: 8px;
   align-items: center;
+  gap: 8px;
 }
 
 .modalDate {
+  color: var(--accent-ink);
   font-size: 22px;
   font-weight: 700;
-  color: var(--accent-ink);
 }
 
 .modalHint {
-  font-size: 16px;
-  color: var(--muted);
-  margin-top: 2px;
   display: none;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 16px;
 }
 
-.modalTools {
+/* Sticker picker header only */
+.stickerPickerHeader {
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 10px;
+  padding: 8px 10px 10px;
+}
+
+.stickerPickerHeaderRow {
   display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: nowrap;
   gap: 8px;
-  padding: 2px 2px;
-  flex-wrap: wrap;
+  width: 100%;
 }
 
-.search {
+.stickerPickerHeaderRow > :first-child {
+  min-width: 0;
+}
+
+.stickerPickerHeaderRow .modalDateRow,
+.stickerPickerHeaderRow .modalHeaderActions {
+  flex-wrap: nowrap;
+}
+
+.stickerPickerHeaderRow .modalHeaderActions {
+  flex-shrink: 0;
+}
+
+.stickerPickerSearch {
+  width: 100%;
+}
+
+.stickerPickerSearch .search {
   display: block;
-  flex: 1;
-  min-width: 200px;
+  width: 100%;
+  min-width: 0;
+  min-height: 36px;
+  padding: 0 14px;
+
+  border: 1px solid rgba(255, 255, 255, 0.68);
   border-radius: 999px;
+  background: rgba(255, 255, 255, 0.38);
+}
+
+@media (max-width: 440px) {
+  .stickerPickerHeaderRow,
+  .stickerPickerHeaderRow .modalDateRow,
+  .stickerPickerHeaderRow .modalHeaderActions {
+    gap: 4px;
+  }
+
+  .stickerPickerHeaderRow .btn {
+    padding-inline: 6px;
+    font-size: clamp(14px, 4vw, 18px);
+    white-space: nowrap;
+  }
+
+  .stickerPickerHeaderRow .modalDate {
+    font-size: clamp(16px, 5vw, 22px);
+    white-space: nowrap;
+  }
 }
 
 .grid {
@@ -1989,6 +2046,7 @@ h3 {
   justify-content: center;
   gap: 8px;
   margin-top: 12px;
+  margin-bottom: 6px;
   flex-wrap: wrap;
 }
 
@@ -3634,8 +3692,15 @@ h3 {
   text-align: center;
 }
 
+#artistName {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
 #artistBio {
   text-align: center;
+  margin-top: 6px !important;
+  margin-bottom: 22px !important;
 }
 
 #artistStickersSection {
@@ -3670,7 +3735,46 @@ h3 {
   text-align: center;
 }
 
-.artistLinkPrimary {
+/* .artistLinkPrimary {
   background: color-mix(in srgb, var(--accent) 28%, white) !important;
   font-weight: 900 !important;
+} */
+
+.btn.catBack {
+  border-radius: 999px;
+  min-height: 30px;
+  font-size: 18px;
+  padding: 0 10px;
+  line-height: 1;
+}
+
+.btn.Tab.catBack {
+  color: lime;
+  padding: 0 30px;
+  line-height: 1;
+}
+
+.menu-item .artistLinkPrimary {
+  /* width: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 7px 11px;
+  border-radius: 999px;
+
+  background: rgba(9, 189, 114, 0.54);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: var(--inner-glow);
+
+  color: var(--accent-ink);
+  font-family: var(--font-alt);
+  font-size: 0.82rem;
+  font-weight: 850;
+  text-decoration: none;
+  line-height: 1;
+  cursor: pointer; */
+  background: lime !important;
+  font-size: 45px !important;
+  border-radius: 0;
 }
