@@ -964,7 +964,7 @@ function wireGridBulge(gridId, cellSelector) {
 
   const BULGE_RADIUS = 80;
   const MAX_SCALE = 2.9;
-  const MAX_PUSH = 18;
+  const MAX_PUSH = 14;
 
   // Higher = the bubble trail hangs around longer.
   const FADE_DURATION = 300;
@@ -1001,6 +1001,7 @@ function wireGridBulge(gridId, cellSelector) {
         strength: 0,
         pushX: 0,
         pushY: 0,
+        angle: null, //testing less swoopy
       });
     }
 
@@ -1143,27 +1144,59 @@ function wireGridBulge(gridId, cellSelector) {
         if (cell === focusedCell) {
           targetStrength = Math.min(1, targetStrength * 1.12);
         }
-
-        if (distance > 0) {
-          targetPushX = (deltaX / distance) * MAX_PUSH * targetStrength;
-
-          targetPushY = (deltaY / distance) * MAX_PUSH * targetStrength;
-        }
       }
+
+      // swoopy start
 
       const isGrowing = targetStrength >= state.strength;
       const smoothing = isGrowing ? riseDecay : fallDecay;
 
       state.strength =
         targetStrength + (state.strength - targetStrength) * smoothing;
-      state.pushX = targetPushX + (state.pushX - targetPushX) * smoothing;
-      state.pushY = targetPushY + (state.pushY - targetPushY) * smoothing;
 
-      if (state.strength < 0.002) {
-        state.strength = 0;
-        state.pushX = 0;
-        state.pushY = 0;
+      if (distance > 0 && targetStrength > 0.01) {
+        const targetAngle = Math.atan2(deltaY, deltaX);
+
+        if (state.angle === null) {
+          state.angle = targetAngle;
+        } else {
+          // Shortest-path angle smoothing so it doesn't spin the long way around.
+          let diff = targetAngle - state.angle;
+          diff = Math.atan2(Math.sin(diff), Math.cos(diff));
+
+          // Slower than strength smoothing — this is what kills the swoop.
+          const ANGLE_SMOOTHING = 0.6;
+          state.angle += diff * ANGLE_SMOOTHING;
+        }
       }
+
+      const pushMagnitude = MAX_PUSH * state.strength;
+      state.pushX =
+        state.angle === null ? 0 : Math.cos(state.angle) * pushMagnitude;
+      state.pushY =
+        state.angle === null ? 0 : Math.sin(state.angle) * pushMagnitude;
+
+      // testing less swoopy
+      //   if (distance > 0) {
+      //     targetPushX = (deltaX / distance) * MAX_PUSH * targetStrength;
+
+      //     targetPushY = (deltaY / distance) * MAX_PUSH * targetStrength;
+      //   }
+      // }
+
+      // const isGrowing = targetStrength >= state.strength;
+      // const smoothing = isGrowing ? riseDecay : fallDecay;
+
+      // state.strength =
+      //   targetStrength + (state.strength - targetStrength) * smoothing;
+      // state.pushX = targetPushX + (state.pushX - targetPushX) * smoothing;
+      // state.pushY = targetPushY + (state.pushY - targetPushY) * smoothing;
+
+      // if (state.strength < 0.002) {
+      //   state.strength = 0;
+      //   state.pushX = 0;
+      //   state.pushY = 0;
+      // }
 
       const scale = +(1 + (MAX_SCALE - 1) * state.strength).toFixed(2);
       const pushX = +state.pushX.toFixed(1);
@@ -1194,7 +1227,7 @@ function wireGridBulge(gridId, cellSelector) {
 
   function updatePointer(event) {
     const newX = event.clientX;
-    const newY = event.clientY - 42;
+    const newY = event.clientY - 37;
 
     if (Math.hypot(newX - targetPointerX, newY - targetPointerY) < 1.5) {
       return;
