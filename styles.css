@@ -2703,7 +2703,7 @@ h3 {
 #monthExportOverlay.overlay,
 #yearExportOverlay.overlay {
   background: rgba(36, 16, 57, 0.38);
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(8px);
   /* padding: 18px; */
 }
@@ -3000,6 +3000,9 @@ h3 {
   height: 228cqw;
   object-fit: contain;
   transform: translate(-50%, -50%) scale(0.3333);
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 .export-footer {
@@ -3369,6 +3372,9 @@ h3 {
   height: 258cqw;
   object-fit: contain;
   transform: translate(-50%, -50%) scale(0.3333);
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 #yearExportPreviewCard .export-footer {
