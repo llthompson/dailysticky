@@ -659,6 +659,7 @@
       let selectedStickerId = null;
       let stickerCache = [];
       let artistCache = [];
+      let artistLinksCache = [];
       let bulkRows = [];
       let bulkEditIds = new Set();
       let bulkEditRows = [];
@@ -749,6 +750,42 @@
             `ALTER TABLE artists ADD COLUMN is_featured INTEGER NOT NULL DEFAULT 0`,
           );
         }
+
+        const tables = new Set(
+          runQuery(`SELECT name FROM sqlite_master WHERE type = 'table'`).map(
+            (table) => table.name,
+          ),
+        );
+
+        if (!tables.has("artist_links")) {
+          exec(`
+      CREATE TABLE artist_links (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        artist_id TEXT NOT NULL REFERENCES artists(id),
+        label TEXT NOT NULL,
+        url TEXT NOT NULL,
+        sort_order INTEGER NOT NULL DEFAULT 0
+      )
+    `);
+
+          runQuery(
+            `SELECT id, instagram_url, website_url FROM artists`,
+          ).forEach((artist) => {
+            if (artist.instagram_url) {
+              exec(
+                `INSERT INTO artist_links (artist_id, label, url, sort_order) VALUES (?, ?, ?, 0)`,
+                [artist.id, "Instagram", artist.instagram_url],
+              );
+            }
+
+            if (artist.website_url) {
+              exec(
+                `INSERT INTO artist_links (artist_id, label, url, sort_order) VALUES (?, ?, ?, 1)`,
+                [artist.id, "Website", artist.website_url],
+              );
+            }
+          });
+        }
       }
 
       function loadCaches() {
@@ -760,6 +797,28 @@
     ORDER BY s.id
   `);
         artistCache = runQuery(`SELECT * FROM artists ORDER BY name`);
+        artistLinksCache = runQuery(
+          `SELECT * FROM artist_links ORDER BY artist_id, sort_order`,
+        );
+      }
+
+      function linksForArtist(artistId) {
+        return artistLinksCache
+          .filter((link) => link.artist_id === artistId)
+          .sort((a, b) => a.sort_order - b.sort_order);
+      }
+
+      function saveArtistLinks(artistId, links) {
+        exec(`DELETE FROM artist_links WHERE artist_id = ?`, [artistId]);
+
+        links.forEach((link, index) => {
+          if (!link.label || !link.url) return;
+
+          exec(
+            `INSERT INTO artist_links (artist_id, label, url, sort_order) VALUES (?, ?, ?, ?)`,
+            [artistId, link.label, link.url, index],
+          );
+        });
       }
 
       function populateCategoryFilter() {
@@ -1121,22 +1180,35 @@
           <input type="text" id="a_name" placeholder="Artist name" />
         </div>
 
-        <div class="two-col">
-          <div class="field">
-            <label>Store URL</label>
-            <input type="text" id="a_store" placeholder="https://..." />
-          </div>
+       <div class="field">
+          <label>Store URL (required)</label>
+          <input type="text" id="a_store" placeholder="https://..." />
+        </div>
 
-          <div class="field">
-            <label>Instagram URL</label>
-            <input type="text" id="a_ig" placeholder="https://..." />
+        <div class="field">
+          <label>Link 1 (optional)</label>
+          <div class="two-col">
+            <input type="text" id="a_link1_label" list="a_link_labels" placeholder="Instagram" />
+            <input type="text" id="a_link1_url" placeholder="https://..." />
           </div>
         </div>
 
         <div class="field">
-          <label>Website URL</label>
-          <input type="text" id="a_web" placeholder="https://..." />
+          <label>Link 2 (optional)</label>
+          <div class="two-col">
+            <input type="text" id="a_link2_label" list="a_link_labels" placeholder="TikTok" />
+            <input type="text" id="a_link2_url" placeholder="https://..." />
+          </div>
         </div>
+
+        <datalist id="a_link_labels">
+          <option value="Instagram"></option>
+          <option value="Facebook"></option>
+          <option value="TikTok"></option>
+          <option value="Blog"></option>
+          <option value="Portfolio"></option>
+          <option value="Website"></option>
+        </datalist>
 
         <div class="field">
           <label>Artist Bio</label>
@@ -1227,7 +1299,7 @@
     <div class="form-card">
       <h2>${artist.name}</h2>
 
-      <div class="field">
+<div class="field">
         <label>Store URL</label>
 
         <div>
@@ -1240,25 +1312,16 @@
       </div>
 
       <div class="field">
-        <label>Instagram URL</label>
+        <label>Links</label>
 
         <div>
           ${
-            artist.instagram_url
-              ? `<a href="${artist.instagram_url}" target="_blank">${artist.instagram_url}</a>`
-              : "—"
-          }
-        </div>
-      </div>
-
-      <div class="field">
-        <label>Website URL</label>
-
-        <div>
-          ${
-            artist.website_url
-              ? `<a href="${artist.website_url}" target="_blank">${artist.website_url}</a>`
-              : "—"
+            linksForArtist(artist.id)
+              .map(
+                (link) =>
+                  `<div><strong>${link.label}:</strong> <a href="${link.url}" target="_blank">${link.url}</a></div>`,
+              )
+              .join("") || "—"
           }
         </div>
       </div>
@@ -1340,14 +1403,18 @@
           return;
         }
 
+        const store = $("a_store").value.trim();
+
+        if (!store) {
+          showToast("Store URL is required");
+          return;
+        }
+
         const id = name
           .toLowerCase()
           .replace(/[^a-z0-9]+/g, "-")
           .replace(/(^-|-$)/g, "");
 
-        const store = $("a_store").value.trim() || null;
-        const instagram = $("a_ig").value.trim() || null;
-        const website = $("a_web").value.trim() || null;
         const bio = $("a_bio").value.trim() || null;
         const isFeatured = $("a_featured").checked ? 1 : 0;
 
@@ -1361,15 +1428,24 @@
         id,
         name,
         store_url,
-        instagram_url,
-        website_url,
         bio,
         is_featured
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?)
     `,
-          [id, name, store, instagram, website, bio, isFeatured],
+          [id, name, store, bio, isFeatured],
         );
+
+        saveArtistLinks(id, [
+          {
+            label: $("a_link1_label").value.trim(),
+            url: $("a_link1_url").value.trim(),
+          },
+          {
+            label: $("a_link2_label").value.trim(),
+            url: $("a_link2_url").value.trim(),
+          },
+        ]);
 
         loadCaches();
         populateArtistFilter();
@@ -1387,6 +1463,10 @@
         selectedStickerId = null;
         renderList();
 
+        const existingLinks = linksForArtist(artistId);
+        const link1 = existingLinks[0] || { label: "", url: "" };
+        const link2 = existingLinks[1] || { label: "", url: "" };
+
         const main = $("mainPanel");
 
         main.innerHTML = `
@@ -1402,40 +1482,41 @@
         />
       </div>
 
-      <div class="two-col">
-        <div class="field">
-          <label>Store URL</label>
+<div class="field">
+        <label>Store URL (required)</label>
 
-          <input
-            type="text"
-            id="a_store"
-            value="${artist.store_url || ""}"
-            placeholder="https://..."
-          />
-        </div>
+        <input
+          type="text"
+          id="a_store"
+          value="${artist.store_url || ""}"
+          placeholder="https://..."
+        />
+      </div>
 
-        <div class="field">
-          <label>Instagram URL</label>
-
-          <input
-            type="text"
-            id="a_ig"
-            value="${artist.instagram_url || ""}"
-            placeholder="https://..."
-          />
+      <div class="field">
+        <label>Link 1 (optional)</label>
+        <div class="two-col">
+          <input type="text" id="a_link1_label" list="a_link_labels" value="${link1.label}" placeholder="Instagram" />
+          <input type="text" id="a_link1_url" value="${link1.url}" placeholder="https://..." />
         </div>
       </div>
 
       <div class="field">
-        <label>Website URL</label>
-
-        <input
-          type="text"
-          id="a_web"
-          value="${artist.website_url || ""}"
-          placeholder="https://..."
-        />
+        <label>Link 2 (optional)</label>
+        <div class="two-col">
+          <input type="text" id="a_link2_label" list="a_link_labels" value="${link2.label}" placeholder="TikTok" />
+          <input type="text" id="a_link2_url" value="${link2.url}" placeholder="https://..." />
+        </div>
       </div>
+
+      <datalist id="a_link_labels">
+        <option value="Instagram"></option>
+        <option value="Facebook"></option>
+        <option value="TikTok"></option>
+        <option value="Blog"></option>
+        <option value="Portfolio"></option>
+        <option value="Website"></option>
+      </datalist>
 
       <div class="field">
         <label>Artist Bio</label>
@@ -1490,9 +1571,13 @@
           return;
         }
 
-        const store = $("a_store").value.trim() || null;
-        const instagram = $("a_ig").value.trim() || null;
-        const website = $("a_web").value.trim() || null;
+        const store = $("a_store").value.trim();
+
+        if (!store) {
+          showToast("Store URL is required");
+          return;
+        }
+
         const bio = $("a_bio").value.trim() || null;
         const isFeatured = $("a_featured").checked ? 1 : 0;
 
@@ -1505,14 +1590,23 @@
       UPDATE artists
       SET name = ?,
           store_url = ?,
-          instagram_url = ?,
-          website_url = ?,
           bio = ?,
           is_featured = ?
       WHERE id = ?
     `,
-          [name, store, instagram, website, bio, isFeatured, id],
+          [name, store, bio, isFeatured, id],
         );
+
+        saveArtistLinks(id, [
+          {
+            label: $("a_link1_label").value.trim(),
+            url: $("a_link1_url").value.trim(),
+          },
+          {
+            label: $("a_link2_label").value.trim(),
+            url: $("a_link2_url").value.trim(),
+          },
+        ]);
 
         loadCaches();
         populateArtistFilter();
