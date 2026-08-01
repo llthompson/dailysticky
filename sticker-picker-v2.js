@@ -201,9 +201,19 @@
     const data = await loadData();
     renderFeaturedStrip(data);
 
-    stickerGrid.innerHTML = "";
+stickerGrid.innerHTML = "";
 
-    const wrapper = document.createElement("div");
+const top = document.createElement("div");
+top.className = "catTopRow";
+
+const title = document.createElement("div");
+title.className = "catTitleTab";
+title.textContent = "Sticker Books";
+
+top.appendChild(title);
+stickerGrid.appendChild(top);
+
+const wrapper = document.createElement("div");
     wrapper.className = "catList";
 
     data.tabs.forEach((tab) => {
@@ -272,7 +282,7 @@
     const back = document.createElement("button");
     back.type = "button";
     back.className = "btn Tab catBack";
-    back.textContent = "← Tabs";
+    back.textContent = "← Sticker Books";
     back.addEventListener("click", renderTabs);
 
     const title = document.createElement("div");

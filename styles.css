@@ -1300,7 +1300,7 @@ body::after {
   height: auto;
 }
 
-.catTopRow {
+/* .catTopRow {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -1310,11 +1310,53 @@ body::after {
 .catTitle {
   font-weight: 800;
   color: var(--accent-ink);
+} */
+
+.catTopRow {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-height: 54px;
+
+  margin: -1px 1px 14px;
+  /* padding: 12px 14px; */
+  padding: 15px;
+
+  border-radius: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--inner-glow);
+}
+
+.catTopRow .catBack {
+  position: absolute;
+  left: 14px;
+
+  min-height: 28px;
+  padding: 0 8px;
+
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.catTitle {
+  max-width: calc(100% - 190px);
+
+  color: var(--accent-ink);
+  font-family: var(--font-main);
+  font-size: clamp(20px, 6vw, 26px);
+  font-weight: 700;
+  line-height: 1.05;
+  text-align: center;
+  text-shadow: 0 1px 12px rgba(255, 255, 255, 0.35);
 }
 
 .catTitleTab {
   font-weight: 600;
-  font-size: 20px;
+  font-size: 26px;
 }
 
 /* .catTitleTab {
@@ -3850,7 +3892,7 @@ h3 {
 }
 
 .btn.Tab.catBack {
-  padding: 0 30px;
+  padding: 0 10px;
   line-height: 1;
 }
 
