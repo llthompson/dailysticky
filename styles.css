@@ -1312,6 +1312,46 @@ body::after {
   color: var(--accent-ink);
 }
 
+.catTitleTab {
+  font-weight: 600;
+  font-size: 20px;
+}
+
+/* .catTitleTab {
+  position: relative;
+  display: inline-block;
+  color: var(--accent-ink);
+  font-size: 1.3rem;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.catTitleTab::after {
+  content: "";
+  position: absolute;
+  left: -3px;
+  right: -7px;
+  bottom: -5px;
+  height: 7px;
+  z-index: -1;
+  background: linear-gradient(
+    90deg,
+    rgba(216, 146, 255, 0.35),
+    rgba(247, 165, 232, 0.65)
+  );
+  clip-path: polygon(
+    0 34%,
+    8% 16%,
+    38% 28%,
+    67% 8%,
+    100% 25%,
+    96% 76%,
+    62% 65%,
+    30% 90%,
+    4% 72%
+  );
+} */
+
 .catGrid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -3757,7 +3797,6 @@ h3 {
 }
 
 .btn.Tab.catBack {
-  color: lime;
   padding: 0 30px;
   line-height: 1;
 }

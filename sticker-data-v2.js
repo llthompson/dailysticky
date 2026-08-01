@@ -128,13 +128,33 @@
             name,
             bio,
             store_url,
-            instagram_url,
-            website_url,
             is_featured
           FROM artists
           ORDER BY is_featured DESC, name COLLATE NOCASE
         `,
       );
+
+      const artistLinkRows = queryRows(
+        database,
+        `
+          SELECT artist_id, label, url, sort_order
+          FROM artist_links
+          ORDER BY artist_id, sort_order
+        `,
+      );
+
+      const linksByArtistId = new Map();
+
+      artistLinkRows.forEach((row) => {
+        if (!linksByArtistId.has(row.artist_id)) {
+          linksByArtistId.set(row.artist_id, []);
+        }
+
+        linksByArtistId.get(row.artist_id).push({
+          label: row.label,
+          url: row.url,
+        });
+      });
 
       const stickerRows = queryRows(
         database,
@@ -193,8 +213,7 @@
         name: row.name,
         bio: row.bio || "",
         storeUrl: row.store_url || "",
-        instagramUrl: row.instagram_url || "",
-        websiteUrl: row.website_url || "",
+        links: (linksByArtistId.get(row.id) || []).slice(0, 2),
         isFeatured: Boolean(row.is_featured),
       }));
 

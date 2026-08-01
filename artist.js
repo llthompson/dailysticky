@@ -30,21 +30,13 @@
 
     if (artist.storeUrl) {
       artistLinksEl.appendChild(
-        buildLinkButton(artist.storeUrl, `Visit ${artist.name}'s Sticker Shop!`, true),
+        buildLinkButton(artist.storeUrl, `Shop ${artist.name}'s Sticker Store!`, true),
       );
     }
 
-    if (artist.instagramUrl) {
-      artistLinksEl.appendChild(
-        buildLinkButton(artist.instagramUrl, "Instagram", false),
-      );
-    }
-
-    if (artist.websiteUrl) {
-      artistLinksEl.appendChild(
-        buildLinkButton(artist.websiteUrl, "Website", false),
-      );
-    }
+    (artist.links || []).forEach((link) => {
+      artistLinksEl.appendChild(buildLinkButton(link.url, link.label, false));
+    });
   }
 
   function renderGallery(stickers) {

@@ -276,7 +276,7 @@
     back.addEventListener("click", renderTabs);
 
     const title = document.createElement("div");
-    title.className = "catTitle";
+    title.className = "catTitleTab";
     title.textContent = tab.label;
 
     top.appendChild(back);
