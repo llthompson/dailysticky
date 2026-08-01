@@ -1278,7 +1278,8 @@ body::after {
 .catName {
   font-weight: 700;
   color: var(--accent-ink);
-  font-size: 16px;
+  font-size: 20px;
+  font-family: Truculenta, sans-serif;
 }
 
 .catMeta {
@@ -2043,6 +2044,7 @@ h3 {
 
 .save-features {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   gap: 8px;
   margin-top: 12px;
@@ -3618,14 +3620,14 @@ h3 {
 .featuredStripHeader {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: 8px;
   margin-bottom: 8px;
 }
 
 .featuredStripLabel {
-  font-weight: 700;
-  font-size: 14px;
+  font-weight: 600;
+  font-size: 20px;
   color: var(--accent-ink);
 }
 

@@ -30,7 +30,7 @@
 
     if (artist.storeUrl) {
       artistLinksEl.appendChild(
-        buildLinkButton(artist.storeUrl, "Visit Store", true),
+        buildLinkButton(artist.storeUrl, `Visit ${artist.name}'s Sticker Shop!`, true),
       );
     }
 

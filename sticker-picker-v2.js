@@ -89,17 +89,11 @@
     label.textContent = `Featured artist: ${artist.name}`;
     header.appendChild(label);
 
-    const link = artist.storeUrl || artist.instagramUrl || artist.websiteUrl;
-
-    if (link) {
-      const a = document.createElement("a");
-      a.className = "featuredStripLink";
-      a.href = link;
-      a.target = "_blank";
-      a.rel = "noopener noreferrer";
-      a.textContent = "Visit →";
-      header.appendChild(a);
-    }
+    const a = document.createElement("a");
+    a.className = "featuredStripLink";
+    a.href = `/artist.html?id=${encodeURIComponent(artist.id)}`;
+    a.textContent = "Meet the Artist →";
+    header.appendChild(a);
 
     const row = document.createElement("div");
     row.className = "featuredStripRow";
