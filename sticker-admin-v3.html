@@ -656,6 +656,7 @@
 
       let SQL = null;
       let db = null;
+      let loadedFileName = "stickers.db";
       let selectedStickerId = null;
       let stickerCache = [];
       let artistCache = [];
@@ -2238,7 +2239,7 @@
         const blob = new Blob([data], { type: "application/octet-stream" });
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
-        a.download = "stickers.db";
+        a.download = loadedFileName;
         document.body.appendChild(a);
         a.click();
         a.remove();
@@ -2246,6 +2247,7 @@
       }
 
       async function handleFile(file) {
+        loadedFileName = file.name;
         const buf = await file.arrayBuffer();
         db = new SQL.Database(new Uint8Array(buf));
 
