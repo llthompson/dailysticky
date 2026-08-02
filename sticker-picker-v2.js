@@ -3,6 +3,7 @@
   let activeTab = null;
   let activeCategory = null;
   let searchListenerWired = false;
+  let inSearchMode = false;
 
   function loadData() {
     if (!cachedDataPromise) {
@@ -142,9 +143,14 @@
       const query = searchInput.value;
 
       if (query.trim()) {
+        if (!inSearchMode) {
+          inSearchMode = true;
+          window.DailyStickyModalNav?.pushLevel("search", { query });
+        }
         renderSearchResults(data, query);
-      } else {
-        renderTabs();
+      } else if (inSearchMode) {
+        inSearchMode = false;
+        history.back();
       }
     });
 
@@ -192,8 +198,20 @@
     resetScroll();
   }
 
+  async function renderSearchForQuery(query, fromHistory = false) {
+    inSearchMode = true;
+
+    if (searchInput) searchInput.value = query || "";
+
+    const data = await loadData();
+    renderSearchResults(data, query || "");
+  }
+
   async function renderTabs() {
     wireSearchOnce();
+
+    inSearchMode = false;
+    if (searchInput) searchInput.value = "";
 
     activeTab = null;
     activeCategory = null;
@@ -262,9 +280,15 @@
     resetScroll();
   }
 
-  async function renderCategoriesForTab(tabId) {
+  async function renderCategoriesForTab(tabId, fromHistory = false) {
+    inSearchMode = false;
+    if (searchInput) searchInput.value = "";
     activeTab = tabId;
     activeCategory = null;
+
+    if (!fromHistory) {
+      window.DailyStickyModalNav?.pushLevel("categories", { tabId });
+    }
 
     const data = await loadData();
     renderFeaturedStrip(data);
@@ -282,10 +306,8 @@
     const back = document.createElement("button");
     back.type = "button";
     back.className = "btn Tab catBack";
-    // back.textContent = "← Sticker Books";
     back.innerHTML = '<i class="fa-solid fa-arrow-left"></i>Back';
-
-    back.addEventListener("click", renderTabs);
+    back.addEventListener("click", () => history.back());
 
     const title = document.createElement("div");
     title.className = "catTitleTab";
@@ -342,9 +364,20 @@
     resetScroll();
   }
 
-  async function renderStickersForCategory(tabId, category) {
+  async function renderStickersForCategory(
+    tabId,
+    category,
+    fromHistory = false,
+  ) {
+    inSearchMode = false;
+    if (searchInput) searchInput.value = "";
+
     activeTab = tabId;
     activeCategory = category;
+
+    if (!fromHistory) {
+      window.DailyStickyModalNav?.pushLevel("stickers", { tabId, category });
+    }
 
     const data = await loadData();
     renderFeaturedStrip(data);
@@ -367,9 +400,8 @@
     const back = document.createElement("button");
     back.type = "button";
     back.className = "btn catBack";
-    // back.textContent = "← Categories";
     back.innerHTML = '<i class="fa-solid fa-arrow-left"></i> Categories';
-    back.addEventListener("click", () => renderCategoriesForTab(tabId));
+    back.addEventListener("click", () => history.back());
 
     const title = document.createElement("div");
     title.className = "catTitle";
@@ -394,5 +426,6 @@
     renderTabs,
     renderCategoriesForTab,
     renderStickersForCategory,
+    renderSearchForQuery,
   };
 })();

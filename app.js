@@ -110,6 +110,25 @@ let stickerModalMode = "cats";
 let activeStickerCategory = null;
 let modalHistoryDepth = 0;
 
+function pushModalLevel(level, extra = {}) {
+  if (!selectedDayKey) return;
+
+  modalHistoryDepth += 1;
+
+  history.pushState(
+    {
+      modal: true,
+      level,
+      depth: modalHistoryDepth,
+      dayKey: selectedDayKey,
+      ...extra,
+    },
+    "",
+  );
+}
+
+window.DailyStickyModalNav = { pushLevel: pushModalLevel };
+
 window.addEventListener("DOMContentLoaded", init);
 
 window.addEventListener("pageshow", () => {
@@ -152,7 +171,7 @@ function populateMonthYearSelects() {
 async function loadStickers() {
   // const data = await fetchStickerData(); old picker
 
- const data = await DailyStickyStickerData.load(); // new picker
+  const data = await DailyStickyStickerData.load(); // new picker
   // stickerGroups = data.stickerGroups; old picker
   stickers = data.stickers;
   stickerById = data.stickerById;
@@ -402,24 +421,32 @@ function handlePopState(e) {
     overlay.classList.remove("hidden");
     updateNoteButtonLabel();
 
-    if (historyState.view === "categories") {
-      stickerModalMode = "cats";
-      activeStickerCategory = null;
-      modalHistoryDepth = 1;
-      DailyStickyStickerPicker.renderCategories();
+    modalHistoryDepth = historyState.depth || 1;
+
+    if (historyState.level === "categories") {
+      DailyStickyStickerPickerV2.renderCategoriesForTab(
+        historyState.tabId,
+        true,
+      );
       return;
     }
 
-    if (historyState.view === "stickers") {
-      stickerModalMode = "stickers";
-      activeStickerCategory = historyState.category || null;
-      modalHistoryDepth = 2;
-      DailyStickyStickerPicker.renderStickersForCategory(
+    if (historyState.level === "stickers") {
+      DailyStickyStickerPickerV2.renderStickersForCategory(
+        historyState.tabId,
         historyState.category,
         true,
       );
       return;
     }
+
+    if (historyState.level === "search") {
+      DailyStickyStickerPickerV2.renderSearchForQuery(historyState.query, true);
+      return;
+    }
+
+    DailyStickyStickerPickerV2.renderTabs();
+    return;
   }
 
   if (!overlay.classList.contains("hidden")) {
@@ -926,19 +953,12 @@ function openModal(dayKey) {
   if (searchInput) searchInput.value = "";
 
   updateNoteButtonLabel();
-  DailyStickyStickerPickerV2.renderTabs();
   overlay.classList.remove("hidden");
 
-  history.pushState(
-    {
-      modal: true,
-      view: "categories",
-      dayKey,
-    },
-    "",
-  );
+  modalHistoryDepth = 0;
+  pushModalLevel("tabs");
 
-  modalHistoryDepth = 1;
+  DailyStickyStickerPickerV2.renderTabs();
 }
 
 function openMonthExportPreview() {
@@ -1295,19 +1315,18 @@ function closeModal(fromHistory = false) {
   selectedDayKey = null;
   stickerModalMode = "cats";
   activeStickerCategory = null;
+  modalHistoryDepth = 0;
   closeNoteModal();
-
-  if (fromHistory) {
-    modalHistoryDepth = 0;
-  }
 }
 
 function closePickerImmediately() {
+  const depthToUnwind = modalHistoryDepth;
+
   closeModal(true);
   render();
 
-  if (history.state?.modal) {
-    history.replaceState(null, "", window.location.href);
+  if (depthToUnwind > 0) {
+    history.go(-depthToUnwind);
   }
 }
 
@@ -1433,9 +1452,7 @@ function saveNoteForSelectedDay() {
   scheduleSharePreparation();
 
   noteDayKey = null;
-  closeNoteModal();
-  closeModal(true);
-  render();
+  closePickerImmediately();
   maybeShowWeeklyRecapPrompt();
   maybeShowInstallPromptAfterNoteFlow();
 }
