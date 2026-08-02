@@ -1270,6 +1270,7 @@ body::after {
   padding: 2px;
   cursor: pointer;
   box-shadow: var(--shadow-soft);
+  box-shadow: var(--inner-glow);
   display: grid;
   justify-items: center;
   min-height: 120px;
@@ -1300,18 +1301,6 @@ body::after {
   height: auto;
 }
 
-/* .catTopRow {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 12px;
-}
-
-.catTitle {
-  font-weight: 800;
-  color: var(--accent-ink);
-} */
-
 .catTopRow {
   position: relative;
   display: flex;
@@ -1320,13 +1309,12 @@ body::after {
   max-height: 54px;
 
   margin: -1px 1px 14px;
-  /* padding: 12px 14px; */
   padding: 15px;
 
   border-radius: 16px;
   background: var(--surface);
   border: 1px solid var(--border);
-  box-shadow: var(--inner-glow);
+  /* box-shadow: var(--inner-glow); */
 }
 
 .catTopRow .catBack {
@@ -3828,54 +3816,78 @@ h3 {
 /* Artist Directory */
 .artistDirectory {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+  gap: 9px;
   margin: 20px 0;
 }
 
-@media (min-width: 720px) {
-  .artistDirectory {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
 .artistCard {
-  display: block;
-  padding: 16px;
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  background: var(--surface);
-  box-shadow: var(--shadow-soft), var(--inner-glow);
-  text-decoration: none;
-  color: inherit;
+  position: relative;
+  padding: 12px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.48);
+  border: 1px solid rgba(255, 255, 255, 0.58);
+  box-shadow: var(--inner-glow);
+
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  column-gap: 14px;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .artistCardName {
-  font-weight: 800;
-  font-size: 17px;
+  max-width: 90px;
+  margin: 0;
   color: var(--accent-ink);
-  margin-bottom: 4px;
-}
-
-.artistCardBio {
-  font-family: var(--font-alt);
-  font-size: 14px;
-  color: var(--muted);
-  line-height: 1.4;
-  margin-bottom: 8px;
-
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
+  font-weight: 800;
+  font-size: 1rem;
   overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: wrap;
+  font-size: 20px;
+  text-align: center;
 }
 
-.artistCardCount {
-  font-family: var(--font-alt);
-  font-size: 12px;
-  font-weight: 800;
+.artistCardName a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.artistCardName a::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.artistCardStickerRow {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.artistCardStickerRow img {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  display: block;
+  pointer-events: none;
+}
+
+.artistCardShop {
+  display: grid;
+  place-items: center;
+  text-align: center;
+}
+
+.artistCardShopLink {
+  position: relative;
+  z-index: 1;
   color: var(--accent-ink);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  white-space: nowrap;
 }
 
 /* .artistLinkPrimary {
