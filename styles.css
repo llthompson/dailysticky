@@ -482,6 +482,25 @@ body::after {
   width: 100%;
 }
 
+@media (min-width: 551px) {
+  .calendar {
+    grid-auto-rows: 103px;
+    /* grid-auto-rows: 87px; */
+
+  }
+
+  .day {
+    min-height: 0;
+  }
+
+  .stickerSlot img {
+    width: auto;
+    height: auto;
+    max-width: 44px;
+    max-height: 44px;
+  }
+}
+
 .day {
   font-family: var(--font-alt);
   font-weight: 400;
