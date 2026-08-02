@@ -283,7 +283,7 @@
     back.type = "button";
     back.className = "btn Tab catBack";
     // back.textContent = "← Sticker Books";
-    back.innerHTML = '<i class="fa-solid fa-arrow-left"></i>Sticker Books';
+    back.innerHTML = '<i class="fa-solid fa-arrow-left"></i>Back';
 
     back.addEventListener("click", renderTabs);
 
