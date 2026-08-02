@@ -201,19 +201,19 @@
     const data = await loadData();
     renderFeaturedStrip(data);
 
-stickerGrid.innerHTML = "";
+    stickerGrid.innerHTML = "";
 
-const top = document.createElement("div");
-top.className = "catTopRow";
+    const top = document.createElement("div");
+    top.className = "catTopRow";
 
-const title = document.createElement("div");
-title.className = "catTitleTab";
-title.textContent = "Sticker Books";
+    const title = document.createElement("div");
+    title.className = "catTitleTab";
+    title.textContent = "Sticker Books";
 
-top.appendChild(title);
-stickerGrid.appendChild(top);
+    top.appendChild(title);
+    stickerGrid.appendChild(top);
 
-const wrapper = document.createElement("div");
+    const wrapper = document.createElement("div");
     wrapper.className = "catList";
 
     data.tabs.forEach((tab) => {
@@ -282,7 +282,9 @@ const wrapper = document.createElement("div");
     const back = document.createElement("button");
     back.type = "button";
     back.className = "btn Tab catBack";
-    back.textContent = "← Sticker Books";
+    // back.textContent = "← Sticker Books";
+    back.innerHTML = '<i class="fa-solid fa-arrow-left"></i>Sticker Books';
+
     back.addEventListener("click", renderTabs);
 
     const title = document.createElement("div");
@@ -365,7 +367,8 @@ const wrapper = document.createElement("div");
     const back = document.createElement("button");
     back.type = "button";
     back.className = "btn catBack";
-    back.textContent = "← Categories";
+    // back.textContent = "← Categories";
+    back.innerHTML = '<i class="fa-solid fa-arrow-left"></i> Categories';
     back.addEventListener("click", () => renderCategoriesForTab(tabId));
 
     const title = document.createElement("div");
