@@ -161,7 +161,15 @@
     const q = query.trim().toLowerCase();
 
     const matches = data.activeStickers.filter((sticker) => {
-      const haystack = [sticker.label, sticker.id, ...(sticker.tags || [])]
+      const haystack = [
+        sticker.label,
+        sticker.id,
+        sticker.primaryCategory,
+        sticker.secondaryCategory,
+        sticker.artist?.name,
+        ...(sticker.tags || []),
+      ]
+        .filter(Boolean)
         .join(" ")
         .toLowerCase();
 

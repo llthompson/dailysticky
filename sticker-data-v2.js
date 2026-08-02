@@ -1,21 +1,30 @@
 (function () {
-const SQL_JS_BASE_URL = "/vendor/sql.js";
-const DEMO_MODE_KEY = "dailySticky.demoMode";
+  const SQL_JS_BASE_URL = "/vendor/sql.js";
+  const DEMO_MODE_KEY = "dailySticky.demoMode";
 
-function isDemoMode() {
-  const params = new URLSearchParams(window.location.search);
-  if (params.has("demo")) {
-    sessionStorage.setItem(DEMO_MODE_KEY, "1");
+  function isDemoMode() {
+    const params = new URLSearchParams(window.location.search);
+    const demoParam = params.get("demo");
+
+    if (demoParam === "off") {
+      sessionStorage.removeItem(DEMO_MODE_KEY);
+      return false;
+    }
+
+    if (params.has("demo")) {
+      sessionStorage.setItem(DEMO_MODE_KEY, "1");
+      return true;
+    }
+
+    return sessionStorage.getItem(DEMO_MODE_KEY) === "1";
   }
-  return sessionStorage.getItem(DEMO_MODE_KEY) === "1";
-}
 
-const DATABASE_URL = isDemoMode() ? "/stickers-demo.db" : "/stickers.db";
+  const DATABASE_URL = isDemoMode() ? "/stickers-demo.db" : "/stickers.db";
 
-
-// https://dailysticky.app/?demo
-// http://127.0.0.1:5500/?demo
-// http://localhost:8000/?demo
+  // https://dailysticky.app/?demo
+  // https://dailysticky.app/?demo=off
+  // http://127.0.0.1:5500/?demo
+  // http://localhost:8000/?demo
 
   const FEELING_CATEGORY_ORDER = [
     "Joy & Fun",
