@@ -1015,7 +1015,6 @@ body::after {
 .modal {
   width: min(980px, 100%);
   max-height: 86vh;
-  /* overflow-y: auto; */
   overflow-x: hidden;
   border-radius: 20px;
   border: 1px solid var(--border);
@@ -1344,22 +1343,28 @@ body::after {
 }
 
 .catTopRow {
-  position: sticky;
-  top: -12px;
+  position: relative;
   z-index: 4;
+
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   align-content: center;
   justify-content: center;
   gap: 10px;
+
   max-height: 54px;
   margin: -1px 1px 14px;
   padding: 15px;
+
   border-radius: 16px;
   background: var(--surface);
-  /* border: 1px solid var(--border); */
   border: none;
+}
+
+.catTopRowSticky {
+  position: sticky;
+  top: -12px;
 }
 
 .catTopRow .catBack {
@@ -1367,7 +1372,7 @@ body::after {
   justify-self: start;
   text-align: right;
   min-height: 28px;
-  padding: 08px;
+  padding: 0 8px;
   text-align: right;
   background: rgba(255, 255, 255, 0.2);
   color: var(--muted);

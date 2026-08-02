@@ -403,7 +403,7 @@
     stickerGrid.innerHTML = "";
 
     const top = document.createElement("div");
-    top.className = "catTopRow";
+    top.className = "catTopRow catTopRowSticky";
 
     const back = document.createElement("button");
     back.type = "button";
