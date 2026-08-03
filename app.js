@@ -140,6 +140,7 @@ window.addEventListener("pageshow", () => {
 async function init() {
   populateMonthYearSelects();
   await loadStickers();
+  renderWelcomeStickers();
   wireEvents();
   wireGridBulge("yearExportPreviewGrid", ".export-year-flat-day");
   wireGridBulge("monthExportPreviewGrid", ".export-month-day");
@@ -175,6 +176,27 @@ async function loadStickers() {
   // stickerGroups = data.stickerGroups; old picker
   stickers = data.stickers;
   stickerById = data.stickerById;
+}
+
+function renderWelcomeStickers() {
+  document
+    .querySelectorAll(".welcome-sticker[data-sticker-id]")
+    .forEach((slot) => {
+      const stickerId = slot.dataset.stickerId;
+      const sticker = stickerById.get(stickerId);
+
+      if (!sticker) {
+        console.warn(`Welcome sticker not found: ${stickerId}`);
+        return;
+      }
+
+      const img = document.createElement("img");
+      img.src = `./stickers/${sticker.file}`;
+      img.alt = "";
+      img.draggable = false;
+
+      slot.replaceChildren(img);
+    });
 }
 
 function wireEvents() {
