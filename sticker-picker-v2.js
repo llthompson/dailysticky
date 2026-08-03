@@ -76,11 +76,35 @@
     if (!artist || !items.length) {
       strip.innerHTML = "";
       strip.classList.add("hidden");
+      strip.removeAttribute("role");
+      strip.removeAttribute("tabindex");
+      strip.onclick = null;
+      strip.onkeydown = null;
       return;
     }
 
     strip.classList.remove("hidden");
     strip.innerHTML = "";
+
+    function openArtistSet() {
+      renderStickersForArtist(artist.id);
+    }
+
+    strip.setAttribute("role", "button");
+    strip.setAttribute("tabindex", "0");
+    strip.setAttribute("aria-label", `View all stickers by ${artist.name}`);
+
+    strip.onclick = (event) => {
+      if (event.target.closest(".featuredStripSticker")) return;
+      openArtistSet();
+    };
+
+    strip.onkeydown = (event) => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+
+      event.preventDefault();
+      openArtistSet();
+    };
 
     const header = document.createElement("div");
     header.className = "featuredStripHeader";
@@ -90,11 +114,10 @@
     label.textContent = `Featured artist: ${artist.name}`;
     header.appendChild(label);
 
-    const a = document.createElement("a");
-    a.className = "featuredStripLink";
-    a.href = `/artist.html?id=${encodeURIComponent(artist.id)}`;
-    a.textContent = "Meet the Artist →";
-    header.appendChild(a);
+    const viewAll = document.createElement("span");
+    viewAll.className = "featuredStripLink";
+    viewAll.textContent = "View all stickers →";
+    header.appendChild(viewAll);
 
     const row = document.createElement("div");
     row.className = "featuredStripRow";
@@ -104,7 +127,11 @@
       btn.type = "button";
       btn.className = "featuredStripSticker";
       btn.setAttribute("data-sticker-id", sticker.id);
-      btn.addEventListener("click", () => selectSticker(sticker));
+
+      btn.addEventListener("click", (event) => {
+        event.stopPropagation();
+        selectSticker(sticker);
+      });
 
       const img = document.createElement("img");
       img.alt = sticker.label || sticker.id;
@@ -372,6 +399,78 @@
     resetScroll();
   }
 
+  async function renderStickersForArtist(artistId, fromHistory = false) {
+    inSearchMode = false;
+
+    if (searchInput) {
+      searchInput.value = "";
+    }
+
+    activeTab = null;
+    activeCategory = null;
+
+    if (!fromHistory) {
+      window.DailyStickyModalNav?.pushLevel("artist", { artistId });
+    }
+
+    const data = await loadData();
+    const artist = data.artistById.get(artistId);
+
+    if (!artist) return;
+
+    const strip = document.getElementById("featuredStrip");
+
+    if (strip) {
+      strip.classList.add("hidden");
+    }
+
+    const items = data.activeStickers
+      .filter((sticker) => sticker.artistId === artistId)
+      .slice()
+      .sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true }));
+
+    stickerGrid.innerHTML = "";
+
+    const top = document.createElement("div");
+    top.className = "catTopRow catTopRowSticky";
+
+    const back = document.createElement("button");
+    back.type = "button";
+    back.className = "btn catBack";
+    back.innerHTML = '<i class="fa-solid fa-arrow-left"></i> Back';
+    back.addEventListener("click", () => history.back());
+
+    const title = document.createElement("div");
+    title.className = "catTitle";
+    title.textContent = artist.name;
+
+    top.appendChild(back);
+    top.appendChild(title);
+
+    const artistLinkRow = document.createElement("div");
+    artistLinkRow.className = "artistSetLinkRow";
+
+    const artistLink = document.createElement("a");
+    artistLink.className = "artistSetProfileLink";
+    artistLink.href = `/artist.html?id=${encodeURIComponent(artist.id)}`;
+    artistLink.textContent = "Meet the Artist →";
+
+    artistLinkRow.appendChild(artistLink);
+
+    const grid = document.createElement("div");
+    grid.className = "catGrid";
+
+    items.forEach((sticker) => {
+      grid.appendChild(buildStickerButton(sticker));
+    });
+
+    stickerGrid.appendChild(top);
+    stickerGrid.appendChild(artistLinkRow);
+    stickerGrid.appendChild(grid);
+
+    resetScroll();
+  }
+
   async function renderStickersForCategory(
     tabId,
     category,
@@ -388,7 +487,12 @@
     }
 
     const data = await loadData();
-    renderFeaturedStrip(data);
+
+    const strip = document.getElementById("featuredStrip");
+
+    if (strip) {
+      strip.classList.add("hidden");
+    }
 
     const items = data.activeStickers
       .filter((sticker) => sticker.primaryCategory === category)
@@ -434,6 +538,7 @@
     renderTabs,
     renderCategoriesForTab,
     renderStickersForCategory,
+    renderStickersForArtist,
     renderSearchForQuery,
   };
 })();

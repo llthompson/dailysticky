@@ -3740,6 +3740,7 @@ h3 {
   background: var(--surface);
   border: 1px solid var(--border);
   box-shadow: var(--inner-glow);
+  /* cursor: pointer; */
 }
 
 .featuredStripHeader {
@@ -3818,6 +3819,33 @@ h3 {
   background: color-mix(in srgb, var(--accent) 20%, white);
   color: var(--accent-ink);
   white-space: nowrap;
+}
+
+.artistSetLinkRow {
+  display: flex;
+  justify-content: center;
+  margin: -4px 0 14px;
+}
+
+.artistSetProfileLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 4px 14px;
+
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.28);
+
+  color: var(--accent-ink);
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.artistSetProfileLink:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  outline-offset: 2px;
 }
 
 /* Artist profile page */
