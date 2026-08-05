@@ -30,7 +30,11 @@
 
     if (artist.storeUrl) {
       artistLinksEl.appendChild(
-        buildLinkButton(artist.storeUrl, `Shop ${artist.name}'s Sticker Store!`, true),
+        buildLinkButton(
+          artist.storeUrl,
+          `Shop ${artist.name}'s Sticker Store!`,
+          true,
+        ),
       );
     }
 
@@ -53,6 +57,7 @@
         img.src = `./stickers/${sticker.file}`;
         img.alt = sticker.label || sticker.id;
         img.loading = "lazy";
+        img.draggable = false;
 
         const label = document.createElement("div");
         label.className = "stickerLabel";

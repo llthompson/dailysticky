@@ -25,6 +25,7 @@
       img.src = `./stickers/${sticker.file}`;
       img.alt = "";
       img.loading = "lazy";
+      img.draggable = false;
       stickerRow.appendChild(img);
     });
 

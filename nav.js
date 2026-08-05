@@ -58,6 +58,16 @@ function normalizePath(path) {
   return path;
 }
 
+document.addEventListener("contextmenu", (e) => {
+  if (
+    e.target.closest(
+      ".stickerBtn, .stickerSlot, .miniDay, .catPreview, .featuredStripSticker, .artistStickerTile, .artistCardStickerRow, .note-sticker, .share-sticker-cell",
+    )
+  ) {
+    e.preventDefault();
+  }
+});
+
 document.addEventListener("DOMContentLoaded", wireNavMenu);
 
 let deferredInstallPrompt = null;

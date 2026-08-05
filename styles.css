@@ -2811,7 +2811,10 @@ h3 {
 .catPreview img,
 .miniDay img,
 .note-sticker img,
-.share-sticker-cell img {
+.share-sticker-cell img,
+.artistStickerTile img,
+.featuredStripSticker img,
+.artistCardStickerRow img {
   -webkit-user-select: none;
   user-select: none;
   -webkit-touch-callout: none;
