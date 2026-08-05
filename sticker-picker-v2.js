@@ -111,7 +111,13 @@
 
     const label = document.createElement("div");
     label.className = "featuredStripLabel";
-    label.textContent = `Featured artist: ${artist.name}`;
+    label.append("Featured artist: ");
+
+    const artistNameSpan = document.createElement("span");
+    artistNameSpan.className = "featuredStripArtistName";
+    artistNameSpan.textContent = artist.name;
+    label.appendChild(artistNameSpan);
+
     header.appendChild(label);
 
     const viewAll = document.createElement("span");

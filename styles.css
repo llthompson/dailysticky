@@ -3772,9 +3772,14 @@ h3 {
 }
 
 .featuredStripLabel {
+  min-width: 0;
   font-weight: 600;
   font-size: 20px;
   color: var(--accent-ink);
+}
+
+.featuredStripArtistName {
+  white-space: nowrap;
 }
 
 .featuredStripLink {
@@ -3791,6 +3796,14 @@ h3 {
   overflow-x: auto;
   padding-bottom: 2px;
   justify-content: space-between;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  mask-image: linear-gradient(to right, black 90%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, black 90%, transparent 100%);
+}
+
+.featuredStripRow::-webkit-scrollbar {
+  display: none;
 }
 
 .featuredStripSticker {
