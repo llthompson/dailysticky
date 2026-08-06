@@ -361,6 +361,22 @@ body::after {
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
 }
 
+.meet-the-artists-card {
+  border-radius: var(--radius);
+  padding: 0 10px;
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(22px) saturate(135%);
+  -webkit-backdrop-filter: blur(22px) saturate(135%);
+  border: 1px solid rgba(255, 255, 255, 0.62);
+  box-shadow: var(--shadow), var(--inner-glow);
+  text-align: center;
+  font-size: 14px;
+}
+
+/* .meet-the-artists-card p {
+  margin-bottom: 0;
+} */
+
 .about-card p {
   font-size: 18px;
 }
@@ -1794,7 +1810,8 @@ p[name="credits"] {
   .day,
   .modal,
   .menu-dropdown,
-  .about-card {
+  .about-card,
+  .meet-the-artists-card {
     background: #f8f7ff;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
@@ -3976,10 +3993,21 @@ h3 {
 }
 
 .artistCardStickerRow {
+  min-width: 0;
+  overflow: hidden;
+
   display: flex;
-  gap: 6px;
   align-items: center;
-  justify-content: space-between;
+  gap: 6px;
+  justify-content: space-around;
+
+  -webkit-mask-image: linear-gradient(
+    to right,
+    black 0%,
+    black 82%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(to right, black 0%, black 82%, transparent 100%);
 }
 
 .artistCardStickerRow img {

@@ -40,7 +40,10 @@
       shopLink.href = artist.storeUrl;
       shopLink.target = "_blank";
       shopLink.rel = "noopener noreferrer";
-      shopLink.textContent = "Shop \u2192";
+      shopLink.href = `/artist-profile.html?id=${encodeURIComponent(artist.id)}`;
+      shopLink.target = "";
+      shopLink.rel = "";
+      shopLink.textContent = "View all →";
 
       shopWrap.appendChild(shopLink);
       card.appendChild(shopWrap);
