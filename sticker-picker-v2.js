@@ -458,7 +458,7 @@
 
     const artistLink = document.createElement("a");
     artistLink.className = "artistSetProfileLink";
-    artistLink.href = `/artist.html?id=${encodeURIComponent(artist.id)}`;
+    artistLink.href = `/artist-profile.html?id=${encodeURIComponent(artist.id)}`;
     artistLink.textContent = "Meet the Artist →";
 
     artistLinkRow.appendChild(artistLink);

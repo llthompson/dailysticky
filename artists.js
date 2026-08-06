@@ -12,7 +12,7 @@
     name.className = "artistCardName";
 
     const nameLink = document.createElement("a");
-    nameLink.href = `/artist.html?id=${encodeURIComponent(artist.id)}`;
+    nameLink.href = `/artist-profile.html?id=${encodeURIComponent(artist.id)}`;
     nameLink.textContent = artist.name;
     name.appendChild(nameLink);
     card.appendChild(name);

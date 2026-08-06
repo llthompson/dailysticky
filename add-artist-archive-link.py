@@ -2,7 +2,7 @@ import pathlib
 
 ROOT = pathlib.Path(__file__).parent
 ANCHOR = '<a class="menu-item" href="/blog/">Sticky Notes</a>'
-LINK_HREF = "/artist-archive.html"
+LINK_HREF = "/artists.html"
 LINK_TEXT = "Meet the Artists"
 
 updated = []
