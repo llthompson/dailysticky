@@ -52,6 +52,18 @@ function hideCurrentPageLink() {
   });
 }
 
+function injectSiteFooter() {
+  if (document.querySelector(".site-footer")) return;
+
+  const footer = document.createElement("footer");
+  footer.className = "site-footer";
+  footer.innerHTML = `
+    <p>&copy; ${new Date().getFullYear()} Daily Sticky. All rights reserved.</p>
+    <p>Sticker artwork belongs to its individual artists. Please don't copy, redistribute, or reuse it without their permission — see <a href="/artists.html">Meet the Artists</a>.</p>
+  `;
+  document.body.appendChild(footer);
+}
+
 function normalizePath(path) {
   if (path === "/index.html") return "/";
   if (path.endsWith("/index.html")) return path.replace("index.html", "");
@@ -68,7 +80,10 @@ document.addEventListener("contextmenu", (e) => {
   }
 });
 
-document.addEventListener("DOMContentLoaded", wireNavMenu);
+document.addEventListener("DOMContentLoaded", () => {
+  wireNavMenu();
+  injectSiteFooter();
+});
 
 let deferredInstallPrompt = null;
 

@@ -425,6 +425,24 @@ body::after {
   text-align: center;
 }
 
+.site-footer {
+  padding: 12px 16px;
+  text-align: center;
+  font-family: var(--font-alt);
+  font-size: 0.75rem;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+}
+
+.site-footer p {
+  margin: 4px 0;
+}
+
+.site-footer a {
+  color: var(--accent-ink);
+  text-decoration: underline;
+}
+
 /* tapir */
 
 .monthHeader {
