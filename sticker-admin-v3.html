@@ -136,6 +136,7 @@
 
       input[type="text"],
       input[type="search"],
+      input[type="password"],
       select,
       textarea {
         font: inherit;
@@ -653,6 +654,64 @@
           "Objects",
         ],
       };
+
+      // Ported from tag-stickers.py's SYSTEM_PROMPT (condensed).
+      // Kept in-memory only — never written to stickers.db, never persisted.
+      let anthropicApiKey =
+        localStorage.getItem("dailysticky_admin_ai_key") || "";
+
+      const AI_SUGGEST_SYSTEM_PROMPT = `You are labeling a sticker from a digital journaling app. Look at the image and return ONLY valid JSON, no other text, no markdown fences, matching this exact schema:
+
+{
+  "id": "<sticker id, provided to you>",
+  "name": "short descriptive name, 2-5 words, plain language",
+  "tags": ["3 to 5 lowercase single or short-phrase tags"],
+  "primaryCategory": "<one category from the list below>",
+  "secondaryCategory": "<one category from the list below, or null if it doesn't clearly fit a second one>",
+  "needsReview": false
+}
+
+You will also be given the sticker's OLD category as context. Treat this as a hint only, not a rule — the image itself should always drive your actual category choice. Old categories often contain stickers that belong to a different new category than the hint suggests (e.g. a stressed face filed under "Working" should be categorized by the expression, not the old label).
+
+Old category -> new category hints:
+- Adulting, Appointments, Books, Cleaning, Health, Money, School, Shopping, Working, Writing, Holiday -> Objects
+- Exercise -> Activities
+- Fun -> Objects or Activities
+- Food All, Food Beverages, Food Desserts, Food Fruits Veggies -> Food & Drink
+- Nature, Seasons, Pets -> Animals & Nature
+- Places, Travel -> Travel & Places
+- Animal Vibes, Emoticon A, Emoticon B, Emoticon C, Emoticon Xtra, People Women, Words, Love, Mental Health (relax), Pride -> Internal World (pick the specific emotion family below)
+- Objects -> Objects
+
+If the old category is an "Internal World" hint, you must still choose one specific emotion family — never output "Internal World" itself.
+
+Categories:
+
+Internal World (emotion families) — use when the sticker's primary content is a facial expression, mood, feeling-word, or emotionally-toned illustration (including stylized animals or people whose main purpose is conveying a vibe/feeling):
+- Joy & Fun — happy, silly, playful, excited, amused
+- Calm & Peace — relaxed, cozy, content, at ease
+- Love & Connection — affection, warmth, closeness, gratitude
+- Sad & Down — low, blue, disappointed, lonely
+- Stressed & Anxious — overwhelmed, worried, nervous, panicked
+- Angry & Frustrated — irritated, mad, annoyed, fed up
+- Tired & Drained — exhausted, burnt out, sleepy, low energy
+- Confused & Mixed — numb, meh, uncertain, "don't know how I feel"
+
+External World (literal content) — use when the sticker's primary content is a concrete object, place, activity, or literal (non-mood-focused) depiction of a person/animal:
+- People & Body — literal human figures/body parts not primarily conveying an emotion
+- Animals & Nature — literal animals, plants, weather, outdoors (not stylized "vibe" animals — those go to Internal World)
+- Food & Drink
+- Travel & Places
+- Activities — sports, hobbies, events, celebrations
+- Objects — household items, tools, money, tech, books, chores, work/school items
+
+Rules:
+- Exactly one primaryCategory. secondaryCategory only if a second category genuinely applies (e.g. a "coffee with a friend" scene could be Love & Connection primary, Food & Drink secondary).
+- Stylized/expressive animals, people, or word/phrase stickers meant to convey a mood belong in an Internal World category — sort by the feeling they convey.
+- Tags should describe what's visually there AND/OR the mood it evokes — whichever is more useful for someone searching later.
+- Set "needsReview": true (and still fill in your best guess for every other field) if the image is abstract, ambiguous, or you are not confident in the category assignment.
+- Never use the word "cute" in name or tags.
+- Do not invent new categories.`;
 
       let SQL = null;
       let db = null;
@@ -2106,8 +2165,15 @@
           <option value="__nochange__" selected>Artist</option>
           ${artistOptions("")}
         </select>
-        <input type="text" id="beApplyTag" placeholder="add tag" style="width:120px" />
+<input type="text" id="beApplyTag" placeholder="add tag" style="width:120px" />
         <button id="beApplyAllBtn" class="primary">Apply all to selected</button>
+      </div>
+
+      <div class="bulk-toolbar">
+        <span>AI suggest name/tags/category for selected:</span>
+        <input type="password" id="aiSuggestKey" placeholder="Anthropic API key" style="width:220px" value="${anthropicApiKey}" />
+        <button id="aiSuggestBtn">Generate tags</button>
+        <span class="hint" id="aiSuggestStatus"></span>
       </div>
 
       <div class="bulk-table-wrap">
@@ -2188,6 +2254,13 @@
           renderBulkEditTable();
         });
 
+        $("aiSuggestKey").addEventListener("input", (e) => {
+          anthropicApiKey = e.target.value.trim();
+          localStorage.setItem("dailysticky_admin_ai_key", anthropicApiKey);
+        });
+
+        $("aiSuggestBtn").addEventListener("click", suggestSelectedWithAI);
+
         $("beCancelBtn").addEventListener("click", () => {
           bulkEditIds.clear();
           bulkEditRows = [];
@@ -2232,6 +2305,165 @@
         renderList();
         renderEditForm();
         showToast(`Updated ${count} sticker(s) — remember to download the .db`);
+      }
+
+      function parseAiSuggestion(text, id) {
+        let clean = text.trim();
+        if (clean.startsWith("```")) {
+          clean = clean
+            .replace(/^```(json)?/, "")
+            .replace(/```$/, "")
+            .trim();
+        }
+        const data = JSON.parse(clean);
+
+        const required = [
+          "id",
+          "name",
+          "tags",
+          "primaryCategory",
+          "secondaryCategory",
+        ];
+        const missing = required.filter((f) => !(f in data));
+        if (missing.length)
+          throw new Error(`missing fields: ${missing.join(", ")}`);
+
+        const validCats = new Set([
+          ...CATEGORIES.feelings,
+          ...CATEGORIES.world,
+        ]);
+        if (!validCats.has(data.primaryCategory)) {
+          throw new Error(`invalid primaryCategory: ${data.primaryCategory}`);
+        }
+        if (
+          data.secondaryCategory !== null &&
+          !validCats.has(data.secondaryCategory)
+        ) {
+          throw new Error(
+            `invalid secondaryCategory: ${data.secondaryCategory}`,
+          );
+        }
+        if (
+          !Array.isArray(data.tags) ||
+          data.tags.length < 3 ||
+          data.tags.length > 5
+        ) {
+          throw new Error(`tags must be a list of 3-5 items`);
+        }
+
+        data.id = id;
+        return data;
+      }
+
+      function blobToBase64(blob) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result.split(",")[1]);
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        });
+      }
+
+      async function fetchStickerImageAsBase64(file) {
+        const res = await fetch(`./stickers/${file}`);
+        if (!res.ok) throw new Error(`could not load ./stickers/${file}`);
+        return blobToBase64(await res.blob());
+      }
+
+      async function callClaudeForSticker(id, file, oldCategory) {
+        const imageB64 = await fetchStickerImageAsBase64(file);
+
+        const res = await fetch("https://api.anthropic.com/v1/messages", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": anthropicApiKey,
+            "anthropic-version": "2023-06-01",
+            "anthropic-dangerous-direct-browser-access": "true",
+          },
+          body: JSON.stringify({
+            model: "claude-haiku-4-5", // matches MODEL in tag-stickers.py
+            max_tokens: 500,
+            system: AI_SUGGEST_SYSTEM_PROMPT,
+            messages: [
+              {
+                role: "user",
+                content: [
+                  {
+                    type: "image",
+                    source: {
+                      type: "base64",
+                      media_type: "image/webp",
+                      data: imageB64,
+                    },
+                  },
+                  {
+                    type: "text",
+                    text: `Sticker id: "${id}"\nOLD category (hint only): "${oldCategory || "Unknown"}"`,
+                  },
+                ],
+              },
+            ],
+          }),
+        });
+
+        if (!res.ok) {
+          throw new Error(
+            `API ${res.status}: ${(await res.text()).slice(0, 200)}`,
+          );
+        }
+
+        const data = await res.json();
+        const text = data.content
+          .filter((b) => b.type === "text")
+          .map((b) => b.text)
+          .join("");
+        return parseAiSuggestion(text, id);
+      }
+
+      async function suggestSelectedWithAI() {
+        const status = $("aiSuggestStatus");
+        const selected = bulkEditRows.filter((r) => r.selected);
+
+        if (!anthropicApiKey) {
+          showToast("Enter an Anthropic API key first");
+          return;
+        }
+        if (!selected.length) {
+          showToast("Select at least one sticker first");
+          return;
+        }
+
+        const btn = $("aiSuggestBtn");
+        btn.disabled = true;
+        let ok = 0,
+          failed = 0;
+
+        for (let i = 0; i < selected.length; i++) {
+          const r = selected[i];
+          if (status)
+            status.textContent = `[${i + 1}/${selected.length}] ${r.id} ...`;
+
+          try {
+            const s = await callClaudeForSticker(r.id, r.file, r.primary);
+            r.name = s.name;
+            r.tags = s.tags.join(", ");
+            r.primary = s.primaryCategory;
+            r.secondary = s.secondaryCategory || "";
+            ok++;
+          } catch (err) {
+            console.error(`AI suggest failed for "${r.id}":`, err);
+            failed++;
+          }
+
+          await new Promise((resolve) => setTimeout(resolve, 300));
+        }
+
+        btn.disabled = false;
+        renderBulkEditTable();
+        showToast(
+          `AI suggestions: ${ok} done, ${failed} failed — review before saving`,
+        );
       }
 
       function downloadDb() {
