@@ -3195,8 +3195,9 @@ h3 {
   font-family: var(--font-alt);
   font-size: 8px;
   font-weight: 800;
-  line-height: 1;
+  line-height: 1.4;
   display: flex;
+  flex-direction: column;
   justify-content: center;
 }
 
@@ -3453,16 +3454,15 @@ h3 {
 }
 
 #monthExportCard.export-card-download .export-footer {
-  height: 60px;
+  height: auto;
   margin-top: 0;
+  padding: 10px 0;
 
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  display: block;
   text-align: center;
 
-  font-size: 20px;
+  font-size: 16px;
+  line-height: 1.4;
   font-weight: 500;
   color: rgba(36, 16, 57, 0.55);
 }
@@ -3575,7 +3575,7 @@ h3 {
 
   color: rgba(36, 16, 57, 0.46);
   font-family: var(--font-alt);
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 800;
   line-height: 1;
   white-space: nowrap;
@@ -3586,7 +3586,7 @@ h3 {
   width: 1000px;
   max-width: none;
   height: auto;
-  min-height: 1400px;
+  min-height: 1440px;
 
   position: fixed;
   left: -99999px;
@@ -3681,11 +3681,12 @@ h3 {
   position: absolute;
   left: 50%;
   right: auto;
-  bottom: 22px;
+  bottom: 3px;
   transform: translateX(-50%);
 
   height: auto;
   margin: 0;
+  margin-bottom: 4px;
 
   display: block;
 
@@ -3709,7 +3710,7 @@ h3 {
    Remove or comment out when done
 ========================= */
 
-body.debug-year-export #yearExportCard.export-card-download {
+/* body.debug-year-export #yearExportCard.export-card-download {
   position: relative;
   left: auto;
   top: auto;
@@ -3718,7 +3719,7 @@ body.debug-year-export #yearExportCard.export-card-download {
   transform: scale(0.35);
   transform-origin: top center;
   margin-bottom: -850px;
-}
+} */
 
 /* =========================
    Preview Touch Magnification Bulge
