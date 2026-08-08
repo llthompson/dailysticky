@@ -3870,23 +3870,7 @@ h3 {
   display: block;
 }
 
-.stickerBtn.hasArtist {
-  border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
-}
 
-.stickerArtistBadge {
-  font-size: 10px;
-  font-weight: 800;
-  padding: 2px 6px;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--accent) 20%, white);
-  color: var(--accent-ink);
-  white-space: nowrap;
-}
-
-.stickerBtn.hasArtist {
-  border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
-}
 
 .stickerArtistBadge {
   font-size: 10px;
@@ -3936,9 +3920,10 @@ h3 {
 }
 
 #artistBio {
-  text-align: center;
+  text-align: left;
   margin-top: 6px !important;
   margin-bottom: 22px !important;
+  white-space: pre-line;
 }
 
 #artistStickersSection {
@@ -4087,27 +4072,10 @@ h3 {
   line-height: 1;
 }
 
-.menu-item .artistLinkPrimary {
-  /* width: auto;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
 
-  padding: 7px 11px;
-  border-radius: 999px;
 
-  background: rgba(9, 189, 114, 0.54);
-  border: 1px solid rgba(255, 255, 255, 0.7);
-  box-shadow: var(--inner-glow);
-
-  color: var(--accent-ink);
-  font-family: var(--font-alt);
-  font-size: 0.82rem;
-  font-weight: 850;
-  text-decoration: none;
-  line-height: 1;
-  cursor: pointer; */
-  background: lime !important;
-  font-size: 45px !important;
-  border-radius: 0;
+.menu-item.artistLinkPrimary {
+  /* background: lime !important; */
+  padding: 12px 44px;
+  font-size: 1.1rem;
 }
