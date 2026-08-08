@@ -657,6 +657,13 @@ function renderMonth() {
       img.draggable = false;
       img.src = `./stickers/${sticker.file}`;
       slot.appendChild(img);
+
+      // if (sticker.artist) {
+      //   const badge = document.createElement("div");
+      //   badge.className = "stickerArtistBadge";
+      //   badge.textContent = sticker.artist.name;
+      //   slot.appendChild(badge);
+      // }
     }
 
     cell.appendChild(num);

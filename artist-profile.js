@@ -65,6 +65,14 @@
 
         tile.appendChild(img);
         tile.appendChild(label);
+
+        if (sticker.artist) {
+          const badge = document.createElement("div");
+          badge.className = "stickerArtistBadge";
+          badge.textContent = sticker.artist.name;
+          tile.appendChild(badge);
+        }
+
         artistGalleryEl.appendChild(tile);
       });
   }

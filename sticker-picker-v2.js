@@ -51,17 +51,17 @@
     img.draggable = false;
     btn.appendChild(img);
 
+    const label = document.createElement("div");
+    label.className = "stickerLabel";
+    label.textContent = sticker.label || sticker.id;
+    btn.appendChild(label);
+
     if (markArtist && sticker.artist) {
       const badge = document.createElement("div");
       badge.className = "stickerArtistBadge";
       badge.textContent = sticker.artist.name;
       btn.appendChild(badge);
     }
-
-    const label = document.createElement("div");
-    label.className = "stickerLabel";
-    label.textContent = sticker.label || sticker.id;
-    btn.appendChild(label);
 
     return btn;
   }
@@ -467,7 +467,7 @@
     grid.className = "catGrid";
 
     items.forEach((sticker) => {
-      grid.appendChild(buildStickerButton(sticker));
+      grid.appendChild(buildStickerButton(sticker, { markArtist: true }));
     });
 
     stickerGrid.appendChild(top);
