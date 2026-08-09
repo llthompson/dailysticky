@@ -1478,10 +1478,6 @@ Rules:
         const bio = $("a_bio").value.trim() || null;
         const isFeatured = $("a_featured").checked ? 1 : 0;
 
-        if (isFeatured) {
-          exec(`UPDATE artists SET is_featured = 0`);
-        }
-
         exec(
           `
       INSERT OR REPLACE INTO artists (
@@ -1640,10 +1636,6 @@ Rules:
 
         const bio = $("a_bio").value.trim() || null;
         const isFeatured = $("a_featured").checked ? 1 : 0;
-
-        if (isFeatured) {
-          exec(`UPDATE artists SET is_featured = 0`);
-        }
 
         exec(
           `

@@ -116,6 +116,22 @@
     });
   }
 
+  function getDailyRotationIndex(count) {
+    const now = new Date();
+
+    // Date.UTC on local Y/M/D gives a day number that only advances at
+    // local midnight, regardless of the visitor's time zone.
+    const localMidnightMs = Date.UTC(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+    );
+
+    const dayNumber = Math.floor(localMidnightMs / 86400000);
+
+    return ((dayNumber % count) + count) % count;
+  }
+
   async function readStickerDatabase() {
     const initSqlJs = await loadSqlJs();
 
@@ -269,8 +285,11 @@
         activeStickers.map((sticker) => [sticker.id, sticker]),
       );
 
-      const featuredArtist =
-        artists.find((artist) => artist.isFeatured) || null;
+      const featuredArtists = artists.filter((artist) => artist.isFeatured);
+
+      const featuredArtist = featuredArtists.length
+        ? featuredArtists[getDailyRotationIndex(featuredArtists.length)]
+        : null;
 
       const featuredStickers = featuredArtist
         ? activeStickers.filter(
