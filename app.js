@@ -1,6 +1,7 @@
 /* Sticker Year — minimal, mobile-first, GitHub Pages friendly */
 
 const WELCOME_CARD_KEY = "dailySticky.welcomeCardSeen.v1";
+const ARMED_STICKER_STORAGE_KEY = "dailySticky.armedSticker.v1";
 
 const el = (id) => document.getElementById(id);
 
@@ -50,6 +51,9 @@ const searchInput = el("searchInput");
 
 const noteBtn = el("noteBtn");
 const removeStickerBtn = el("removeStickerBtn");
+const armedStickerBanner = el("armedStickerBanner");
+const armedStickerPreviewImg = el("armedStickerPreviewImg");
+const cancelArmedStickerBtn = el("cancelArmedStickerBtn");
 
 // Note modal
 const noteOverlay = el("noteOverlay");
@@ -104,6 +108,7 @@ let stickers = []; // flattened list
 let stickerById = new Map();
 
 let selectedDayKey = null;
+let armedStickerId = null;
 let noteDayKey = null;
 let pendingWeeklyRecapDayKey = null;
 let stickerModalMode = "cats";
@@ -140,6 +145,7 @@ window.addEventListener("pageshow", () => {
 async function init() {
   populateMonthYearSelects();
   await loadStickers();
+  checkForArmedSticker();
   renderWelcomeStickers();
   wireEvents();
   wireGridBulge("yearExportPreviewGrid", ".export-year-flat-day");
@@ -176,6 +182,71 @@ async function loadStickers() {
   // stickerGroups = data.stickerGroups; old picker
   stickers = data.stickers;
   stickerById = data.stickerById;
+}
+
+function loadArmedSticker() {
+  try {
+    const raw = localStorage.getItem(ARMED_STICKER_STORAGE_KEY);
+    if (!raw) return null;
+
+    const parsed = JSON.parse(raw);
+    return parsed?.stickerId || null;
+  } catch (error) {
+    console.error("Could not read armed sticker:", error);
+    return null;
+  }
+}
+
+function clearArmedSticker() {
+  armedStickerId = null;
+  localStorage.removeItem(ARMED_STICKER_STORAGE_KEY);
+  if (armedStickerBanner) armedStickerBanner.classList.add("hidden");
+}
+
+function showArmedStickerBanner() {
+  if (!armedStickerBanner || !armedStickerId) return;
+
+  const sticker = stickerById.get(armedStickerId);
+  if (!sticker) {
+    clearArmedSticker();
+    return;
+  }
+
+  if (armedStickerPreviewImg) {
+    armedStickerPreviewImg.src = `./stickers/${sticker.file}`;
+    armedStickerPreviewImg.alt = sticker.label || sticker.id;
+  }
+
+  armedStickerBanner.classList.remove("hidden");
+}
+
+function checkForArmedSticker() {
+  const stickerId = loadArmedSticker();
+
+  if (!stickerId || !stickerById.has(stickerId)) {
+    if (stickerId) clearArmedSticker();
+    return;
+  }
+
+  armedStickerId = stickerId;
+  showArmedStickerBanner();
+}
+
+function placeArmedStickerOnDay(dayKey) {
+  if (!armedStickerId) return;
+
+  const stickerId = armedStickerId;
+  clearArmedSticker();
+
+  openModal(dayKey);
+
+  state.placements[dayKey] = stickerId;
+  saveState(state);
+  scheduleSharePreparation();
+  updateNoteButtonLabel();
+  queueWeeklyRecapPromptIfSunday(dayKey);
+
+  openNoteModal();
 }
 
 function renderWelcomeStickers() {
@@ -314,6 +385,10 @@ function wireEvents() {
     scheduleSharePreparation();
     requestModalClose();
   });
+
+  if (cancelArmedStickerBtn) {
+    cancelArmedStickerBtn.addEventListener("click", clearArmedSticker);
+  }
 
   closeNoteModalBtn.addEventListener("click", closeNoteModal);
 
@@ -677,6 +752,11 @@ function renderMonth() {
         render();
       }
 
+      if (armedStickerId) {
+        placeArmedStickerOnDay(key);
+        return;
+      }
+
       openModal(key);
     });
 
@@ -790,6 +870,12 @@ function renderYear() {
         state.month = month;
         saveState(state);
         render();
+
+        if (armedStickerId) {
+          placeArmedStickerOnDay(key);
+          return;
+        }
+
         openModal(key);
       });
 

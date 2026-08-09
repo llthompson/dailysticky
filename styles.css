@@ -2840,6 +2840,70 @@ h3 {
   transform: translateY(1px);
 }
 
+.armed-sticker-banner {
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  top: 12px;
+  z-index: 9998;
+  pointer-events: none;
+}
+
+.armed-sticker-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: min(100%, 460px);
+  margin: 123.5px auto;
+  padding: 10px 12px;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.82),
+      rgba(255, 255, 255, 0.5)
+    ),
+    linear-gradient(135deg, #ffd6e8, #d7c7ff, #bff4e6);
+  box-shadow:
+    0 18px 50px rgba(36, 16, 57, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.82);
+  color: #241039;
+  pointer-events: auto;
+}
+
+.armed-sticker-preview {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+}
+
+.armed-sticker-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.armed-sticker-title {
+  margin: 0;
+  font-family: var(--font-main);
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.armed-sticker-subtitle {
+  margin: 2px 0 0;
+  font-family: var(--font-alt);
+  font-size: 12px;
+  color: rgba(36, 16, 57, 0.68);
+}
+
+.armed-sticker-cancel {
+  flex: 0 0 auto;
+  min-height: 34px;
+}
+
 /* Make sticker images harder to casually save/drag */
 .stickerBtn img,
 .stickerSlot img,
@@ -3969,6 +4033,7 @@ body.artist-profile-page {
   background: var(--surface);
   border-radius: 16px;
   padding: 8px;
+  cursor: pointer;
   display: grid;
   place-items: center;
   gap: 6px;

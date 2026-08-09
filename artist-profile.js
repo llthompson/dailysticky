@@ -16,6 +16,21 @@
     return params.get("id");
   }
 
+  const ARMED_STICKER_STORAGE_KEY = "dailySticky.armedSticker.v1";
+
+  function armStickerAndGoToCalendar(sticker) {
+    try {
+      localStorage.setItem(
+        ARMED_STICKER_STORAGE_KEY,
+        JSON.stringify({ stickerId: sticker.id }),
+      );
+    } catch (error) {
+      console.error("Could not arm sticker:", error);
+    }
+
+    window.location.href = "/";
+  }
+
   function buildLinkButton(url, label, isPrimary) {
     const a = document.createElement("a");
     a.className = isPrimary ? "menu-item artistLinkPrimary" : "menu-item";
@@ -66,6 +81,17 @@
 
         tile.appendChild(img);
         tile.appendChild(label);
+
+        tile.setAttribute("role", "button");
+        tile.setAttribute("tabindex", "0");
+        tile.addEventListener("click", () =>
+          armStickerAndGoToCalendar(sticker),
+        );
+        tile.addEventListener("keydown", (event) => {
+          if (event.key !== "Enter" && event.key !== " ") return;
+          event.preventDefault();
+          armStickerAndGoToCalendar(sticker);
+        });
 
         if (sticker.artist) {
           const badge = document.createElement("div");
