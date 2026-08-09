@@ -120,10 +120,19 @@
       .sidebar {
         width: 340px;
         min-width: 340px;
+        flex-shrink: 0;
         border-right: 1px solid var(--border);
         display: flex;
         flex-direction: column;
         background: var(--panel);
+        transition:
+          width 0.2s ease,
+          min-width 0.2s ease;
+      }
+
+      .sidebar.collapsed {
+        width: 48px;
+        min-width: 48px;
       }
 
       .sidebar-controls {
@@ -132,6 +141,41 @@
         display: flex;
         flex-direction: column;
         gap: 8px;
+      }
+
+      .search-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .search-row input {
+        min-width: 0;
+      }
+
+      .sidebar-toggle {
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        border-radius: 8px;
+        flex-shrink: 0;
+        font-size: 18px;
+        line-height: 1;
+      }
+
+      .sidebar.collapsed .sidebar-controls {
+        padding: 10px 8px;
+        border-bottom: 0;
+      }
+
+      .sidebar.collapsed .search-row {
+        justify-content: center;
+      }
+
+      .sidebar.collapsed .search-row input,
+      .sidebar.collapsed .filter-row,
+      .sidebar.collapsed .sticker-list {
+        display: none;
       }
 
       input[type="text"],
@@ -579,13 +623,26 @@
     </div>
 
     <div id="app">
-      <div class="sidebar">
+      <div class="sidebar" id="stickerSidebar">
         <div class="sidebar-controls">
-          <input
-            type="search"
-            id="searchInput"
-            placeholder="Search name, tag, or id"
-          />
+          <div class="search-row">
+            <input
+              type="search"
+              id="searchInput"
+              placeholder="Search name, tag, or id"
+            />
+            <button
+              type="button"
+              class="sidebar-toggle"
+              id="sidebarToggleBtn"
+              aria-controls="stickerSidebar"
+              aria-expanded="true"
+              aria-label="Collapse sticker selector"
+              title="Collapse sticker selector"
+            >
+              ‹
+            </button>
+          </div>
           <div class="filter-row">
             <select id="tabFilter">
               <option value="">All tabs</option>
@@ -2118,6 +2175,18 @@ Rules:
       function renderBulkEditTable() {
         const main = $("mainPanel");
 
+        const allBulkRowsSelected = () =>
+          bulkEditRows.length > 0 && bulkEditRows.every((row) => row.selected);
+
+        const updateSelectAllButton = () => {
+          const button = $("beSelectAll");
+          if (!button) return;
+
+          const allSelected = allBulkRowsSelected();
+          button.textContent = allSelected ? "Deselect all" : "Select all";
+          button.setAttribute("aria-pressed", String(allSelected));
+        };
+
         const artistOptions = (selected) => `
     <option value="">— Artist —</option>
     ${artistCache.map((a) => `<option value="${a.id}" ${a.id === selected ? "selected" : ""}>${a.name}</option>`).join("")}
@@ -2145,7 +2214,13 @@ Rules:
         main.innerHTML = `
     <div class="bulk-wrap">
       <div class="bulk-toolbar">
-        <label><input type="checkbox" id="beSelectAll" /> Select all</label>
+        <button
+  type="button"
+  id="beSelectAll"
+  aria-pressed="${allBulkRowsSelected()}"
+>
+  ${allBulkRowsSelected() ? "Deselect all" : "Select all"}
+</button>
         <span class="sep">|</span>
         <span>Apply to selected:</span>
 <select id="beApplyPrimary">
@@ -2208,6 +2283,7 @@ Rules:
         document.querySelectorAll(".be-select").forEach((el) => {
           el.addEventListener("change", () => {
             bulkEditRows[Number(el.dataset.idx)].selected = el.checked;
+            updateSelectAllButton();
           });
         });
 
@@ -2220,8 +2296,13 @@ Rules:
           });
         });
 
-        $("beSelectAll").addEventListener("change", (e) => {
-          bulkEditRows.forEach((r) => (r.selected = e.target.checked));
+        $("beSelectAll").addEventListener("click", () => {
+          const shouldSelectAll = !allBulkRowsSelected();
+
+          bulkEditRows.forEach((row) => {
+            row.selected = shouldSelectAll;
+          });
+
           renderBulkEditTable();
         });
 
@@ -2494,6 +2575,20 @@ Rules:
 
       $("fileInput").addEventListener("change", (e) => {
         if (e.target.files[0]) handleFile(e.target.files[0]);
+      });
+
+      $("sidebarToggleBtn").addEventListener("click", () => {
+        const sidebar = $("stickerSidebar");
+        const button = $("sidebarToggleBtn");
+        const isCollapsed = sidebar.classList.toggle("collapsed");
+        const label = isCollapsed
+          ? "Expand sticker selector"
+          : "Collapse sticker selector";
+
+        button.textContent = isCollapsed ? "›" : "‹";
+        button.setAttribute("aria-expanded", String(!isCollapsed));
+        button.setAttribute("aria-label", label);
+        button.title = label;
       });
 
       $("searchInput").addEventListener("input", renderList);
