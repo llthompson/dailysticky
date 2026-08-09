@@ -4,6 +4,7 @@
   const artistNameEl = document.getElementById("artistName");
   const artistBioEl = document.getElementById("artistBio");
   const artistLinksEl = document.getElementById("artistLinks");
+  const artistNameBannerEl = document.getElementById("artistNameBanner");
   const artistStickerHeadingEl = document.getElementById(
     "artistStickerHeading",
   );
@@ -107,6 +108,12 @@
     );
 
     artistNameEl.textContent = artist.name;
+
+    if (artist.storeUrl) {
+      artistNameBannerEl.href = artist.storeUrl;
+    } else {
+      artistNameBannerEl.removeAttribute("href");
+    }
 
     if (artist.bio) {
       artistBioEl.textContent = artist.bio;

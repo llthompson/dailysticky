@@ -28,7 +28,7 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
 
-  <body>
+  <body class="artist-profile-page">
     <header class="topbar simple-topbar">
       <button id="menuBtn" class="btn icon-btn image-btn" aria-label="Menu">
         <img src="/menu-icon.png" alt="" />
@@ -63,8 +63,16 @@
       </section>
 
       <section id="artistContent" class="hidden">
-        <section class="about-card" id="artistHeader">
+        <a
+          id="artistNameBanner"
+          class="artistNameBanner"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <h1 id="artistName"></h1>
+        </a>
+
+        <section class="about-card" id="artistHeader">
           <p id="artistBio" class="tagline hidden"></p>
           <div id="artistLinks" class="save-features"></div>
         </section>
