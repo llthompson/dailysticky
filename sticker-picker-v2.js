@@ -158,7 +158,11 @@
       .map((categoryName) => ({
         category: categoryName,
         items: data.activeStickers
-          .filter((sticker) => sticker.primaryCategory === categoryName)
+          .filter(
+            (sticker) =>
+              sticker.primaryCategory === categoryName ||
+              sticker.secondaryCategory === categoryName,
+          )
           .slice()
           .sort((a, b) =>
             a.id.localeCompare(b.id, undefined, { numeric: true }),
@@ -501,7 +505,11 @@
     }
 
     const items = data.activeStickers
-      .filter((sticker) => sticker.primaryCategory === category)
+      .filter(
+        (sticker) =>
+          sticker.primaryCategory === category ||
+          sticker.secondaryCategory === category,
+      )
       .slice()
       .sort((a, b) => {
         const artistRank = (s) => (s.artistId ? 0 : 1);
