@@ -3916,8 +3916,8 @@ h3 {
 
 .featuredStripSticker {
   flex: 0 0 auto;
-  width: 64px;
-  height: 64px;
+  width: 80px;
+  height: 80px;
   border-radius: 12px;
   border: 1px solid var(--border);
   background: rgba(255, 255, 255, 0.4);
@@ -3947,7 +3947,7 @@ h3 {
 .artistSetLinkRow {
   display: flex;
   justify-content: center;
-  margin: -4px 0 14px;
+  margin: -4px 0 10px;
 }
 
 .artistSetProfileLink {
@@ -3961,7 +3961,7 @@ h3 {
   background: rgba(255, 255, 255, 0.28);
 
   color: var(--accent-ink);
-  font-size: 14px;
+  font-size: 19px;
   font-weight: 700;
   text-decoration: none;
 }
@@ -3982,10 +3982,11 @@ h3 {
 }
 
 #artistBio {
-  text-align: left;
+  text-align: center;
   margin-top: 6px !important;
   margin-bottom: 22px !important;
   white-space: pre-line;
+  font-size: 20px;
 }
 
 .artistNameBanner {
@@ -4171,8 +4172,18 @@ body.artist-profile-page {
   line-height: 1;
 }
 
+#artistStickerHeading {
+  margin: 0;
+  text-align: center;
+}
+
+#artistStickerCount {
+  margin: 10px 0;
+}
+
 .menu-item.artistLinkPrimary {
   /* background: lime !important; */
   padding: 12px 44px;
   font-size: 1.1rem;
+  text-align: center;
 }
