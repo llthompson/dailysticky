@@ -594,6 +594,25 @@
         object-fit: contain;
       }
 
+      table.bulk-table tr:has(input[type="text"]:focus) .thumb img {
+        /* temp for formatting */
+        /* table.bulk-table tbody tr:first-child .thumb img { */
+        position: fixed;
+        top: 24px;
+        left: 42px;
+        width: 200px;
+        height: 200px;
+        padding: 0;
+        object-fit: contain;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: 0 12px 35px rgba(38, 35, 28, 0.22);
+        z-index: 9000;
+        /* pointer-events: none; */
+        pointer-events: auto;
+      }
+
       table.bulk-table .remove-row {
         padding: 4px 9px;
         font-size: 11px;
