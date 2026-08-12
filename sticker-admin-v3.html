@@ -2438,13 +2438,14 @@ Rules:
             `invalid secondaryCategory: ${data.secondaryCategory}`,
           );
         }
-        if (
-          !Array.isArray(data.tags) ||
-          data.tags.length < 3 ||
-          data.tags.length > 5
-        ) {
-          throw new Error(`tags must be a list of 3-5 items`);
+        if (!Array.isArray(data.tags)) {
+          throw new Error(`tags must be a list`);
         }
+
+        data.tags = data.tags
+          .map((tag) => String(tag).trim())
+          .filter(Boolean)
+          .slice(0, 5);
 
         data.id = id;
         return data;
