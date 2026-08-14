@@ -1819,6 +1819,13 @@ function renderWeeklyShare() {
       img.alt = sticker.label || sticker.id;
       img.draggable = false;
       el.appendChild(img);
+
+      if (sticker.artist) {
+        const badge = document.createElement("div");
+        badge.className = "stickerArtistBadge";
+        badge.textContent = sticker.artist.name;
+        el.appendChild(badge);
+      }
     } else {
       el.classList.add("is-empty");
       el.textContent = "";
@@ -1864,6 +1871,7 @@ function renderWeeklyShare() {
 }
 
 async function shareWeek() {
+  await prepareShareImage();
   const shareText = "sticker your week at";
   const shareUrl = "https://dailysticky.app/share.html";
 

@@ -1683,9 +1683,26 @@ body::after {
   width: auto;
   height: auto;
   max-width: 88%;
-  max-height: 88%;
+  max-height: 70%;
   object-fit: contain;
   display: block;
+}
+
+.share-sticker-cell {
+  flex-direction: column;
+  gap: 2px;
+}
+
+.share-sticker-cell .stickerArtistBadge {
+  max-width: 90%;
+  padding: 1px 5px;
+  font-size: 7px;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background: rgba(255, 255, 255, 0.55);
+  color: rgba(45, 8, 25, 0.75);
 }
 
 .share-logo-cell img {
@@ -4187,3 +4204,10 @@ body.artist-profile-page {
   font-size: 1.1rem;
   text-align: center;
 }
+
+/* TEMP: show weekly share card for CSS editing */
+/* .weekly-share-card {
+  left: 50% !important;
+  top: 20px !important;
+  transform: translateX(-50%);
+} */
