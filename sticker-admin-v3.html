@@ -577,6 +577,24 @@
         min-width: 110px;
       }
 
+      /* table.bulk-table input[data-field="tags"] {
+        min-width: 220px;
+      } */
+
+      .tag-resize-wrap {
+        display: inline-block;
+        resize: horizontal;
+        overflow: hidden;
+        min-width: 110px;
+        max-width: 100%;
+      }
+
+      .tag-resize-wrap input[data-field="tags"] {
+        width: 100%;
+        height: 100%;
+        min-width: 0;
+      }
+
       table.bulk-table .thumb {
         width: 36px;
         height: 36px;
@@ -616,6 +634,12 @@
       table.bulk-table .remove-row {
         padding: 4px 9px;
         font-size: 11px;
+      }
+
+      table.bulk-table td:nth-child(9) {
+        width: 32px !important;
+        max-width: 32px !important;
+        text-align: center;
       }
     </style>
   </head>
@@ -802,6 +826,7 @@ Rules:
       let bulkRows = [];
       let bulkEditIds = new Set();
       let bulkEditRows = [];
+      let tagResizeObserver = null;
 
       let visibleStickerIds = [];
 
@@ -1860,6 +1885,27 @@ Rules:
         renderBulkTable();
       }
 
+      function initTagResizeSync() {
+        if (tagResizeObserver) tagResizeObserver.disconnect();
+
+        const wraps = document.querySelectorAll(".tag-resize-wrap");
+        if (!wraps.length) return;
+
+        tagResizeObserver = new ResizeObserver((entries) => {
+          entries.forEach((entry) => {
+            const target = entry.target;
+            const width = `${target.offsetWidth}px`;
+            wraps.forEach((w) => {
+              if (w !== target && w.offsetWidth !== target.offsetWidth) {
+                w.style.width = width;
+              }
+            });
+          });
+        });
+
+        wraps.forEach((w) => tagResizeObserver.observe(w));
+      }
+
       function renderBulkTable() {
         const main = $("mainPanel");
 
@@ -1879,7 +1925,7 @@ Rules:
       <td><div class="thumb"><img src="${r.objectUrl}" /></div></td>
       <td><input type="text" data-idx="${i}" data-field="id" value="${r.id}" /></td>
       <td><input type="text" data-idx="${i}" data-field="name" value="${r.name}" placeholder="name" /></td>
-      <td><input type="text" data-idx="${i}" data-field="tags" value="${r.tags}" placeholder="tag, tag" /></td>
+      <td><div class="tag-resize-wrap"><input type="text" data-idx="${i}" data-field="tags" value="${r.tags}" placeholder="tag, tag" /></div></td>
       <td><select data-idx="${i}" data-field="primary">${categoryOptionsHtml(r.primary)}</select></td>
       <td><select data-idx="${i}" data-field="secondary">${categoryOptionsHtml(r.secondary)}</select></td>
       <td><select data-idx="${i}" data-field="artist">${artistOptions(r.artist)}</select></td>
@@ -2012,6 +2058,7 @@ Rules:
         });
 
         $("bulkCommitBtn").addEventListener("click", commitBulkImport);
+        initTagResizeSync();
       }
 
       async function commitBulkImport() {
@@ -2181,7 +2228,7 @@ Rules:
       <td><div class="thumb"><img src="./stickers/${r.file}" onerror="this.style.display='none'" /></div></td>
       <td>${r.id}</td>
       <td><input type="text" data-idx="${i}" data-field="name" value="${r.name}" /></td>
-      <td><input type="text" data-idx="${i}" data-field="tags" value="${r.tags}" /></td>
+      <td><div class="tag-resize-wrap"><input type="text" data-idx="${i}" data-field="tags" value="${r.tags}" /></div></td>
       <td><select data-idx="${i}" data-field="primary">${categoryOptionsHtml(r.primary)}</select></td>
       <td><select data-idx="${i}" data-field="secondary">${categoryOptionsHtml(r.secondary)}</select></td>
       <td><select data-idx="${i}" data-field="artist">${artistOptions(r.artist)}</select></td>
@@ -2326,6 +2373,7 @@ Rules:
         });
 
         $("beCommitBtn").addEventListener("click", commitBulkEdit);
+        initTagResizeSync();
       }
 
       function commitBulkEdit() {
