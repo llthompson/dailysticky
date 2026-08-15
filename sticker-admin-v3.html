@@ -1868,6 +1868,9 @@ Rules:
     ${artistCache.map((a) => `<option value="${a.id}" ${a.id === selected ? "selected" : ""}>${a.name}</option>`).join("")}
   `;
 
+        const allBulkRowsSelected = () =>
+          bulkRows.length > 0 && bulkRows.every((row) => row.selected);
+
         const rowsHtml = bulkRows
           .map(
             (r, i) => `
@@ -1895,25 +1898,19 @@ Rules:
       </div>
 
       <div class="bulk-toolbar">
-        <label><input type="checkbox" id="bulkSelectAll" />All</label>
+        <button
+          type="button"
+          id="bulkSelectAll"
+          aria-pressed="${allBulkRowsSelected()}"
+        >
+          ${allBulkRowsSelected() ? "Deselect all" : "Select all"}
+        </button>
         <span class="sep">|</span>
         <span>Apply to selected:</span>
-
-        <button id="bulkApplyPrimaryBtn">Set primary</button>
-
         <select id="bulkApplyPrimary">${categoryOptionsHtml("")}</select>
-
-        <button id="bulkApplySecondaryBtn">Set secondary</button>
-
         <select id="bulkApplySecondary">${categoryOptionsHtml("")}</select>
-
-        <button id="bulkApplyArtistBtn">Set artist</button>
         <select id="bulkApplyArtist">${artistOptions("")}</select>
-
-     <button id="bulkApplyTagBtn">Add tag</button>
         <input type="text" id="bulkApplyTag" placeholder="add tag" style="width:120px" />
-
-        <span class="sep">|</span>
         <button id="bulkApplyAllBtn" class="primary">Apply all to selected</button>
       </div>
 
@@ -1974,48 +1971,13 @@ Rules:
           });
         }
 
-        $("bulkSelectAll").addEventListener("change", (e) => {
-          bulkRows.forEach((r) => (r.selected = e.target.checked));
-          renderBulkTable();
-        });
+        $("bulkSelectAll").addEventListener("click", () => {
+          const shouldSelectAll = !allBulkRowsSelected();
 
-        $("bulkApplyPrimaryBtn").addEventListener("click", () => {
-          const val = $("bulkApplyPrimary").value;
-          if (!val) return;
           bulkRows.forEach((r) => {
-            if (r.selected) r.primary = val;
+            r.selected = shouldSelectAll;
           });
-          renderBulkTable();
-        });
 
-        $("bulkApplySecondaryBtn").addEventListener("click", () => {
-          const val = $("bulkApplySecondary").value;
-          bulkRows.forEach((r) => {
-            if (r.selected) r.secondary = val;
-          });
-          renderBulkTable();
-        });
-
-        $("bulkApplyArtistBtn").addEventListener("click", () => {
-          const val = $("bulkApplyArtist").value;
-          bulkRows.forEach((r) => {
-            if (r.selected) r.artist = val;
-          });
-          renderBulkTable();
-        });
-
-        $("bulkApplyTagBtn").addEventListener("click", () => {
-          const tag = $("bulkApplyTag").value.trim();
-          if (!tag) return;
-          bulkRows.forEach((r) => {
-            if (!r.selected) return;
-            const existing = r.tags
-              .split(",")
-              .map((t) => t.trim())
-              .filter(Boolean);
-            if (!existing.includes(tag)) existing.push(tag);
-            r.tags = existing.join(", ");
-          });
           renderBulkTable();
         });
 
