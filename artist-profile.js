@@ -31,13 +31,28 @@
     window.location.href = "/";
   }
 
-  function buildLinkButton(url, label, isPrimary) {
+function buildLinkButton(url, label, isPrimary, artistSlug) {
     const a = document.createElement("a");
     a.className = isPrimary ? "menu-item artistLinkPrimary" : "menu-item";
     a.href = url;
     a.target = "_blank";
     a.rel = "noopener noreferrer";
     a.textContent = label;
+
+    if (isPrimary) {
+      a.addEventListener("click", () => {
+        let destinationDomain = "";
+        try {
+          destinationDomain = new URL(url).hostname;
+        } catch {}
+
+        DailyStickyAnalytics.trackEvent("artist_shop_clicked", {
+          artist_slug: artistSlug,
+          destination_domain: destinationDomain,
+        });
+      });
+    }
+
     return a;
   }
 
@@ -50,12 +65,15 @@
           artist.storeUrl,
           `Shop ${artist.name}'s Art!`,
           true,
+          artist.id,
         ),
       );
     }
 
     (artist.links || []).forEach((link) => {
-      artistLinksEl.appendChild(buildLinkButton(link.url, link.label, false));
+      artistLinksEl.appendChild(
+        buildLinkButton(link.url, link.label, false, artist.id),
+      );
     });
   }
 
@@ -128,6 +146,10 @@
       artistNotFoundEl.classList.remove("hidden");
       return;
     }
+
+    DailyStickyAnalytics.trackEvent("artist_profile_viewed", {
+      artist_slug: artist.id,
+    });
 
     const stickers = data.activeStickers.filter(
       (sticker) => sticker.artistId === artistId,

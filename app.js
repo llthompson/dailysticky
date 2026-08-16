@@ -114,6 +114,7 @@ let pendingWeeklyRecapDayKey = null;
 let stickerModalMode = "cats";
 let activeStickerCategory = null;
 let modalHistoryDepth = 0;
+let lastTrackedView = null;
 
 function pushModalLevel(level, extra = {}) {
   if (!selectedDayKey) return;
@@ -242,6 +243,11 @@ function placeArmedStickerOnDay(dayKey) {
 
   state.placements[dayKey] = stickerId;
   saveState(state);
+  DailyStickyAnalytics.trackEvent("sticker_placed");
+  DailyStickyAnalytics.trackOnce(
+    "first_sticker_placed",
+    "dailySticky.firstStickerPlaced.v1",
+  );
   scheduleSharePreparation();
   updateNoteButtonLabel();
   queueWeeklyRecapPromptIfSunday(dayKey);
@@ -575,6 +581,11 @@ function saveAndRender() {
 }
 
 function render() {
+  if (state.view !== lastTrackedView) {
+    lastTrackedView = state.view;
+    DailyStickyAnalytics.trackEvent("view_changed", { view: state.view });
+  }
+
   monthSelect.value = String(state.month);
   yearSelect.value = String(state.year);
   toggleViewBtn.textContent =
@@ -979,11 +990,28 @@ async function downloadMonthImage() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `daily-sticky-${MONTHS[state.month].toLowerCase()}-${state.year}.png`;
+
+  const now = new Date();
+  const hour12 = now.getHours() % 12 || 12;
+
+  const dateStamp =
+    String(now.getFullYear()) +
+    String(now.getMonth() + 1).padStart(2, "0") +
+    String(now.getDate()).padStart(2, "0") +
+    "_" +
+    String(hour12).padStart(2, "0") +
+    String(now.getMinutes()).padStart(2, "0");
+
+  a.download = `daily-sticky-${MONTHS[state.month].toLowerCase()}-${dateStamp}.png`;
+
   document.body.appendChild(a);
   a.click();
   a.remove();
   URL.revokeObjectURL(url);
+
+  DailyStickyAnalytics.trackEvent("export_completed", {
+    export_type: "monthly",
+  });
 }
 
 function renderYearExportCard(target = "download") {
@@ -1062,11 +1090,28 @@ async function downloadYearImage() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `daily-sticky-${state.year}.png`;
+
+  const now = new Date();
+  const hour12 = now.getHours() % 12 || 12;
+
+  const dateStamp =
+    String(now.getFullYear()) +
+    String(now.getMonth() + 1).padStart(2, "0") +
+    String(now.getDate()).padStart(2, "0") +
+    "_" +
+    String(hour12).padStart(2, "0") +
+    String(now.getMinutes()).padStart(2, "0");
+
+  a.download = `daily-sticky-${state.year}-${dateStamp}.png`;
+
   document.body.appendChild(a);
   a.click();
   a.remove();
   URL.revokeObjectURL(url);
+
+  DailyStickyAnalytics.trackEvent("export_completed", {
+    export_type: "yearly",
+  });
 }
 
 function openModal(dayKey) {
@@ -1567,6 +1612,7 @@ function saveNoteForSelectedDay() {
 
   if (value) {
     state.notes[dayKeyToSave] = value;
+    DailyStickyAnalytics.trackEvent("sticker_story_saved");
   } else {
     delete state.notes[dayKeyToSave];
   }
@@ -1670,6 +1716,7 @@ function exportJson() {
   a.click();
   a.remove();
   URL.revokeObjectURL(a.href);
+  DailyStickyAnalytics.trackEvent("backup_exported");
 }
 
 async function importJson(e) {
@@ -1694,6 +1741,7 @@ async function importJson(e) {
     };
 
     saveAndRender();
+    DailyStickyAnalytics.trackEvent("backup_imported");
     alert("Imported!");
   } catch {
     alert("Import failed. Make sure it's a valid JSON export from this app.");
@@ -1888,6 +1936,9 @@ async function shareWeek() {
         text: shareText,
         url: shareUrl,
       });
+      DailyStickyAnalytics.trackEvent("export_completed", {
+        export_type: "weekly",
+      });
       return;
     } catch (err) {
       if (err?.name === "AbortError") return;
@@ -1900,6 +1951,9 @@ async function shareWeek() {
       await navigator.share({
         text: shareText,
         url: shareUrl,
+      });
+      DailyStickyAnalytics.trackEvent("export_completed", {
+        export_type: "weekly",
       });
       return;
     } catch (err) {
@@ -1917,6 +1971,9 @@ async function shareWeek() {
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
+    DailyStickyAnalytics.trackEvent("export_completed", {
+      export_type: "weekly",
+    });
   }
 
   try {

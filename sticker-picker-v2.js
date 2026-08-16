@@ -24,6 +24,11 @@
 
     state.placements[selectedDayKey] = sticker.id;
     saveState(state);
+    DailyStickyAnalytics.trackEvent("sticker_placed");
+    DailyStickyAnalytics.trackOnce(
+      "first_sticker_placed",
+      "dailySticky.firstStickerPlaced.v1",
+    );
     scheduleSharePreparation();
     updateNoteButtonLabel();
     queueWeeklyRecapPromptIfSunday(selectedDayKey);

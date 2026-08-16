@@ -328,6 +328,7 @@ function populateNotesYearSelect(years, selectedYear) {
 }
 
 async function initNotesPage() {
+  DailyStickyAnalytics.trackEvent("view_changed", { view: "sticker_stories" });
   await loadStickers();
 
   const hashYear = getYearFromHash();
@@ -344,7 +345,11 @@ async function initNotesPage() {
   if (notesYearSelect) {
     notesYearSelect.addEventListener("change", () => {
       selectedNotesYear = Number(notesYearSelect.value);
-      history.replaceState(null, "", window.location.pathname);
+history.replaceState(
+        null,
+        "",
+        window.location.pathname + window.location.search,
+      );
       renderNotesPage();
     });
   }
