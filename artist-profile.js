@@ -48,7 +48,7 @@
       artistLinksEl.appendChild(
         buildLinkButton(
           artist.storeUrl,
-          `Shop ${artist.name}'s Sticker Store!`,
+          `Shop ${artist.name}'s Art!`,
           true,
         ),
       );
