@@ -2264,9 +2264,13 @@ Rules:
           <option value="__nochange__" selected>Artist</option>
           ${artistOptions("")}
         </select>
+        <select id="beApplyActive">
+          <option value="__nochange__" selected>Active</option>
+          <option value="1">Mark active</option>
+          <option value="0">Mark inactive</option>
+        </select>
 <input type="text" id="beApplyTag" placeholder="add tag" style="width:120px" />
         <button id="beApplyAllBtn" class="primary">Apply all to selected</button>
-      </div>
 
       <div class="bulk-toolbar">
         <span>AI suggest name/tags/category for selected:</span>
@@ -2339,6 +2343,7 @@ Rules:
           const primary = $("beApplyPrimary").value;
           const secondary = $("beApplySecondary").value;
           const artist = $("beApplyArtist").value;
+          const active = $("beApplyActive").value;
           const tag = $("beApplyTag").value.trim();
 
           bulkEditRows.forEach((r) => {
@@ -2346,6 +2351,7 @@ Rules:
             if (primary !== "__nochange__") r.primary = primary;
             if (secondary !== "__nochange__") r.secondary = secondary;
             if (artist !== "__nochange__") r.artist = artist;
+            if (active !== "__nochange__") r.active = active === "1";
             if (tag) {
               const existing = r.tags
                 .split(",")
