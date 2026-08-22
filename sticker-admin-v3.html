@@ -764,12 +764,19 @@
 
 {
   "id": "<sticker id, provided to you>",
+  "observedDetails": "2-4 short phrases naming exactly what you see: subject/species or object identity, pose or action, exact colors, any distinguishing accessory or detail, expression if a face is shown. Literal observation only, no interpretation. This field is discarded and never shown to anyone — its only purpose is to make you look closely before you write name/tags.",
   "name": "literal visual descriptive name, 2-5 words, plain language",
   "tags": ["3 to 5 lowercase single or short-phrase tags"],
   "primaryCategory": "<one category from the list below>",
   "secondaryCategory": "<one category from the list below, or null if it doesn't clearly fit a second one>",
   "needsReview": false
 }
+
+Framing: this sticker will sit in a set with hundreds of others in a daily journaling app. Fill in observedDetails as if you were describing the image to someone who cannot see it, using only what's in front of you. Then ask yourself: if there were five similar stickers next to this one, what specific, visible detail would let someone tell this one apart? Lead the name and tags with that detail, not with the safest word that could describe any of the five.
+
+Specificity rule: when a more specific, identifiable term is visible, use it instead of the generic category-level word. A daisy is a "daisy," not a "flower." A corgi is a "corgi," not a "dog." A cup with a tea bag string is "mug of tea," not "drink." Only fall back to a generic term if the image genuinely doesn't support anything more specific.
+
+BANNED WORDS — hard constraint, check this before you answer: never use "cute", "kawaii", "sticker", "happy", "stickers", "character", "baby", "cute character", "kawaii style", "kawaii character", "stylized", or any of those words in combination with other words in the name or tags. These words are banned even when they feel like the most natural or accurate descriptor — if your first instinct is one of these words, that is the signal to look harder at the image and find a more specific, literal alternative instead.
 
 You will also be given the sticker's OLD category as context. Treat this as a hint only, not a rule — the image itself should always drive your actual category choice. Old categories often contain stickers that belong to a different new category than the hint suggests (e.g. a stressed face filed under "Working" should be categorized by the expression, not the old label).
 
@@ -787,35 +794,36 @@ If the old category is an "Internal World" hint, you must still choose one speci
 
 Categories:
 
-Internal World (emotion families) — use when the sticker's primary content is a facial expression, mood, feeling-word, or emotionally-toned illustration (including stylized animals or people whose main purpose is conveying a vibe/feeling):
-- Joy & Fun — happy, silly, playful, excited, amused
-- Calm & Peace — relaxed, cozy, content, at ease
-- Love & Connection — affection, warmth, closeness, gratitude
-- Sad & Down — low, blue, disappointed, lonely
-- Stressed & Anxious — overwhelmed, worried, nervous, panicked
-- Angry & Frustrated — irritated, mad, annoyed, fed up
-- Tired & Drained — exhausted, burnt out, sleepy, low energy
-- Confused & Mixed — numb, meh, uncertain, "don't know how I feel"
+Internal World (emotion families) — use when the sticker's primary content is a facial expression, mood, feeling-word, or emotionally-toned illustration (including stylized animals or people whose main purpose is conveying a vibe/feeling). These category labels are for classification only — do not copy their wording into the name or tags:
+- Joy & Fun — delighted, gleeful, playful, excited, amused, good mood, good, amazing, great, fantastic, wonderful, awesome
+- Calm & Peace — relaxed, cozy, content, at ease, chill, serene, meditative, peaceful, calm
+- Love & Connection — affection, warmth, closeness, gratitude, friendship, love, caring, supportive, together
+- Sad & Down — low, blue, disappointed, lonely, depressed, gloomy, sad, down, unhappy
+- Stressed & Anxious — overwhelmed, worried, nervous, panicked, tense, pressured, stressed, freaked out, anxious, anxiety
+- Angry & Frustrated — irritated, mad, annoyed, fed up, grumpy, angry, pissed, rage, kill, upset, over it, furious, frustrated
+- Tired & Drained — exhausted, burnt out, sleepy, low energy, overwhelmed, worn out, fatigued, dead, done, over it
+- Confused & Mixed — numb, meh, uncertain, "don't know how I feel", idk, okay, fine, mixed, conflicted, ambivalent, unsure, confused, lost, disoriented
 
 External World (literal content) — use when the sticker's primary content is a concrete object, place, activity, or literal (non-mood-focused) depiction of a person/animal:
 - People & Body — literal human figures/body parts not primarily conveying an emotion
 - Animals & Nature — literal animals, plants, weather, outdoors (not stylized "vibe" animals — those go to Internal World or Activities)
 - Food & Drink
-- Travel & Places
-- Activities — sports, hobbies, events, celebrations
-- Objects — household items, tools, money, tech, books, chores, work/school items
+- Travel & Places — landmarks, vehicles, luggage, maps, passports, road trips, beaches, mountains, cities
+- Activities — sports, hobbies, events, celebrations, games, crafts, dancing, cooking, gardening, music, exercise, workout, work, business
+- Objects — household items, tools, money, tech, books, work/school items, furniture, appliances, stationery
 
 Rules:
 - Exactly one primaryCategory. secondaryCategory only if a second category genuinely applies (e.g. a "coffee with a friend" scene could be Love & Connection primary, Food & Drink secondary).
 - Stylized/expressive animals, people, or word/phrase stickers meant to convey a mood belong in an Internal World category — sort by the feeling they convey.
-- Tags should describe what's visually there AND/OR the mood it evokes — whichever is more useful for someone searching later.
+- Tags should describe what's visually there AND/OR the mood it evokes — whichever is more useful for someone searching later. Ground each tag in something specific to this image (pose, object, color, expression, setting) — do not fall back on a generic mood word that could apply to dozens of other stickers.
 - Set "needsReview": true (and still fill in your best guess for every other field) if the image is abstract, ambiguous, or you are not confident in the category assignment.
-- Never use these words in name or tags: "cute", "kawaii", "sticker", "happy", "stickers", "character", "baby", "cute character", "kawaii style", "kawaii character", "stylized".
 - The name must describe only what is literally visible: the subject, object, action, pose, or physical detail. Do not use inferred emotion, feeling, mood, personality, or vibe words in the name. For example, use "cat with tears" instead of "sad cat", "smiling face" instead of "happy face", and "person holding head" instead of "stressed person". Emotion and feeling words may still be used in tags and should still guide the category choice.
 - If the sticker contains clearly readable text, use that text as the sticker name. If the text is long, truncate to 2-5 words, prioritizing meaningful nouns, verbs, adverbs, and adjectives. Preserve the original wording, but normal capitalization is fine. If the text is not clearly readable, use a short descriptive name instead.
 - If the sticker contains any clearly readable text, always include "text" and "words" as tags.
 - Tags should not simply repeat the sticker name; use them to add useful visual, emotional, or contextual search terms.
-- Do not invent new categories.`;
+- Do not invent new categories.
+
+Before you output the JSON, re-read your "name" and "tags" values and confirm none of them contain a banned word from above. If one does, replace it with a more specific alternative and only then respond.`;
 
       let SQL = null;
       let db = null;
@@ -2196,6 +2204,7 @@ Rules:
             artist: s.artist_id || "",
             active: !!s.active,
             selected: false,
+            needsReview: false,
           }));
 
         renderBulkEditTable();
@@ -2228,7 +2237,7 @@ Rules:
       <td><input type="checkbox" data-idx="${i}" class="be-select" ${r.selected ? "checked" : ""} /></td>
       <td><div class="thumb"><img src="./stickers/${r.file}" onerror="this.style.display='none'" /></div></td>
       <td>${r.id}</td>
-      <td><input type="text" data-idx="${i}" data-field="name" value="${r.name}" /></td>
+      <td><input type="text" data-idx="${i}" data-field="name" value="${r.name}" /></td>      <td>${r.needsReview ? `<span title="double-check" style="color:#c00;margin-right:4px;">⚠</span>` : ""}<input type="text" data-idx="${i}" data-field="name" value="${r.name}" /></td>
       <td><div class="tag-resize-wrap"><input type="text" data-idx="${i}" data-field="tags" value="${r.tags}" /></div></td>
       <td><select data-idx="${i}" data-field="primary">${categoryOptionsHtml(r.primary)}</select></td>
       <td><select data-idx="${i}" data-field="secondary">${categoryOptionsHtml(r.secondary)}</select></td>
@@ -2427,47 +2436,52 @@ Rules:
             .replace(/```$/, "")
             .trim();
         }
-        const data = JSON.parse(clean);
 
-        const required = [
-          "id",
-          "name",
-          "tags",
-          "primaryCategory",
-          "secondaryCategory",
-        ];
-        const missing = required.filter((f) => !(f in data));
-        if (missing.length)
-          throw new Error(`missing fields: ${missing.join(", ")}`);
+        let data;
+        try {
+          data = JSON.parse(clean);
+        } catch (e) {
+          throw new Error(`unparseable response: ${clean.slice(0, 120)}`);
+        }
 
         const validCats = new Set([
           ...CATEGORIES.feelings,
           ...CATEGORIES.world,
         ]);
-        if (!validCats.has(data.primaryCategory)) {
-          throw new Error(`invalid primaryCategory: ${data.primaryCategory}`);
-        }
-        if (
-          data.secondaryCategory !== null &&
-          !validCats.has(data.secondaryCategory)
-        ) {
-          throw new Error(
-            `invalid secondaryCategory: ${data.secondaryCategory}`,
-          );
-        }
-        if (!Array.isArray(data.tags)) {
-          throw new Error(`tags must be a list`);
-        }
+        let needsReview = data.needsReview === true;
 
-        data.tags = data.tags
-          .map((tag) => String(tag).trim())
-          .filter(Boolean)
-          .slice(0, 5);
+        const name =
+          typeof data.name === "string" && data.name.trim()
+            ? data.name.trim()
+            : ((needsReview = true), "");
 
-        data.id = id;
-        return data;
+        const tags = Array.isArray(data.tags)
+          ? data.tags
+              .map((t) => String(t).trim())
+              .filter(Boolean)
+              .slice(0, 5)
+          : ((needsReview = true), []);
+
+        const primaryCategory = validCats.has(data.primaryCategory)
+          ? data.primaryCategory
+          : ((needsReview = true), "");
+
+        const secondaryCategory =
+          data.secondaryCategory == null
+            ? null
+            : validCats.has(data.secondaryCategory)
+              ? data.secondaryCategory
+              : ((needsReview = true), null);
+
+        return {
+          id,
+          name,
+          tags,
+          primaryCategory,
+          secondaryCategory,
+          needsReview,
+        };
       }
-
       function blobToBase64(blob) {
         return new Promise((resolve, reject) => {
           const reader = new FileReader();
@@ -2496,7 +2510,7 @@ Rules:
           },
           body: JSON.stringify({
             model: "claude-haiku-4-5", // matches MODEL in tag-stickers.py
-            max_tokens: 500,
+            max_tokens: 750,
             system: AI_SUGGEST_SYSTEM_PROMPT,
             messages: [
               {
@@ -2521,9 +2535,10 @@ Rules:
         });
 
         if (!res.ok) {
-          throw new Error(
-            `API ${res.status}: ${(await res.text()).slice(0, 200)}`,
-          );
+          const bodyText = (await res.text()).slice(0, 200);
+          const err = new Error(`API ${res.status}: ${bodyText}`);
+          err.status = res.status;
+          throw err;
         }
 
         const data = await res.json();
@@ -2531,7 +2546,46 @@ Rules:
           .filter((b) => b.type === "text")
           .map((b) => b.text)
           .join("");
-        return parseAiSuggestion(text, id);
+
+        try {
+          return parseAiSuggestion(text, id);
+        } catch (parseErr) {
+          // Only truly unparseable JSON reaches here now. One cheap
+          // text-only repair pass (no image resend) before giving up.
+          const repairRes = await fetch(
+            "https://api.anthropic.com/v1/messages",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "x-api-key": anthropicApiKey,
+                "anthropic-version": "2023-06-01",
+                "anthropic-dangerous-direct-browser-access": "true",
+              },
+              body: JSON.stringify({
+                model: "claude-haiku-4-5",
+                max_tokens: 750,
+                system:
+                  "Return ONLY the corrected JSON object, no markdown fences, no other text.",
+                messages: [
+                  {
+                    role: "user",
+                    content: `This response was supposed to be a single JSON object but failed to parse:\n\n${text}\n\nFix it and return only valid JSON matching the same fields.`,
+                  },
+                ],
+              }),
+            },
+          );
+
+          if (!repairRes.ok) throw parseErr;
+
+          const repairData = await repairRes.json();
+          const repairText = repairData.content
+            .filter((b) => b.type === "text")
+            .map((b) => b.text)
+            .join("");
+          return parseAiSuggestion(repairText, id);
+        }
       }
 
       async function suggestSelectedWithAI() {
@@ -2550,7 +2604,9 @@ Rules:
         const btn = $("aiSuggestBtn");
         btn.disabled = true;
         let ok = 0,
-          failed = 0;
+          failed = 0,
+          flagged = 0,
+          stoppedEarly = false;
 
         for (let i = 0; i < selected.length; i++) {
           const r = selected[i];
@@ -2559,14 +2615,21 @@ Rules:
 
           try {
             const s = await callClaudeForSticker(r.id, r.file, r.primary);
-            r.name = s.name;
-            r.tags = s.tags.join(", ");
-            r.primary = s.primaryCategory;
-            r.secondary = s.secondaryCategory || "";
+            if (s.name) r.name = s.name;
+            if (s.tags.length) r.tags = s.tags.join(", ");
+            if (s.primaryCategory) r.primary = s.primaryCategory;
+            if (s.secondaryCategory !== null) r.secondary = s.secondaryCategory;
+            r.needsReview = s.needsReview;
+            if (s.needsReview) flagged++;
             ok++;
           } catch (err) {
             console.error(`AI suggest failed for "${r.id}":`, err);
             failed++;
+
+            if (/credit balance|insufficient/i.test(err.message)) {
+              stoppedEarly = true;
+              break;
+            }
           }
 
           await new Promise((resolve) => setTimeout(resolve, 300));
@@ -2574,9 +2637,17 @@ Rules:
 
         btn.disabled = false;
         renderBulkEditTable();
-        showToast(
-          `AI suggestions: ${ok} done, ${failed} failed — review before saving`,
-        );
+
+        if (stoppedEarly) {
+          const remaining = selected.length - ok - failed;
+          showToast(
+            `Stopped — Anthropic account is out of credits. ${ok} done, ${remaining} not attempted — review before saving`,
+          );
+        } else {
+          showToast(
+            `AI suggestions: ${ok} done (${flagged} flagged for review), ${failed} failed`,
+          );
+        }
       }
 
       function downloadDb() {
