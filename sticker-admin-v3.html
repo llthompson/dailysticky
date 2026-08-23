@@ -2237,7 +2237,7 @@ Before you output the JSON, re-read your "name" and "tags" values and confirm no
       <td><input type="checkbox" data-idx="${i}" class="be-select" ${r.selected ? "checked" : ""} /></td>
       <td><div class="thumb"><img src="./stickers/${r.file}" onerror="this.style.display='none'" /></div></td>
       <td>${r.id}</td>
-      <td><input type="text" data-idx="${i}" data-field="name" value="${r.name}" /></td>      <td>${r.needsReview ? `<span title="double-check" style="color:#c00;margin-right:4px;">⚠</span>` : ""}<input type="text" data-idx="${i}" data-field="name" value="${r.name}" /></td>
+              <td>${r.needsReview ? `<span title="double-check" style="color:#c00;margin-right:4px;">⚠</span>` : ""}<input type="text" data-idx="${i}" data-field="name" value="${r.name}" /></td>
       <td><div class="tag-resize-wrap"><input type="text" data-idx="${i}" data-field="tags" value="${r.tags}" /></div></td>
       <td><select data-idx="${i}" data-field="primary">${categoryOptionsHtml(r.primary)}</select></td>
       <td><select data-idx="${i}" data-field="secondary">${categoryOptionsHtml(r.secondary)}</select></td>
