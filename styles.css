@@ -1494,6 +1494,104 @@ body::after {
   gap: 10px;
 }
 
+.catTagFilterRow {
+  margin: -4px 0 14px;
+  padding: 7px 5px 10px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+.catTagFilterList {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  max-height: 66px;
+  overflow: hidden;
+}
+
+.catTagFilterList.expanded {
+  max-height: 145px;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 12%,
+    black 88%,
+    transparent 100%
+  );
+
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 5%,
+    black 88%,
+    transparent 100%
+  );
+
+  scrollbar-width: none;
+}
+
+.catTagFilterList.expanded::-webkit-scrollbar {
+  display: none;
+}
+
+.catTagFilterChip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 30px;
+  padding: 4px 11px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.68);
+  background: rgba(255, 255, 255, 0.28);
+  color: var(--accent-ink);
+  font-family: var(--font-alt);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.1s ease;
+}
+
+.catTagFilterChip:hover {
+  background: rgba(255, 255, 255, 0.45);
+}
+
+.catTagFilterChip.active {
+  background: color-mix(in srgb, var(--accent) 28%, white);
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+}
+
+.catTagFilterChip:active {
+  transform: translateY(1px);
+}
+
+.catTagShowMore {
+  display: block;
+  margin: 9px auto 0;
+  padding: 3px 8px;
+  border: 0;
+  background: transparent;
+  color: var(--accent-ink);
+  font-family: var(--font-alt);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  opacity: 0.75;
+}
+
+.catTagShowMore:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
 /* Menu */
 .menu-wrap {
   grid-column: 1;
@@ -4182,6 +4280,24 @@ body.artist-profile-page {
 
 .btn.catBack i {
   font-size: 0.85em;
+}
+
+.btn.catFilterToggle {
+  grid-column: 3;
+  justify-self: end;
+
+  width: 30px;
+  min-height: 30px;
+  padding: 0;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn.catFilterToggle[aria-expanded="true"] {
+  background: color-mix(in srgb, var(--accent) 26%, white);
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
 }
 
 .btn.Tab.catBack {

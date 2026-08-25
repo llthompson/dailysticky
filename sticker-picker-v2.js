@@ -420,7 +420,6 @@
     if (searchInput) {
       searchInput.value = "";
     }
-
     activeTab = null;
     activeCategory = null;
 
@@ -523,6 +522,25 @@
         return a.id.localeCompare(b.id, undefined, { numeric: true });
       });
 
+    const tagCounts = new Map();
+
+    items.forEach((sticker) => {
+      (sticker.tags || []).forEach((tag) => {
+        tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
+      });
+    });
+
+    // console.warn("ALL TAG COUNTS", [...tagCounts.entries()]);
+    // console.warn(
+    //   "QUALIFYING TAGS",
+    //   [...tagCounts.entries()].filter(([, count]) => count >= 6),
+    // );
+
+    const tagOptions = [...tagCounts.entries()]
+      .filter(([, count]) => count >= 6 && count < items.length)
+      .sort((a, b) => a[0].localeCompare(b[0]))
+      .map(([tag]) => tag);
+
     stickerGrid.innerHTML = "";
 
     const top = document.createElement("div");
@@ -544,11 +562,109 @@
     const grid = document.createElement("div");
     grid.className = "catGrid";
 
-    items.forEach((sticker) => {
-      grid.appendChild(buildStickerButton(sticker, { markArtist: true }));
-    });
+    function renderGridItems(list) {
+      grid.innerHTML = "";
+      list.forEach((sticker) => {
+        grid.appendChild(buildStickerButton(sticker, { markArtist: true }));
+      });
+    }
+
+    let tagRow = null;
+
+    if (tagOptions.length) {
+      const filterToggle = document.createElement("button");
+      filterToggle.type = "button";
+      filterToggle.className = "btn catFilterToggle";
+      filterToggle.setAttribute("aria-label", "Filter this category by tag");
+      filterToggle.setAttribute("aria-expanded", "false");
+      filterToggle.innerHTML = '<i class="fa-solid fa-sliders"></i>';
+
+      top.appendChild(filterToggle);
+
+      tagRow = document.createElement("div");
+      tagRow.className = "catTagFilterRow hidden";
+
+      const tagList = document.createElement("div");
+      tagList.className = "catTagFilterList";
+
+      const showMoreButton = document.createElement("button");
+      showMoreButton.type = "button";
+      showMoreButton.className = "catTagShowMore";
+      showMoreButton.textContent = "Show all tags ↓";
+
+      function createTagChip(tag) {
+        const chip = document.createElement("button");
+        chip.type = "button";
+        chip.className = "catTagFilterChip";
+        chip.textContent = tag;
+
+        chip.addEventListener("click", () => {
+          const isActive = chip.classList.contains("active");
+
+          tagList
+            .querySelectorAll(".catTagFilterChip")
+            .forEach((el) => el.classList.remove("active"));
+
+          if (isActive) {
+            renderGridItems(items);
+          } else {
+            chip.classList.add("active");
+
+            renderGridItems(
+              items.filter((sticker) => (sticker.tags || []).includes(tag)),
+            );
+          }
+
+          resetScroll();
+        });
+
+        return chip;
+      }
+
+      tagOptions.forEach((tag) => {
+        tagList.appendChild(createTagChip(tag));
+      });
+
+      tagRow.appendChild(tagList);
+      tagRow.appendChild(showMoreButton);
+
+      let tagsExpanded = false;
+
+      showMoreButton.addEventListener("click", () => {
+        tagsExpanded = !tagsExpanded;
+
+        tagList.classList.toggle("expanded", tagsExpanded);
+
+        showMoreButton.textContent = tagsExpanded
+          ? "Show fewer ↑"
+          : "Show all tags ↓";
+
+        resetScroll();
+      });
+
+      filterToggle.addEventListener("click", () => {
+        const isHidden = tagRow.classList.toggle("hidden");
+
+        filterToggle.setAttribute("aria-expanded", isHidden ? "false" : "true");
+
+        // Once the filter panel is actually visible, check whether
+        // there are more than two rows of tags.
+        if (!isHidden) {
+          requestAnimationFrame(() => {
+            const hasMoreTags = tagList.scrollHeight > tagList.clientHeight + 1;
+
+            showMoreButton.style.display = hasMoreTags ? "" : "none";
+          });
+        }
+
+        resetScroll();
+      });
+    }
+
+    renderGridItems(items);
 
     stickerGrid.appendChild(top);
+    if (tagRow) stickerGrid.appendChild(tagRow);
     stickerGrid.appendChild(grid);
     resetScroll();
   }
