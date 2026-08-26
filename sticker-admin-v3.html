@@ -151,6 +151,28 @@
 
       .search-row input {
         min-width: 0;
+        flex: 1 1 auto;
+      }
+
+      .scope-chip {
+        flex: 0 0 auto;
+        width: 24px;
+        height: 24px;
+        padding: 0;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        background: var(--panel);
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 600;
+        line-height: 1;
+        cursor: pointer;
+      }
+
+      .scope-chip.active {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
       }
 
       .sidebar-toggle {
@@ -173,6 +195,8 @@
       }
 
       .sidebar.collapsed .search-row input,
+      .sidebar.collapsed .search-row select,
+      .sidebar.collapsed .scope-chip,
       .sidebar.collapsed .filter-row,
       .sidebar.collapsed .sticker-list {
         display: none;
@@ -676,6 +700,26 @@
             />
             <button
               type="button"
+              class="scope-chip"
+              id="scopeNameBtn"
+              data-scope="name"
+              title="Search names"
+              aria-pressed="false"
+            >
+              N
+            </button>
+            <button
+              type="button"
+              class="scope-chip"
+              id="scopeTagsBtn"
+              data-scope="tags"
+              title="Search tags"
+              aria-pressed="false"
+            >
+              T
+            </button>
+            <button
+              type="button"
               class="sidebar-toggle"
               id="sidebarToggleBtn"
               aria-controls="stickerSidebar"
@@ -1018,6 +1062,8 @@ Before you output the JSON, re-read your "name" and "tags" values and confirm no
         if (artistCache.some((a) => a.id === current)) sel.value = current;
       }
 
+      const searchScopes = new Set();
+
       function renderList() {
         const search = $("searchInput").value.trim().toLowerCase();
         const tabFilter = $("tabFilter").value;
@@ -1029,8 +1075,15 @@ Before you output the JSON, re-read your "name" and "tags" values and confirm no
           if (!statusFilter && !s.active) return false;
 
           if (search) {
-            const hay =
-              `${s.id} ${s.name || ""} ${s.tag_list || ""}`.toLowerCase();
+            let hay;
+            if (searchScopes.size === 0) {
+              hay = `${s.id} ${s.name || ""} ${s.tag_list || ""}`.toLowerCase();
+            } else {
+              const parts = [];
+              if (searchScopes.has("name")) parts.push(s.name || "");
+              if (searchScopes.has("tags")) parts.push(s.tag_list || "");
+              hay = parts.join(" ").toLowerCase();
+            }
             if (!hay.includes(search)) return false;
           }
           if (tabFilter && tabForCategory(s.primary_category) !== tabFilter)
@@ -2700,6 +2753,16 @@ Before you output the JSON, re-read your "name" and "tags" values and confirm no
       });
 
       $("searchInput").addEventListener("input", renderList);
+      [$("scopeNameBtn"), $("scopeTagsBtn")].forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const scope = btn.dataset.scope;
+          const isActive = btn.classList.toggle("active");
+          btn.setAttribute("aria-pressed", String(isActive));
+          if (isActive) searchScopes.add(scope);
+          else searchScopes.delete(scope);
+          renderList();
+        });
+      });
       $("tabFilter").addEventListener("change", () => {
         populateCategoryFilter();
         const currentTab = $("tabFilter").value;
