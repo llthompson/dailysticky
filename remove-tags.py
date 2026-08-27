@@ -13,31 +13,27 @@ itself, so a tag name stays available for other stickers / future use
 even after you strip it from everywhere.
 
 SAFETY:
-  - Dry run by default. Nothing is touched unless you pass --apply.
   - Always prints an exact preview of every sticker/tag pair that would
-    be removed, before anything happens.
-  - With --apply, still requires a typed "yes" confirmation.
-  - Makes a timestamped copy of the .db file before writing.
+    be removed first.
+  - Nothing is deleted until you type "yes" at the prompt that follows
+    the preview — answer anything else (or just Ctrl-C) and it aborts.
   - All deletes run inside a single explicit transaction (BEGIN/COMMIT,
     with ROLLBACK on any error), so a failure partway through leaves the
     database unchanged.
 
 USAGE
 
-  # Preview: remove "cute" and "adorable" from every sticker
+  # Remove "cute" and "adorable" from every sticker (shows preview, then asks to confirm)
   python3 remove-tags.py --tags cute adorable
 
-  # Preview: remove them only from the Animals & Nature category
+  # Remove them only from the Animals & Nature category
   python3 remove-tags.py --tags cute adorable --category "Animals & Nature"
 
   # Same, but comma-separated also works
   python3 remove-tags.py --tags cute,adorable --category "Animals & Nature"
 
-  # After checking the preview looks right, actually apply it
-  python3 remove-tags.py --tags cute adorable --apply
-
   # Point at a different .db file (default: ./stickers.db)
-  python3 remove-tags.py --tags cute --db path/to/stickers.db --apply
+  python3 remove-tags.py --tags cute --db path/to/stickers.db
 
 Category matching: a sticker counts as "in" a category if it matches
 either primary_category or secondary_category, same as the category
@@ -45,8 +41,6 @@ filter in sticker-admin-v3.html.
 """
 
 import argparse
-import datetime
-import shutil
 import sqlite3
 import sys
 from pathlib import Path
@@ -76,11 +70,6 @@ def parse_args():
         "--db",
         default="stickers.db",
         help="Path to the SQLite database (default: stickers.db)",
-    )
-    parser.add_argument(
-        "--apply",
-        action="store_true",
-        help="Actually make the change. Without this flag, the script only previews.",
     )
     return parser.parse_args()
 
@@ -181,13 +170,6 @@ def print_preview(matches, missing_tags, tag_names, category):
     print(f"Total: {len(matches)} tag removal(s) across {len(by_sticker)} sticker(s).")
 
 
-def backup_db(db_path):
-    timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-    backup_path = db_path.with_name(f"{db_path.stem}-backup-{timestamp}{db_path.suffix}")
-    shutil.copy2(db_path, backup_path)
-    return backup_path
-
-
 def apply_removal(conn, matches):
     pairs = [(m["sticker_id"], m["tag_id"]) for m in matches]
     conn.isolation_level = None  # manual transaction control
@@ -221,11 +203,6 @@ def main():
         if not matches:
             return
 
-        if not args.apply:
-            print()
-            print("DRY RUN — no changes made. Re-run with --apply to make this change.")
-            return
-
         print()
         answer = input(
             f"Type 'yes' to permanently remove these {len(matches)} tag "
@@ -234,9 +211,6 @@ def main():
         if answer != "yes":
             print("Aborted. No changes made.")
             return
-
-        backup_path = backup_db(db_path)
-        print(f"Backup written to {backup_path}")
 
         apply_removal(conn, matches)
         print(f"Done. Removed {len(matches)} tag association(s).")
