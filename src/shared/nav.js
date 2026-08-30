@@ -34,6 +34,14 @@ function wireNavMenu() {
     });
   }
 
+  const homeExportBtn = document.getElementById("homeExportBtn");
+
+  if (homeExportBtn && typeof exportJson === "function") {
+    homeExportBtn.addEventListener("click", () => {
+      exportJson();
+    });
+  }
+
   if (menuImportInput && typeof importJson === "function") {
     menuImportInput.addEventListener("change", importJson);
   }

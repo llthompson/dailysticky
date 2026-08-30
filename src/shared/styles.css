@@ -2359,7 +2359,8 @@ h3 {
   gap: 7px;
 }
 
-.home-link-list a {
+.home-link-list a,
+.home-link-list button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -2376,6 +2377,12 @@ h3 {
   font-size: 0.77rem;
   font-weight: 550;
   text-decoration: none;
+}
+
+.home-link-list button {
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 
 /* .home-link-list a:hover {
