@@ -12,6 +12,7 @@
 - Keep changes scoped to the request — don't refactor unrelated code.
 - Put new helper/utility scripts in `utils/`, not the repo root.
 - If you notice something unrelated (a bug, dead code, a better pattern) — mention it, don't fix it, don't touch it without permission.
+- If I've made my own manual tweaks to something you previously edited, don't overwrite or revert them on a later pass — check the current file state first. If your next change touches the same lines, ask whether to keep my adjustment or preserve it by working around it.
 
 ## Style
 - Match existing code style in the file you're editing — don't reformat untouched lines.

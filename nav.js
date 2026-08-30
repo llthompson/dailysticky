@@ -62,6 +62,25 @@ function injectSiteFooter() {
     <p>Sticker artwork belongs to its individual artists. Please don't copy, redistribute, or reuse it without their permission — see <a href="/artists.html">Meet the Artists</a>.</p>
   `;
   document.body.appendChild(footer);
+
+  injectBuyMeACoffeeButton();
+}
+
+function injectBuyMeACoffeeButton() {
+  if (document.querySelector(".bmc-wrap")) return;
+
+  const wrap = document.createElement("div");
+  wrap.className = "bmc-wrap";
+
+  const link = document.createElement("a");
+  link.className = "bmc-button";
+  link.href = "https://www.buymeacoffee.com/dailystickyapp";
+  link.target = "_blank";
+  link.rel = "noopener noreferrer";
+  link.innerHTML = `<img class="bmc-emoji" src="/bmc-logo.svg" alt="" /> Buy me a coffee!`;
+
+  wrap.appendChild(link);
+  document.body.appendChild(wrap);
 }
 
 function normalizePath(path) {

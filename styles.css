@@ -443,6 +443,55 @@ body::after {
   text-decoration: underline;
 }
 
+.bmc-wrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 1px 16px 12px;
+}
+
+.bmc-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 5px 9px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.78);
+
+  background: rgba(255, 255, 255, 0.34);
+  color: var(--ink);
+  font-family: "Truculenta", var(--font-alt);
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-decoration: none;
+
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+
+  box-shadow:
+    0 6px 16px rgba(87, 52, 124, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72);
+  transition: transform 0.15s ease;
+}
+
+.bmc-button:active {
+  transform: translateY(1px);
+}
+
+.bmc-emoji {
+  height: 1.1rem;
+  width: auto;
+  display: block;
+}
+
+@media (max-width: 480px) {
+  .bmc-button {
+    font-size: 0.85rem;
+    padding: 8px 14px;
+  }
+}
+
 /* tapir */
 
 .monthHeader {
