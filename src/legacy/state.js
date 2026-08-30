@@ -50,7 +50,7 @@ const ymd = (d) =>
   `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
 
 async function fetchStickerData() {
-  const res = await fetch("/stickers.json");
+  const res = await fetch("/src/legacy/stickers.json");
   const data = await res.json();
 
   let stickerGroups = [];

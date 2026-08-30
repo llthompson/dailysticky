@@ -19,7 +19,7 @@
     return sessionStorage.getItem(DEMO_MODE_KEY) === "1";
   }
 
-  const DATABASE_URL = isDemoMode() ? "/stickers-demo.db" : "/stickers.db";
+  const DATABASE_URL = isDemoMode() ? "/src/legacy/stickers-demo.db" : "/data/stickers.db";
 
   // https://dailysticky.app/?demo
   // https://dailysticky.app/?demo=off

@@ -77,7 +77,7 @@ function injectBuyMeACoffeeButton() {
   link.href = "https://www.buymeacoffee.com/dailystickyapp";
   link.target = "_blank";
   link.rel = "noopener noreferrer";
-  link.innerHTML = `<img class="bmc-emoji" src="/bmc-logo.svg" alt="" /> Buy me a coffee!`;
+  link.innerHTML = `<img class="bmc-emoji" src="/assets/img/bmc-logo.svg" alt="" /> Buy me a coffee!`;
 
   wrap.appendChild(link);
   document.body.appendChild(wrap);

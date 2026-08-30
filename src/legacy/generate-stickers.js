@@ -1,10 +1,11 @@
-// to generate sticker file JSON, run this command in the terminal:
-// node generate-stickers.js
+// DEPRECATED — superseded by the sticker-admin-v3.html + stickers.db (v2) path.
+// to generate sticker file JSON, run this command from the repo root:
+// node src/legacy/generate-stickers.js
 
 const fs = require("fs");
 
 const STICKERS_DIR = "./stickers";
-const DISABLED_FILE = "./disabled-stickers.json";
+const DISABLED_FILE = "./src/legacy/disabled-stickers.json";
 
 const CATEGORY_LABELS = {
   relax: "Mental Health",
@@ -50,6 +51,6 @@ const output = Object.entries(groups)
     ),
   }));
 
-fs.writeFileSync("stickers.json", JSON.stringify(output, null, 2));
+fs.writeFileSync("./src/legacy/stickers.json", JSON.stringify(output, null, 2));
 
 console.log("✅ stickers.json generated");

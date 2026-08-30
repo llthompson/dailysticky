@@ -682,11 +682,11 @@ function renderMonth() {
 
   <div class="header-icon-actions">
  <button id="openMonthExportBtn" class="btn icon-btn image-btn icon-btn-labeled" aria-label="View month export">
-  <img src="/calendar-download.svg" alt="" />
+  <img src="/assets/img/calendar-download.svg" alt="" />
   <span>Month</span>
 </button>
 <a class="btn icon-btn image-btn icon-btn-labeled" href="/notes.html" aria-label="View sticker stories">
-  <img src="/open-book-round.svg" alt="" />
+  <img src="/assets/img/open-book-round.svg" alt="" />
   <span>Stories</span>
 </a>
   </div>
@@ -694,10 +694,10 @@ function renderMonth() {
 
   //   <div class="header-icon-actions">
   //     <button id="downloadMonthBtn" class="btn icon-btn image-btn" aria-label="Download month image">
-  //       <img src="/calendar-download.svg" alt="" />
+  //       <img src="/assets/img/calendar-download.svg" alt="" />
   //     </button>
   //     <a class="btn icon-btn image-btn" href="/notes.html" aria-label="View sticker stories">
-  //       <img src="/open-book-round.svg" alt="" />
+  //       <img src="/assets/img/open-book-round.svg" alt="" />
   //     </a>
   //   </div>
   // `;
@@ -810,12 +810,12 @@ function renderYear() {
 
     <div class="year-action-buttons">
       <button id="openYearExportBtn" class="btn icon-btn image-btn icon-btn-labeled" aria-label="View year export">
-        <img src="/calendar-download.svg" alt="" />
+        <img src="/assets/img/calendar-download.svg" alt="" />
         <span>Year</span>
       </button>
 
       <a class="btn icon-btn image-btn icon-btn-labeled" href="/notes.html" aria-label="View sticker stories">
-        <img src="/open-book-round.svg" alt="" />
+        <img src="/assets/img/open-book-round.svg" alt="" />
         <span>Stories</span>
       </a>
     </div>
@@ -1892,7 +1892,7 @@ function renderWeeklyShare() {
     el.className = "share-logo-cell";
 
     const img = document.createElement("img");
-    img.src = "./the-daily-sticky-words.png";
+    img.src = "/assets/img/the-daily-sticky-words.png";
     img.alt = "The Daily Sticky — a sticker journal for your year";
     img.draggable = false;
     el.appendChild(img);

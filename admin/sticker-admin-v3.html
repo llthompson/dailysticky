@@ -2,7 +2,7 @@
 <!-- To prevent html from reloading with every change, run 
  python3 -m http.server 8000
  in the terminal and then load 
-  http://localhost:8000/sticker-admin-v3.html
+  http://localhost:8000/admin/sticker-admin-v3.html
  in your browser. -->
 
 <!doctype html>
@@ -2545,7 +2545,7 @@ Before you output the JSON, re-read your "name" and "tags" values and confirm no
       }
 
       async function fetchStickerImageAsBase64(file) {
-        const res = await fetch(`./stickers/${file}`);
+        const res = await fetch(`/stickers/${file}`);
         if (!res.ok) throw new Error(`could not load ./stickers/${file}`);
         return blobToBase64(await res.blob());
       }

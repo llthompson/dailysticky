@@ -414,7 +414,7 @@ body::after {
   width: 14px;
   height: 14px;
 
-  background-image: url("/star.png");
+  background-image: url("/assets/img/star.png");
   background-size: contain;
   background-repeat: no-repeat;
 }
