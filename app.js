@@ -551,6 +551,11 @@ function handlePopState(e) {
       return;
     }
 
+    if (historyState.level === "allArtists") {
+      DailyStickyStickerPickerV2.renderAllArtistStickers(true);
+      return;
+    }
+
     if (historyState.level === "search") {
       DailyStickyStickerPickerV2.renderSearchForQuery(historyState.query, true);
       return;

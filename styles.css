@@ -4114,6 +4114,12 @@ h3 {
   margin: -4px 0 10px;
 }
 
+.artistBrowseRow {
+  display: flex;
+  justify-content: center;
+  margin: 14px 0 4px;
+}
+
 .artistSetProfileLink {
   display: inline-flex;
   align-items: center;

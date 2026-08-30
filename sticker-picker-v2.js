@@ -327,6 +327,22 @@
     });
 
     stickerGrid.appendChild(wrapper);
+
+    const artistBrowseRow = document.createElement("div");
+    artistBrowseRow.className = "artistBrowseRow";
+
+    const artistBrowseLink = document.createElement("a");
+    artistBrowseLink.href = "#";
+    artistBrowseLink.className = "featuredStripLink";
+    artistBrowseLink.textContent = "Browse by artist →";
+    artistBrowseLink.addEventListener("click", (event) => {
+      event.preventDefault();
+      renderAllArtistStickers();
+    });
+
+    artistBrowseRow.appendChild(artistBrowseLink);
+    stickerGrid.appendChild(artistBrowseRow);
+
     resetScroll();
   }
 
@@ -482,6 +498,171 @@
     stickerGrid.appendChild(artistLinkRow);
     stickerGrid.appendChild(grid);
 
+    resetScroll();
+  }
+
+  async function renderAllArtistStickers(fromHistory = false) {
+    inSearchMode = false;
+
+    if (searchInput) {
+      searchInput.value = "";
+    }
+    activeTab = null;
+    activeCategory = null;
+
+    if (!fromHistory) {
+      window.DailyStickyModalNav?.pushLevel("allArtists");
+    }
+
+    const data = await loadData();
+
+    const strip = document.getElementById("featuredStrip");
+
+    if (strip) {
+      strip.classList.add("hidden");
+    }
+
+    const items = data.activeStickers
+      .filter((sticker) => sticker.artistId)
+      .slice()
+      .sort((a, b) => {
+        const artistCompare = (a.artist?.name || "").localeCompare(
+          b.artist?.name || "",
+        );
+        if (artistCompare !== 0) return artistCompare;
+        return a.id.localeCompare(b.id, undefined, { numeric: true });
+      });
+
+    const artistOptions = [
+      ...new Set(
+        items.map((sticker) => sticker.artist?.name).filter(Boolean),
+      ),
+    ].sort((a, b) => a.localeCompare(b));
+
+    stickerGrid.innerHTML = "";
+
+    const top = document.createElement("div");
+    top.className = "catTopRow catTopRowSticky";
+
+    const back = document.createElement("button");
+    back.type = "button";
+    back.className = "btn catBack";
+    back.innerHTML = '<i class="fa-solid fa-arrow-left"></i> Back';
+    back.addEventListener("click", () => history.back());
+
+    const title = document.createElement("div");
+    title.className = "catTitle";
+    title.textContent = "Artist Stickers";
+
+    top.appendChild(back);
+    top.appendChild(title);
+
+    const grid = document.createElement("div");
+    grid.className = "catGrid";
+
+    function renderGridItems(list) {
+      grid.innerHTML = "";
+      list.forEach((sticker) => {
+        grid.appendChild(buildStickerButton(sticker, { markArtist: true }));
+      });
+    }
+
+    let artistRow = null;
+
+    if (artistOptions.length) {
+      const filterToggle = document.createElement("button");
+      filterToggle.type = "button";
+      filterToggle.className = "btn catFilterToggle";
+      filterToggle.setAttribute("aria-label", "Filter by artist");
+      filterToggle.setAttribute("aria-expanded", "false");
+      filterToggle.innerHTML = '<i class="fa-solid fa-sliders"></i>';
+
+      top.appendChild(filterToggle);
+
+      artistRow = document.createElement("div");
+      artistRow.className = "catTagFilterRow hidden";
+
+      const artistList = document.createElement("div");
+      artistList.className = "catTagFilterList";
+
+      const showMoreButton = document.createElement("button");
+      showMoreButton.type = "button";
+      showMoreButton.className = "catTagShowMore";
+      showMoreButton.textContent = "Show all artists ↓";
+
+      function createArtistChip(artistName) {
+        const chip = document.createElement("button");
+        chip.type = "button";
+        chip.className = "catTagFilterChip";
+        chip.textContent = artistName;
+
+        chip.addEventListener("click", () => {
+          const isActive = chip.classList.contains("active");
+
+          artistList
+            .querySelectorAll(".catTagFilterChip")
+            .forEach((el) => el.classList.remove("active"));
+
+          if (isActive) {
+            renderGridItems(items);
+          } else {
+            chip.classList.add("active");
+
+            renderGridItems(
+              items.filter((sticker) => sticker.artist?.name === artistName),
+            );
+          }
+
+          resetScroll();
+        });
+
+        return chip;
+      }
+
+      artistOptions.forEach((artistName) => {
+        artistList.appendChild(createArtistChip(artistName));
+      });
+
+      artistRow.appendChild(artistList);
+      artistRow.appendChild(showMoreButton);
+
+      let artistsExpanded = false;
+
+      showMoreButton.addEventListener("click", () => {
+        artistsExpanded = !artistsExpanded;
+
+        artistList.classList.toggle("expanded", artistsExpanded);
+
+        showMoreButton.textContent = artistsExpanded
+          ? "Show fewer ↑"
+          : "Show all artists ↓";
+
+        resetScroll();
+      });
+
+      filterToggle.addEventListener("click", () => {
+        const isHidden = artistRow.classList.toggle("hidden");
+
+        filterToggle.setAttribute("aria-expanded", isHidden ? "false" : "true");
+
+        if (!isHidden) {
+          requestAnimationFrame(() => {
+            const hasMoreArtists =
+              artistList.scrollHeight > artistList.clientHeight + 1;
+
+            showMoreButton.style.display = hasMoreArtists ? "" : "none";
+          });
+        }
+
+        resetScroll();
+      });
+    }
+
+    renderGridItems(items);
+
+    stickerGrid.appendChild(top);
+    if (artistRow) stickerGrid.appendChild(artistRow);
+    stickerGrid.appendChild(grid);
     resetScroll();
   }
 
@@ -674,6 +855,7 @@
     renderCategoriesForTab,
     renderStickersForCategory,
     renderStickersForArtist,
+    renderAllArtistStickers,
     renderSearchForQuery,
   };
 })();
