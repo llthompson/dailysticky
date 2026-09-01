@@ -3581,10 +3581,10 @@ h3 {
 
 /* Hidden full-size download source */
 #monthExportCard.export-card-download {
-  width: 1000px;
+  width: 1080px;
   max-width: none;
-  height: 1400px;
-  min-height: 1400px;
+  height: 1350px;
+  min-height: 1350px;
 
   position: fixed;
   left: -99999px;
@@ -3592,7 +3592,7 @@ h3 {
   z-index: -1;
 
   margin: 0;
-  padding: 40px;
+  padding: 40px 10px;
   box-sizing: border-box;
 
   border-radius: 0;
@@ -3608,12 +3608,14 @@ h3 {
 
   display: flex;
   flex-direction: column;
+  justify-content: center;
   font-family: "Truculenta", sans-serif;
 }
 
 #monthExportCard.export-card-download .export-header {
-  height: 140px;
-  margin-bottom: 0;
+  /* height: 140px; */
+  margin-top: -30px;
+  margin-bottom: 15px;
 
   display: flex;
   justify-content: space-between;
@@ -3625,6 +3627,18 @@ h3 {
   font-weight: 700;
   color: #241039;
   line-height: 1;
+}
+
+#monthExportCard.export-card-download .export-logo-row {
+  display: flex;
+  justify-content: center;
+  /* margin-bottom: 24px; */
+}
+
+#monthExportCard.export-card-download .export-logo {
+  height: 180px;
+  width: auto;
+  display: block;
 }
 
 #monthExportCard.export-card-download .export-count {
@@ -3660,12 +3674,14 @@ h3 {
 
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  grid-template-rows: repeat(6, 1fr);
+  grid-template-rows: repeat(6, auto);
+  align-content: flex-start;
   gap: 10px;
 }
 
 #monthExportCard.export-card-download .export-month-day {
   min-height: 0;
+  aspect-ratio: 1 / 1;
 
   position: relative;
 
@@ -3695,20 +3711,20 @@ h3 {
 }
 
 #monthExportCard.export-card-download .export-month-day img {
-  width: 90px;
-  height: 90px;
+  width: 75%;
+  height: 75%;
   object-fit: contain;
 }
 
 #monthExportCard.export-card-download .export-footer {
   height: auto;
-  margin-top: 0;
-  padding: 10px 0;
+  margin-top: 0px;
+  /* padding: 10px 0; */
 
   display: block;
   text-align: center;
 
-  font-size: 16px;
+  font-size: 20px;
   line-height: 1.4;
   font-weight: 500;
   color: rgba(36, 16, 57, 0.55);
@@ -3966,6 +3982,22 @@ h3 {
   transform: scale(0.35);
   transform-origin: top center;
   margin-bottom: -850px;
+} */
+
+/* =========================
+   TEMP: Show month download card for styling
+   Remove or comment out when done
+========================= */
+
+/* body.debug-month-export #monthExportCard.export-card-download {
+  position: relative;
+  left: auto;
+  top: auto;
+  z-index: 1;
+  margin: 24px auto;
+  transform: scale(0.35);
+  transform-origin: top center;
+  margin-bottom: -830px;
 } */
 
 /* =========================
