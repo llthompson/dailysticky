@@ -67,27 +67,35 @@ function injectSiteFooter() {
   footer.className = "site-footer";
   footer.innerHTML = `
     <p>&copy; ${new Date().getFullYear()} Daily Sticky. All rights reserved.</p>
-    <p>Sticker artwork belongs to its individual artists. Please don't copy, redistribute, or reuse it without their permission — see <a href="/artists.html">Meet the Artists</a>.</p>
+    <p>Sticker artwork belongs to its individual artists. Please don't copy, redistribute, or reuse it without their permission.</p> <p><a href="/artists.html">Meet the Artists</a>.</p>
   `;
   document.body.appendChild(footer);
 
-  injectBuyMeACoffeeButton();
+  injectFooterButtons();
 }
 
-function injectBuyMeACoffeeButton() {
-  if (document.querySelector(".bmc-wrap")) return;
+function injectFooterButtons() {
+  if (document.querySelector(".footer-buttons")) return;
 
   const wrap = document.createElement("div");
-  wrap.className = "bmc-wrap";
+  wrap.className = "footer-buttons";
 
-  const link = document.createElement("a");
-  link.className = "bmc-button";
-  link.href = "https://www.buymeacoffee.com/dailystickyapp";
-  link.target = "_blank";
-  link.rel = "noopener noreferrer";
-  link.innerHTML = `<img class="bmc-emoji" src="/assets/img/bmc-logo.svg" alt="" /> Buy me a coffee!`;
+  const bmcLink = document.createElement("a");
+  bmcLink.className = "bmc-button";
+  bmcLink.href = "https://www.buymeacoffee.com/dailystickyapp";
+  bmcLink.target = "_blank";
+  bmcLink.rel = "noopener noreferrer";
+  bmcLink.innerHTML = `<img class="bmc-emoji" src="/assets/img/bmc-logo.svg" alt="" /> Buy me a coffee!`;
 
-  wrap.appendChild(link);
+  const igLink = document.createElement("a");
+  igLink.className = "instagram-button";
+  igLink.href = "https://www.instagram.com/dailystickyapp/";
+  igLink.target = "_blank";
+  igLink.rel = "noopener noreferrer";
+  igLink.innerHTML = `<img class="instagram-icon" src="/assets/img/Instagram_Glyph_Gradient.svg" alt="" /> Follow me!`;
+
+  wrap.appendChild(bmcLink);
+  wrap.appendChild(igLink);
   document.body.appendChild(wrap);
 }
 
