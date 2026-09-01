@@ -1116,7 +1116,7 @@ Before you output the JSON, re-read your "name" and "tags" values and confirm no
             "sticker-row" + (s.id === selectedStickerId ? " active" : "");
           row.innerHTML = `
       <input type="checkbox" class="bulk-edit-check" data-id="${s.id}" ${bulkEditIds.has(s.id) ? "checked" : ""} />
-      <div class="thumb"><img src="./stickers/${s.file}" onerror="this.style.display='none'" /></div>
+      <div class="thumb"><img src="/stickers/${s.file}" onerror="this.style.display='none'" /></div>
       <div class="meta">
         <div class="name">${s.name || s.id}</div>
         <div class="sub">${s.primary_category || "uncategorized"}${s.artist_name ? " · " + s.artist_name : ""}</div>
@@ -1212,7 +1212,7 @@ Before you output the JSON, re-read your "name" and "tags" values and confirm no
     </div>
 
     <div class="sticker-preview">
-      <div class="sticker-preview-img"><img src="./stickers/${s.file}" onerror="this.style.display='none'" /></div>
+      <div class="sticker-preview-img"><img src="/stickers/${s.file}" onerror="this.style.display='none'" /></div>
       <p class="sticker-preview-label">${s.name || s.id}</p>
     </div>
     </div>
@@ -1577,7 +1577,7 @@ Before you output the JSON, re-read your "name" and "tags" values and confirm no
                   >
                     <div class="thumb">
                       <img
-                        src="./stickers/${sticker.file}"
+                        src="/stickers/${sticker.file}"
                         onerror="this.style.display='none'"
                       />
                     </div>
@@ -2288,7 +2288,7 @@ Before you output the JSON, re-read your "name" and "tags" values and confirm no
             (r, i) => `
     <tr>
       <td><input type="checkbox" data-idx="${i}" class="be-select" ${r.selected ? "checked" : ""} /></td>
-      <td><div class="thumb"><img src="./stickers/${r.file}" onerror="this.style.display='none'" /></div></td>
+      <td><div class="thumb"><img src="/stickers/${r.file}" onerror="this.style.display='none'" /></div></td>
       <td>${r.id}</td>
               <td>${r.needsReview ? `<span title="double-check" style="color:#c00;margin-right:4px;">⚠</span>` : ""}<input type="text" data-idx="${i}" data-field="name" value="${r.name}" /></td>
       <td><div class="tag-resize-wrap"><input type="text" data-idx="${i}" data-field="tags" value="${r.tags}" /></div></td>
@@ -2546,7 +2546,7 @@ Before you output the JSON, re-read your "name" and "tags" values and confirm no
 
       async function fetchStickerImageAsBase64(file) {
         const res = await fetch(`/stickers/${file}`);
-        if (!res.ok) throw new Error(`could not load ./stickers/${file}`);
+        if (!res.ok) throw new Error(`could not load /stickers/${file}`);
         return blobToBase64(await res.blob());
       }
 
