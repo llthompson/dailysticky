@@ -1,4 +1,9 @@
 (function () {
+  const ICON_ARROW_LEFT =
+    '<svg style="width:1em;height:1em;vertical-align:-0.125em" viewBox="0 0 448 512" fill="currentColor" aria-hidden="true"><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg>';
+  const ICON_SLIDERS =
+    '<svg style="width:1em;height:1em;vertical-align:-0.125em" viewBox="0 0 512 512" fill="currentColor" aria-hidden="true"><path d="M0 416c0 17.7 14.3 32 32 32l54.7 0c12.3 28.3 40.5 48 73.3 48s61-19.7 73.3-48L480 448c17.7 0 32-14.3 32-32s-14.3-32-32-32l-246.7 0c-12.3-28.3-40.5-48-73.3-48s-61 19.7-73.3 48L32 384c-17.7 0-32 14.3-32 32zm128 0a32 32 0 1 1 64 0 32 32 0 1 1 -64 0zM320 256a32 32 0 1 1 64 0 32 32 0 1 1 -64 0zm32-80c-32.8 0-61 19.7-73.3 48L32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l246.7 0c12.3 28.3 40.5 48 73.3 48s61-19.7 73.3-48l54.7 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-54.7 0c-12.3-28.3-40.5-48-73.3-48zM192 128a32 32 0 1 1 0-64 32 32 0 1 1 0 64zm73.3-64C253 35.7 224.8 16 192 16s-61 19.7-73.3 48L32 64C14.3 64 0 78.3 0 96s14.3 32 32 32l86.7 0c12.3 28.3 40.5 48 73.3 48s61-19.7 73.3-48L480 128c17.7 0 32-14.3 32-32s-14.3-32-32-32L265.3 64z"/></svg>';
+
   let cachedDataPromise = null;
   let activeTab = null;
   let activeCategory = null;
@@ -372,7 +377,7 @@
     const back = document.createElement("button");
     back.type = "button";
     back.className = "btn Tab catBack";
-    back.innerHTML = '<i class="fa-solid fa-arrow-left"></i>Back';
+    back.innerHTML = ICON_ARROW_LEFT + "Back";
     back.addEventListener("click", () => history.back());
 
     const title = document.createElement("div");
@@ -467,7 +472,7 @@
     const back = document.createElement("button");
     back.type = "button";
     back.className = "btn catBack";
-    back.innerHTML = '<i class="fa-solid fa-arrow-left"></i> Back';
+    back.innerHTML = ICON_ARROW_LEFT + " Back";
     back.addEventListener("click", () => history.back());
 
     const title = document.createElement("div");
@@ -547,7 +552,7 @@
     const back = document.createElement("button");
     back.type = "button";
     back.className = "btn catBack";
-    back.innerHTML = '<i class="fa-solid fa-arrow-left"></i> Back';
+    back.innerHTML = ICON_ARROW_LEFT + " Back";
     back.addEventListener("click", () => history.back());
 
     const title = document.createElement("div");
@@ -575,7 +580,7 @@
       filterToggle.className = "btn catFilterToggle";
       filterToggle.setAttribute("aria-label", "Filter by artist");
       filterToggle.setAttribute("aria-expanded", "false");
-      filterToggle.innerHTML = '<i class="fa-solid fa-sliders"></i>';
+      filterToggle.innerHTML = ICON_SLIDERS;
 
       top.appendChild(filterToggle);
 
@@ -730,7 +735,7 @@
     const back = document.createElement("button");
     back.type = "button";
     back.className = "btn catBack";
-    back.innerHTML = '<i class="fa-solid fa-arrow-left"></i> Categories';
+    back.innerHTML = ICON_ARROW_LEFT + " Categories";
     back.addEventListener("click", () => history.back());
 
     const title = document.createElement("div");
@@ -758,7 +763,7 @@
       filterToggle.className = "btn catFilterToggle";
       filterToggle.setAttribute("aria-label", "Filter this category by tag");
       filterToggle.setAttribute("aria-expanded", "false");
-      filterToggle.innerHTML = '<i class="fa-solid fa-sliders"></i>';
+      filterToggle.innerHTML = ICON_SLIDERS;
 
       top.appendChild(filterToggle);
 

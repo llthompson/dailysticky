@@ -92,6 +92,16 @@
         }
       }
     </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Daily Sticky",
+        "url": "https://dailysticky.app",
+        "logo": "https://dailysticky.app/the-daily-sticky-logo.png",
+        "sameAs": ["https://www.instagram.com/dailystickyapp/"]
+      }
+    </script>
 
     <link rel="icon" href="/favicon.ico" />
     <link rel="stylesheet" href="/src/shared/styles.css" />
@@ -100,15 +110,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
     <link
-      href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&family=Manjari:wght@100;400;700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&family=Quicksand:wght@300..700&family=Truculenta:opsz,wght@12..72,100..900&family=Baloo+2:wght@600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&family=Quicksand:wght@300..700&family=Truculenta:opsz,wght@12..72,100..900&display=swap"
       rel="stylesheet"
-    />
-
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
     />
   </head>
 
@@ -138,9 +141,11 @@
     <header class="topbar">
       <div class="title">
         <img
-          src="/assets/img/the-daily-sticky-logo.png"
+          src="/assets/img/the-daily-sticky-logo-header.webp"
           alt="The Daily Sticky — a sticker journal for your year"
           class="site-logo"
+          width="500"
+          height="279"
         />
         <p class="subtitle">One sticker a day. Memories that stick.</p>
       </div>
@@ -258,7 +263,7 @@
         <div class="welcome-badge">Daily Sticky</div>
 
         <h1 id="welcomeTitle">One sticker a day.</h1>
-        <h1 id="welcomeTitle">Memories that stick.</h1>
+        <h1>Memories that stick.</h1>
 
         <p class="welcome-lede">
           Choose one sticker that captures your day. As the days fill in, your
@@ -590,7 +595,6 @@
       </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <div id="installPrompt" class="install-prompt hidden">
       <div class="install-prompt-card">
         <button
@@ -636,12 +640,12 @@
       </div>
     </div>
 
-    <script src="/src/shared/analytics.js"></script>
-    <script src="/src/shared/nav.js"></script>
-    <script src="/src/legacy/state.js"></script>
-    <script src="/src/legacy/sticker-picker.js"></script>
-    <script src="/src/stickers/sticker-data-v2.js"></script>
-    <script src="/src/stickers/sticker-picker-v2.js"></script>
-    <script src="/src/calendar/app.js"></script>
+    <script src="/src/shared/analytics.js" defer></script>
+    <script src="/src/shared/nav.js" defer></script>
+    <script src="/src/legacy/state.js" defer></script>
+    <script src="/src/legacy/sticker-picker.js" defer></script>
+    <script src="/src/stickers/sticker-data-v2.js" defer></script>
+    <script src="/src/stickers/sticker-picker-v2.js" defer></script>
+    <script src="/src/calendar/app.js" defer></script>
   </body>
 </html>

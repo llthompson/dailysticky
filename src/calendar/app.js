@@ -1,5 +1,39 @@
 /* Sticker Year — minimal, mobile-first, GitHub Pages friendly */
 
+const HTML2CANVAS_SRC =
+  "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js";
+const HTML2CANVAS_INTEGRITY =
+  "sha384-ZZ1pncU3bQe8y31yfZdMFdSpttDoPmOZg2wguVK9almUodir1PghgT0eY7Mrty8H";
+let html2canvasLoadPromise = null;
+
+function loadHtml2Canvas() {
+  if (typeof html2canvas !== "undefined") return Promise.resolve();
+
+  if (!html2canvasLoadPromise) {
+    html2canvasLoadPromise = new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = HTML2CANVAS_SRC;
+      script.integrity = HTML2CANVAS_INTEGRITY;
+      script.crossOrigin = "anonymous";
+      script.referrerPolicy = "no-referrer";
+      script.onload = () => resolve();
+      script.onerror = () => {
+        html2canvasLoadPromise = null;
+        reject(new Error("Failed to load html2canvas"));
+      };
+      document.head.appendChild(script);
+    });
+  }
+
+  return html2canvasLoadPromise;
+}
+
+if ("requestIdleCallback" in window) {
+  requestIdleCallback(() => loadHtml2Canvas().catch(() => {}));
+} else {
+  setTimeout(() => loadHtml2Canvas().catch(() => {}), 2000);
+}
+
 const WELCOME_CARD_KEY = "dailySticky.welcomeCardSeen.v1";
 const ARMED_STICKER_STORAGE_KEY = "dailySticky.armedSticker.v1";
 
@@ -974,7 +1008,11 @@ function renderMonthExportCard(target = "download") {
 }
 
 async function downloadMonthImage() {
-  if (typeof html2canvas === "undefined") return;
+  try {
+    await loadHtml2Canvas();
+  } catch {
+    return;
+  }
 
   renderMonthExportCard("download");
 
@@ -1074,7 +1112,11 @@ function renderYearExportCard(target = "download") {
 }
 
 async function downloadYearImage() {
-  if (typeof html2canvas === "undefined") return;
+  try {
+    await loadHtml2Canvas();
+  } catch {
+    return;
+  }
 
   renderYearExportCard("download");
 
@@ -1771,11 +1813,12 @@ function scheduleSharePreparation() {
 
 async function prepareShareImage() {
   const card = document.getElementById("weeklyShareCard");
-  if (!card || typeof html2canvas === "undefined") return;
+  if (!card) return;
 
   shareState = "preparing";
 
   try {
+    await loadHtml2Canvas();
     renderWeeklyShare();
 
     const canvas = await html2canvas(card, {
