@@ -15,30 +15,28 @@
       })(window, document, "script", "dataLayer", "GTM-W3BD8RVV");
     </script>
     <!-- End Google Tag Manager -->
-
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#f7d9ef" />
+    <link rel="apple-touch-icon" href="/assets/img/pwa-icon-512.png" />
 
-    <title>All Sticker Stories | Daily Sticky</title>
-    <link rel="canonical" href="https://dailysticky.app/notes.html" />
-    <meta name="robots" content="noindex, follow" />
+    <title>Contact | Daily Sticky</title>
+    <link rel="canonical" href="https://dailysticky.app/contact.html" />
+    <meta name="robots" content="index, follow" />
     <meta
       name="description"
-      content="View all of your saved Daily Sticky stories by month."
-    />
-    <meta
-      name="keywords"
-      content="Daily Sticky stories, digital sticker journal stories, sticker diary stories, daily journal stories, sticker journal"
+      content="Contact Daily Sticky with a question, feedback, or a privacy request."
     />
 
     <!-- Open Graph -->
-    <meta property="og:title" content="All Stories | Daily Sticky" />
+    <meta property="og:title" content="Contact | Daily Sticky" />
     <meta
       property="og:description"
-      content="View your Daily Sticky stories by month."
+      content="Contact Daily Sticky with a question, feedback, or a privacy request."
     />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://dailysticky.app/notes.html" />
+    <meta property="og:url" content="https://dailysticky.app/contact.html" />
     <meta
       property="og:image"
       content="https://dailysticky.app/the-daily-sticky-logo.png"
@@ -49,10 +47,10 @@
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="All Stories | Daily Sticky" />
+    <meta name="twitter:title" content="Contact | Daily Sticky" />
     <meta
       name="twitter:description"
-      content="View your Daily Sticky stories by month."
+      content="Contact Daily Sticky with a question, feedback, or a privacy request."
     />
     <meta
       name="twitter:image"
@@ -60,6 +58,14 @@
     />
 
     <link rel="stylesheet" href="/src/shared/styles.css" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&family=Truculenta:opsz,wght@12..72,100..900&display=swap"
+      rel="stylesheet"
+    />
   </head>
 
   <body>
@@ -80,8 +86,8 @@
 
       <div id="menuDropdown" class="menu-dropdown hidden" role="menu">
         <a class="menu-item" href="/">Home</a>
-        <a class="menu-item" href="/notes.html">View Sticker Stories</a>
-        <a class="menu-item" href="/about.html">About</a>
+        <a class="menu-item" href="/notes.html">View Saved Notes</a>
+        <a id="menuAbout" class="menu-item" href="/about.html">About</a>
         <a class="menu-item" href="/blog/">Sticky Notes</a>
         <a class="menu-item" href="/artists.html">Meet the Artists</a>
         <a class="menu-item" href="/contact.html">Contact</a>
@@ -100,48 +106,38 @@
       <a href="/" class="blog-nav-link">Home</a>
     </header>
 
-    <main class="about-container notes-container">
-      <section class="notes-page-header">
-        <p class="blog-kicker">Your Year In Stories</p>
-        <h1>All Sticker Stories</h1>
+    <main class="about-container">
+      <h1>Contact Daily Sticky</h1>
+
+      <div class="about-card">
         <p>
-          A month-by-month archive of the little stories you saved with your
-          stickers.
+          Have a question, feedback, or a privacy request? Reach out using
+          either of these:
         </p>
 
-        <div class="notes-toolbar">
-          <label class="notes-year-control" for="notesYearSelect">
-            <!-- <span>Viewing</span> -->
-            <select
-              id="notesYearSelect"
-              class="select"
-              aria-label="Notes year"
-            ></select>
-          </label>
+        <ul>
+          <li>
+            Email:
+            <a href="mailto:hello@dailysticky.app">hello@dailysticky.app</a>
+          </li>
+          <li>
+            Contact form:
+            <a
+              href="https://forms.gle/MxaCTy45S55qPBx66"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Fill out the contact form →</a
+            >
+          </li>
+        </ul>
 
-          <button id="toggleAllNotesBtn" class="btn btn-primary" type="button">
-            Expand all months
-          </button>
-        </div>
-      </section>
-
-      <section
-        id="notesYearNav"
-        class="notes-year-nav"
-        aria-label="Jump to month"
-      >
-        <!-- Month jump links will go here -->
-      </section>
-
-      <section id="notesList" class="notes-list">
-        <!-- Notes will go here -->
-      </section>
+        <p class="back-link">
+          <a href="/">← Back to Daily Sticky</a>
+        </p>
+      </div>
     </main>
 
     <script src="/src/shared/analytics.js"></script>
     <script src="/src/shared/nav.js"></script>
-    <script src="/src/legacy/state.js"></script>
-    <script src="/src/stickers/sticker-data-v2.js"></script>
-    <script src="/src/notes/notes.js"></script>
   </body>
 </html>

@@ -67,7 +67,7 @@ function injectSiteFooter() {
   footer.className = "site-footer";
   footer.innerHTML = `
     <p>&copy; ${new Date().getFullYear()} Daily Sticky. All rights reserved.</p>
-    <p>Sticker artwork belongs to its individual artists. Please don't copy, redistribute, or reuse it without their permission.</p> <p><a href="/artists.html">Meet the Artists</a>.</p>
+    <p>Sticker artwork belongs to its individual artists. Please don't copy, redistribute, or reuse it without their permission.</p> <p><a href="/artists.html">Meet the Artists</a> · <a href="/privacy.html">Privacy Policy</a></p>
   `;
   document.body.appendChild(footer);
 
