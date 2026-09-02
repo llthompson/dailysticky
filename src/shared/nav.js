@@ -72,6 +72,9 @@ function injectSiteFooter() {
   document.body.appendChild(footer);
 
   injectFooterButtons();
+
+  const homeInfo = document.querySelector(".home-info");
+  if (homeInfo) document.body.appendChild(homeInfo);
 }
 
 function injectFooterButtons() {
