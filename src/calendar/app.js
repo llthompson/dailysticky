@@ -1910,11 +1910,15 @@ function renderWeeklyShare() {
     el.className = "share-sticker-cell";
 
     if (sticker) {
+      const imgWrap = document.createElement("div");
+      imgWrap.className = "share-sticker-img-wrap";
+
       const img = document.createElement("img");
       img.src = `./stickers/${sticker.file}`;
       img.alt = sticker.label || sticker.id;
       img.draggable = false;
-      el.appendChild(img);
+      imgWrap.appendChild(img);
+      el.appendChild(imgWrap);
 
       if (sticker.artist) {
         const badge = document.createElement("div");

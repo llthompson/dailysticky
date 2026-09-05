@@ -1838,12 +1838,19 @@ body::after {
   border-radius: 16px;
 }
 
+.share-sticker-img-wrap {
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .share-sticker-cell img {
   width: auto;
   height: auto;
-  max-width: 88%;
-  max-height: 70%;
-  object-fit: contain;
+  max-width: 100%;
+  max-height: 100%;
   display: block;
 }
 
@@ -2266,6 +2273,46 @@ h3 {
 .article-content li {
   line-height: 1.75;
   font-size: 1.05rem;
+}
+
+.article-content img {
+  display: block;
+  max-width: 100%;
+  max-height: 520px;
+  width: auto;
+  margin: 20px auto;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-soft);
+}
+
+.article-content img.article-hero-img-mobile {
+  display: none;
+}
+
+@media (min-width: 761px) {
+  .article-content img.article-hero-img {
+    float: right;
+    width: 280px;
+    max-width: 40%;
+    max-height: none;
+    margin: 4px 0 16px 28px;
+  }
+}
+
+@media (max-width: 760px) {
+  .article-content img.article-hero-img {
+    display: none;
+  }
+
+  /* creator-article has no separate mobile-position duplicate image,
+     so keep its single hero image visible instead of hiding it */
+  .article-content.creator-article img.article-hero-img {
+    display: block;
+  }
+
+  .article-content img.article-hero-img-mobile {
+    display: block;
+  }
 }
 
 .creator-article p {
