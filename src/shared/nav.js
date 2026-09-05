@@ -36,14 +36,32 @@ function wireNavMenu() {
 
   const homeExportBtn = document.getElementById("homeExportBtn");
 
-  if (homeExportBtn && typeof exportJson === "function") {
+  if (homeExportBtn && typeof exportDailyStickyBackup === "function") {
     homeExportBtn.addEventListener("click", () => {
-      exportJson();
+      exportDailyStickyBackup();
     });
   }
 
   if (menuImportInput && typeof importJson === "function") {
     menuImportInput.addEventListener("change", importJson);
+  }
+
+  const homeImportInput = document.getElementById("homeImportInput");
+
+  if (homeImportInput && typeof importDailyStickyBackup === "function") {
+    homeImportInput.addEventListener("change", async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      try {
+        await importDailyStickyBackup(file);
+        alert("Imported!");
+      } catch {
+        alert("Import failed. Make sure it's a valid JSON export from this app.");
+      } finally {
+        homeImportInput.value = "";
+      }
+    });
   }
 }
 

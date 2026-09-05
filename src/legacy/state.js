@@ -30,6 +30,47 @@ function saveDailyStickyState(state) {
   localStorage.setItem(STICKER_YEAR_STORAGE_KEY, JSON.stringify(toSave));
 }
 
+function exportDailyStickyBackup() {
+  const state = loadDailyStickyState() || migrateDailyStickyState({});
+
+  const blob = new Blob([JSON.stringify(state, null, 2)], {
+    type: "application/json",
+  });
+
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `sticker-year-${ymd(new Date())}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(a.href);
+
+  DailyStickyAnalytics.trackEvent("backup_exported");
+}
+
+async function importDailyStickyBackup(file) {
+  const text = await file.text();
+  const imported = JSON.parse(text);
+
+  if (!imported || typeof imported !== "object" || !imported.placements) {
+    throw new Error("Not a valid Daily Sticky export.");
+  }
+
+  const current = loadDailyStickyState() || migrateDailyStickyState({});
+  const next = {
+    year: imported.year ?? current.year,
+    month: imported.month ?? current.month,
+    view: imported.view ?? current.view,
+    placements: imported.placements ?? {},
+    notes: imported.notes ?? {},
+  };
+
+  saveDailyStickyState(next);
+  DailyStickyAnalytics.trackEvent("backup_imported");
+
+  return next;
+}
+
 const MONTHS = [
   "January",
   "February",

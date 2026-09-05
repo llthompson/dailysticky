@@ -1752,18 +1752,7 @@ function saveState(next) {
 }
 
 function exportJson() {
-  const blob = new Blob([JSON.stringify(state, null, 2)], {
-    type: "application/json",
-  });
-
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = `sticker-year-${ymd(new Date())}.json`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(a.href);
-  DailyStickyAnalytics.trackEvent("backup_exported");
+  exportDailyStickyBackup();
 }
 
 async function importJson(e) {
@@ -1771,24 +1760,8 @@ async function importJson(e) {
   if (!file) return;
 
   try {
-    const text = await file.text();
-    const imported = JSON.parse(text);
-
-    if (!imported || typeof imported !== "object" || !imported.placements) {
-      alert("That JSON doesn't look like a Sticker Year export.");
-      return;
-    }
-
-    state = {
-      year: imported.year ?? state.year,
-      month: imported.month ?? state.month,
-      view: imported.view ?? state.view,
-      placements: imported.placements ?? {},
-      notes: imported.notes ?? {},
-    };
-
+    state = await importDailyStickyBackup(file);
     saveAndRender();
-    DailyStickyAnalytics.trackEvent("backup_imported");
     alert("Imported!");
   } catch {
     alert("Import failed. Make sure it's a valid JSON export from this app.");
