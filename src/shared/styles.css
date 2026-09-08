@@ -2353,6 +2353,68 @@ h3 {
   max-height: 420px;
 }
 
+.article-content.backup-page .article-hero-float {
+  display: block;
+  margin: 16px auto;
+  width: 100%;
+  max-width: 320px;
+}
+
+.article-content.backup-page img.article-hero-float {
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.article-content.backup-page button.article-hero-float,
+.article-content.backup-page label.article-hero-float {
+  width: max-content;
+  max-width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 7px 11px;
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.54);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: var(--inner-glow);
+
+  color: var(--accent-ink);
+  font-family: var(--font-alt);
+  font-size: 0.82rem;
+  font-weight: 850;
+  text-decoration: none;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.article-content.backup-page button.article-hero-float:hover,
+.article-content.backup-page label.article-hero-float:hover {
+  background: color-mix(in srgb, var(--accent) 10%, white);
+  transform: translateY(-1px);
+}
+
+@media (min-width: 761px) {
+  .article-content.backup-page img.article-hero-float {
+    float: right;
+    width: 220px;
+    max-width: 40%;
+    margin: 4px 0 16px 28px;
+  }
+
+  .article-content.backup-page button.article-hero-float,
+  .article-content.backup-page label.article-hero-float {
+    float: right;
+    margin: 4px 0 16px 28px;
+  }
+}
+
+.article-content.backup-page h2,
+.article-content.backup-page .backup-summary {
+  clear: both;
+}
+
 .creator-article p {
   line-height: 1.25;
 }
@@ -2534,10 +2596,11 @@ h3 {
   margin-top: 12px;
   margin-bottom: 6px;
   flex-wrap: wrap;
+  align-items: center;
 }
 
 .save-features .menu-item {
-  width: auto;
+  width: 30%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -2561,6 +2624,12 @@ h3 {
 .save-features .menu-item:hover {
   background: color-mix(in srgb, var(--accent) 10%, white);
   transform: translateY(-1px);
+}
+
+@media (max-width: 760px) {
+  .save-features .menu-item {
+    width: auto;
+  }
 }
 
 .save-features .fileBtn {

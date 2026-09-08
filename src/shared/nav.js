@@ -1,9 +1,25 @@
+function updateAutoBackupToggleLabel(el) {
+  if (!el) return;
+  if (typeof isAutoBackupEnabled !== "function") return;
+
+  el.textContent = isAutoBackupEnabled()
+    ? "Turn off Auto Backup"
+    : "Turn on Auto Backup";
+}
+
+async function toggleAutoBackup(el) {
+  if (typeof isAutoBackupEnabled === "function" && isAutoBackupEnabled()) {
+    await disableAutoBackup();
+  } else {
+    await setupAutoBackup();
+  }
+
+  updateAutoBackupToggleLabel(el);
+}
+
 function wireNavMenu() {
   const menuBtn = document.getElementById("menuBtn");
   const menuDropdown = document.getElementById("menuDropdown");
-  const menuExport = document.getElementById("menuExport");
-  const menuImportInput = document.getElementById("menuImportInput");
-
   if (!menuBtn || !menuDropdown) return;
 
   menuBtn.addEventListener("click", (e) => {
@@ -27,10 +43,19 @@ function wireNavMenu() {
 
   hideCurrentPageLink();
 
-  if (menuExport && typeof exportJson === "function") {
-    menuExport.addEventListener("click", () => {
+  const menuAutoBackup = document.getElementById("menuAutoBackup");
+  const homeAutoBackupBtn = document.getElementById("homeAutoBackupBtn");
+
+  if (typeof isAutoBackupEnabled === "function") {
+    updateAutoBackupToggleLabel(menuAutoBackup);
+    updateAutoBackupToggleLabel(homeAutoBackupBtn);
+  }
+
+  if (menuAutoBackup && typeof setupAutoBackup === "function") {
+    menuAutoBackup.addEventListener("click", async () => {
       menuDropdown.classList.add("hidden");
-      exportJson();
+      await toggleAutoBackup(menuAutoBackup);
+      updateAutoBackupToggleLabel(homeAutoBackupBtn);
     });
   }
 
@@ -42,8 +67,11 @@ function wireNavMenu() {
     });
   }
 
-  if (menuImportInput && typeof importJson === "function") {
-    menuImportInput.addEventListener("change", importJson);
+  if (homeAutoBackupBtn && typeof setupAutoBackup === "function") {
+    homeAutoBackupBtn.addEventListener("click", async () => {
+      await toggleAutoBackup(homeAutoBackupBtn);
+      updateAutoBackupToggleLabel(menuAutoBackup);
+    });
   }
 
   const homeImportInput = document.getElementById("homeImportInput");
@@ -176,6 +204,13 @@ function showInstallPromptBanner(options = {}) {
   if (isInstallPromptDismissed()) return;
   if (isDailyStickyInstalled()) return;
 
+  if (
+    typeof hasAnyPromptShownToday === "function" &&
+    hasAnyPromptShownToday()
+  ) {
+    return;
+  }
+
   const minStickeredDays = options.minStickeredDays || 0;
   const stickeredDays = Number(options.stickeredDays || 0);
   const isReturningVisitor = options.isReturningVisitor === true;
@@ -187,6 +222,10 @@ function showInstallPromptBanner(options = {}) {
   if (!installPrompt) return;
 
   installPrompt.classList.remove("hidden");
+
+  if (typeof markPromptShownToday === "function") {
+    markPromptShownToday();
+  }
 }
 
 window.addEventListener("beforeinstallprompt", (event) => {

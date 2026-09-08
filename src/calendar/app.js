@@ -58,8 +58,10 @@ const monthViewSelect = el("monthViewSelect");
 const menuBtn = el("menuBtn");
 const menuDropdown = el("menuDropdown");
 // const menuAbout = el("menuAbout");
-const menuExport = el("menuExport");
-const menuImportInput = el("menuImportInput");
+
+const backupPromptOverlay = el("backupPrompt");
+const backupPromptBtn = el("backupPromptBtn");
+const dismissBackupPromptBtn = el("dismissBackupPromptBtn");
 
 const clearBtn = el("clearBtn");
 
@@ -457,6 +459,20 @@ function wireEvents() {
   });
 
   // wireMenuEvents(); moving to nav.js for better separation of concerns and to avoid circular dependencies
+
+  if (backupPromptBtn) {
+    backupPromptBtn.addEventListener("click", async () => {
+      const success = await setupAutoBackup();
+      if (success) hideBackupPrompt();
+    });
+  }
+
+  if (dismissBackupPromptBtn) {
+    dismissBackupPromptBtn.addEventListener("click", () => {
+      dismissBackupPrompt();
+      hideBackupPrompt();
+    });
+  }
 
   if (clearBtn) {
     clearBtn.addEventListener("click", clearCurrentYear);
@@ -1551,6 +1567,7 @@ function requestModalClose() {
   closePickerImmediately();
   maybeShowWeeklyRecapPrompt();
   maybeShowInstallPromptAfterNoteFlow();
+  maybeShowBackupPromptAfterNoteFlow();
 }
 
 function isSunday(dayKey) {
@@ -1620,6 +1637,54 @@ function maybeShowInstallPromptAfterNoteFlow() {
   }
 }
 
+const BACKUP_PROMPT_DISMISSED_KEY = "dailySticky.backupPromptDismissedUntil.v1";
+
+function isBackupPromptDismissed() {
+  const dismissedUntil = Number(
+    localStorage.getItem(BACKUP_PROMPT_DISMISSED_KEY),
+  );
+
+  if (!dismissedUntil) return false;
+
+  return Date.now() < dismissedUntil;
+}
+
+function dismissBackupPrompt() {
+  const sevenDaysFromNow = Date.now() + 7 * 24 * 60 * 60 * 1000;
+  localStorage.setItem(BACKUP_PROMPT_DISMISSED_KEY, String(sevenDaysFromNow));
+}
+
+function hideBackupPrompt() {
+  if (!backupPromptOverlay) return;
+  backupPromptOverlay.classList.add("hidden");
+}
+
+function maybeShowBackupPromptAfterNoteFlow() {
+  if (!backupPromptOverlay) return;
+  if (typeof isAutoBackupEnabled === "function" && isAutoBackupEnabled()) {
+    return;
+  }
+  if (isBackupPromptDismissed()) return;
+  if (
+    typeof hasAnyPromptShownToday === "function" &&
+    hasAnyPromptShownToday()
+  ) {
+    return;
+  }
+
+  const hasSeenWelcomeCard = localStorage.getItem(WELCOME_CARD_KEY) === "true";
+  const stickeredDays = Object.keys(state.placements || {}).length;
+
+  if (!hasSeenWelcomeCard) return;
+  if (stickeredDays < 2) return;
+
+  backupPromptOverlay.classList.remove("hidden");
+
+  if (typeof markPromptShownToday === "function") {
+    markPromptShownToday();
+  }
+}
+
 function updateNoteButtonLabel() {
   if (!selectedDayKey) {
     noteBtn.textContent = "Add a Story";
@@ -1671,6 +1736,8 @@ function saveNoteForSelectedDay() {
   closePickerImmediately();
   maybeShowWeeklyRecapPrompt();
   maybeShowInstallPromptAfterNoteFlow();
+  maybeShowBackupPromptAfterNoteFlow();
+  maybeAutoExportBackup();
 }
 
 function clearCurrentYear() {
@@ -1749,26 +1816,6 @@ function loadState() {
 
 function saveState(next) {
   saveDailyStickyState(next);
-}
-
-function exportJson() {
-  exportDailyStickyBackup();
-}
-
-async function importJson(e) {
-  const file = e.target.files?.[0];
-  if (!file) return;
-
-  try {
-    state = await importDailyStickyBackup(file);
-    saveAndRender();
-    alert("Imported!");
-  } catch {
-    alert("Import failed. Make sure it's a valid JSON export from this app.");
-  } finally {
-    if (menuImportInput) menuImportInput.value = "";
-    if (menuDropdown) menuDropdown.classList.add("hidden");
-  }
 }
 
 function scheduleSharePreparation() {

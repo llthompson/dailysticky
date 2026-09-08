@@ -27,7 +27,7 @@
     <meta name="robots" content="index, follow" />
     <meta
       name="description"
-      content="How to back up your Daily Sticky sticker journal with Export and Import: what's included in your backup, when to export, and how to restore your data."
+      content="How to back up your Daily Sticky sticker journal: automatic backups, manual Export and Import, and how to restore your data."
     />
 
     <meta
@@ -36,7 +36,7 @@
     />
     <meta
       property="og:description"
-      content="Learn how Export and Import work in Daily Sticky, so you never lose your sticker journal data."
+      content="Automatic backups, plus manual Export and Import — so you never lose your Daily Sticky journal."
     />
     <meta property="og:type" content="article" />
     <meta
@@ -55,7 +55,7 @@
     />
     <meta
       name="twitter:description"
-      content="How Export and Import work in Daily Sticky, so you never lose your sticker journal data."
+      content="Automatic backups, plus manual Export and Import, so you never lose your Daily Sticky journal."
     />
     <meta
       name="twitter:image"
@@ -78,10 +78,10 @@
         "@context": "https://schema.org",
         "@type": "BlogPosting",
         "headline": "Save Your Journal Data",
-        "description": "How to back up your Daily Sticky sticker journal with Export and Import: what's included in your backup, when to export, and how to restore your data.",
+        "description": "How to back up your Daily Sticky sticker journal: automatic backups, manual Export and Import, and how to restore your data.",
         "datePublished": "2026-09-05",
-        "dateModified": "2026-09-05",
-        "image": "https://dailysticky.app/assets/img/screenshot-backup-data.png",
+        "dateModified": "2026-09-07",
+        "image": "https://dailysticky.app/assets/img/screenshot-backup-data.webp",
         "author": {
           "@type": "Person",
           "name": "Lisa Lacy"
@@ -142,42 +142,55 @@
       <header class="article-header">
         <p class="blog-kicker">Backup & Restore</p>
         <h1>Save Your Journal Data</h1>
-        <!-- <p class="article-description">
-          Daily Sticky is simple on purpose, but there are two extra features
-          that make it even more useful: sharing your weekly recap and saving
-          your sticker journal data.
-        </p> -->
+    
       </header>
 
-      <article class="article-content">
+      <article class="article-content backup-page">
         <p>
           Daily Sticky saves your stickers and notes locally, right on your
           device. That keeps things simple and private — no account, nothing
-          uploaded to a server. But it also means your sticker journal isn’t
-          backed up anywhere else automatically, so it’s worth knowing how
-          <strong>Export</strong> and <strong>Import</strong> work before you
-          need them.
+          uploaded to a server. That also means it's worth knowing your
+          options for keeping that data safe: automatic backups, or manual
+          <strong>Export</strong> and <strong>Import</strong>.
+        </p>
+
+        <h2>Back up automatically</h2>
+        <button id="homeAutoBackupBtn" class="menu-item article-hero-float">
+          Turn on Auto Backup
+        </button>
+
+        <p>
+          The easiest option: Daily Sticky can back itself up on its own.
+          Turn it on once, and from then on every sticker you place will be
+          saved automatically in a small
+          <a href="#what-is-json">JSON file</a> — no need to remember.
+        </p>
+
+        <p>
+          On supported devices, you’ll be able to choose exactly where those
+          backups go. Point it at a folder that syncs to a cloud drive (like
+          Google Drive or Dropbox), and your backups stay safe even if
+          something happens to this device. On phones that don’t support
+          choosing a folder, backups save straight to your downloads instead
+          — still automatic, just without the folder choice.
+        </p>
+
+        <p>
+          Backups build up over time rather than overwriting each other, so
+          you can always look back through them, or clean up old ones
+          whenever you like.
         </p>
 
         <h2>Export your sticker journal</h2>
-        <img
-          class="article-hero-img"
-          src="/assets/img/screenshot-backup-data.png"
-          alt="Example of a Daily Sticky exported backup file showing sticker placements and notes as JSON"
-        />
+        <button id="homeExportBtn" class="menu-item article-hero-float">
+          Manual Export
+        </button>
 
         <p>
-          Tap <strong>Export Backup</strong> to download your entire sticker
-          journal as a JSON file: every sticker you’ve placed, every note
-          you’ve written, and your current month and year. The file is small,
-          readable, and yours to keep — save it to a cloud drive, email it to
+          Prefer to do it yourself? Tap <strong>Export Backup</strong> to
+          download a copy right now — save it to a cloud drive, email it to
           yourself, or just tuck it in a downloads folder.
         </p>
-        <img
-          class="article-hero-img-mobile"
-          src="/assets/img/screenshot-backup-data.png"
-          alt="Example of a Daily Sticky exported backup file showing sticker placements and notes as JSON"
-        />
 
         <p>
           A good time to export: before you clear your browser data, before
@@ -186,12 +199,22 @@
         </p>
 
         <h2>Import your sticker journal</h2>
+        <label class="menu-item fileBtn article-hero-float">
+          Import Backup
+          <input
+            id="homeImportInput"
+            type="file"
+            accept="application/json"
+            hidden
+          />
+        </label>
 
         <p>
-          Tap <strong>Import Backup</strong> and choose a previously exported
-          JSON file to restore your stickers and notes. This is the way back
-          in if you get a new device, switch browsers, or ever need to
-          reinstall.
+          If something does happen to your data, or you want to move it to
+          a different device, here’s how to restore it: tap
+          <strong>Import Backup</strong> and choose a previously saved
+          <a href="#what-is-json">JSON file</a> to bring back your stickers
+          and notes.
         </p>
 
         <p>
@@ -200,25 +223,27 @@
           export, export again first so you don’t lose them.
         </p>
 
-        <div class="save-features">
-          <button id="homeExportBtn" class="menu-item">Export Backup</button>
+        <p class="backup-summary">
+          Because everything lives locally, backing up — automatic or manual
+          — is also the only way to move your sticker journal from one
+          device or browser to another. Basically: back up often, one way or
+          another, and you’ll never lose a sticker.
+        </p>
 
-          <label class="menu-item fileBtn">
-            Import Backup
-            <input
-              id="homeImportInput"
-              type="file"
-              accept="application/json"
-              hidden
-            />
-          </label>
-        </div>
+        <h2 id="what-is-json">What’s in a JSON backup</h2>
+        <img
+          class="article-hero-float"
+          src="/assets/img/screenshot-backup-data.webp"
+          alt="Example of a Daily Sticky exported backup file showing sticker placements and notes as JSON"
+        />
 
         <p>
-          Because everything lives locally, Export/Import is also the only way
-          to move your sticker journal from one device or browser to another —
-          there’s no automatic sync. Basically: export often, and you’ll never
-          lose a sticker.
+          JSON might sound technical, but don’t let it scare you off — it’s
+          really just a plain text file. Every backup, automatic or manual,
+          stores two things: the notes you’ve written, and which sticker you
+          picked for each day (just a short ID, not the picture itself).
+          That’s all Daily Sticky needs to read it back and rebuild your
+          calendar exactly the way you left it.
         </p>
 
         <p>

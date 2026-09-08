@@ -158,16 +158,12 @@
 
           <div id="menuDropdown" class="menu-dropdown hidden" role="menu">
             <a class="menu-item" href="/notes.html">View Sticker Stories</a>
-            <button id="menuExport" class="menu-item">Export Backup</button>
-            <label class="menu-item fileBtn">
-              Import Backup
-              <input
-                id="menuImportInput"
-                type="file"
-                accept="application/json"
-                hidden
-              />
-            </label>
+            <a class="menu-item" href="/blog/save-your-data.html"
+              >Backup &amp; Restore</a
+            >
+            <button id="menuAutoBackup" class="menu-item">
+              Turn on Auto Backup
+            </button>
             <a id="menuAbout" class="menu-item" href="/about.html">About</a>
             <a class="menu-item" href="/blog/">Sticky Notes</a>
             <a class="menu-item" href="/artists.html">Meet the Artists</a>
@@ -630,6 +626,33 @@
           type="button"
         >
           Add to Home Screen
+        </button>
+      </div>
+    </div>
+
+    <div id="backupPrompt" class="install-prompt hidden">
+      <div class="install-prompt-card">
+        <button
+          id="dismissBackupPromptBtn"
+          class="install-prompt-close"
+          type="button"
+          aria-label="Dismiss backup prompt"
+        >
+          ×
+        </button>
+
+        <p class="install-prompt-title">Using Daily Sticky?</p>
+        <p class="install-prompt-text">
+          Keep your data safe if you switch devices or clear your cache —
+          set up auto backups.
+        </p>
+
+        <button
+          id="backupPromptBtn"
+          class="install-prompt-main-btn"
+          type="button"
+        >
+          Set Up Auto Backups
         </button>
       </div>
     </div>

@@ -1,5 +1,12 @@
 const STICKER_YEAR_STORAGE_KEY = "stickerYear.v1";
 const STICKER_YEAR_VERSION = 1;
+const LAST_AUTO_EXPORT_KEY = "dailySticky.lastAutoExport.v1";
+const AUTO_EXPORT_INTERVAL_MS = 12 * 60 * 60 * 1000;
+const AUTO_BACKUP_MODE_KEY = "dailySticky.autoBackupMode.v1";
+const LAST_PROMPT_SHOWN_KEY = "dailySticky.lastPromptShownDate.v1";
+const BACKUP_DIR_DB_NAME = "dailySticky.backupDir";
+const BACKUP_DIR_STORE = "handles";
+const BACKUP_DIR_HANDLE_KEY = "backupDirHandle";
 // test again at 10 am
 function loadDailyStickyState() {
   try {
@@ -46,6 +53,126 @@ function exportDailyStickyBackup() {
   URL.revokeObjectURL(a.href);
 
   DailyStickyAnalytics.trackEvent("backup_exported");
+}
+
+function hasAnyPromptShownToday() {
+  return localStorage.getItem(LAST_PROMPT_SHOWN_KEY) === ymd(new Date());
+}
+
+function markPromptShownToday() {
+  localStorage.setItem(LAST_PROMPT_SHOWN_KEY, ymd(new Date()));
+}
+
+function isAutoBackupEnabled() {
+  return !!localStorage.getItem(AUTO_BACKUP_MODE_KEY);
+}
+
+function openBackupHandleDb() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(BACKUP_DIR_DB_NAME, 1);
+    req.onupgradeneeded = () => {
+      req.result.createObjectStore(BACKUP_DIR_STORE);
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function saveBackupDirectoryHandle(handle) {
+  const db = await openBackupHandleDb();
+  await new Promise((resolve, reject) => {
+    const tx = db.transaction(BACKUP_DIR_STORE, "readwrite");
+    tx.objectStore(BACKUP_DIR_STORE).put(handle, BACKUP_DIR_HANDLE_KEY);
+    tx.oncomplete = resolve;
+    tx.onerror = () => reject(tx.error);
+  });
+  db.close();
+}
+
+async function loadBackupDirectoryHandle() {
+  const db = await openBackupHandleDb();
+  const handle = await new Promise((resolve, reject) => {
+    const tx = db.transaction(BACKUP_DIR_STORE, "readonly");
+    const req = tx.objectStore(BACKUP_DIR_STORE).get(BACKUP_DIR_HANDLE_KEY);
+    req.onsuccess = () => resolve(req.result || null);
+    req.onerror = () => reject(req.error);
+  });
+  db.close();
+  return handle;
+}
+
+async function clearBackupDirectoryHandle() {
+  const db = await openBackupHandleDb();
+  await new Promise((resolve, reject) => {
+    const tx = db.transaction(BACKUP_DIR_STORE, "readwrite");
+    tx.objectStore(BACKUP_DIR_STORE).delete(BACKUP_DIR_HANDLE_KEY);
+    tx.oncomplete = resolve;
+    tx.onerror = () => reject(tx.error);
+  });
+  db.close();
+}
+
+async function setupAutoBackup() {
+  if ("showDirectoryPicker" in window) {
+    try {
+      const dirHandle = await window.showDirectoryPicker({
+        mode: "readwrite",
+      });
+      await saveBackupDirectoryHandle(dirHandle);
+      localStorage.setItem(AUTO_BACKUP_MODE_KEY, "directory");
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  localStorage.setItem(AUTO_BACKUP_MODE_KEY, "download");
+  return true;
+}
+
+async function disableAutoBackup() {
+  localStorage.removeItem(AUTO_BACKUP_MODE_KEY);
+  await clearBackupDirectoryHandle();
+}
+
+async function writeBackupToDirectory() {
+  try {
+    const dirHandle = await loadBackupDirectoryHandle();
+    if (!dirHandle) return false;
+
+    const permission = await dirHandle.queryPermission({ mode: "readwrite" });
+    if (permission !== "granted") return false;
+
+    const state = loadDailyStickyState() || migrateDailyStickyState({});
+    const fileHandle = await dirHandle.getFileHandle(
+      `sticker-year-${ymd(new Date())}.json`,
+      { create: true },
+    );
+    const writable = await fileHandle.createWritable();
+    await writable.write(JSON.stringify(state, null, 2));
+    await writable.close();
+
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function maybeAutoExportBackup() {
+  const mode = localStorage.getItem(AUTO_BACKUP_MODE_KEY);
+  if (!mode) return;
+
+  const last = Number(localStorage.getItem(LAST_AUTO_EXPORT_KEY));
+  if (last && Date.now() - last < AUTO_EXPORT_INTERVAL_MS) return;
+
+  if (mode === "directory") {
+    const wrote = await writeBackupToDirectory();
+    if (!wrote) return;
+  } else {
+    exportDailyStickyBackup();
+  }
+
+  localStorage.setItem(LAST_AUTO_EXPORT_KEY, String(Date.now()));
 }
 
 async function importDailyStickyBackup(file) {
