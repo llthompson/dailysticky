@@ -43,20 +43,14 @@ function wireNavMenu() {
 
   hideCurrentPageLink();
 
-  const menuAutoBackup = document.getElementById("menuAutoBackup");
   const homeAutoBackupBtn = document.getElementById("homeAutoBackupBtn");
 
   if (typeof isAutoBackupEnabled === "function") {
-    updateAutoBackupToggleLabel(menuAutoBackup);
     updateAutoBackupToggleLabel(homeAutoBackupBtn);
   }
 
-  if (menuAutoBackup && typeof setupAutoBackup === "function") {
-    menuAutoBackup.addEventListener("click", async () => {
-      menuDropdown.classList.add("hidden");
-      await toggleAutoBackup(menuAutoBackup);
-      updateAutoBackupToggleLabel(homeAutoBackupBtn);
-    });
+  if (typeof renderAutoBackupStatus === "function") {
+    renderAutoBackupStatus();
   }
 
   const homeExportBtn = document.getElementById("homeExportBtn");
@@ -70,7 +64,10 @@ function wireNavMenu() {
   if (homeAutoBackupBtn && typeof setupAutoBackup === "function") {
     homeAutoBackupBtn.addEventListener("click", async () => {
       await toggleAutoBackup(homeAutoBackupBtn);
-      updateAutoBackupToggleLabel(menuAutoBackup);
+
+      if (typeof renderAutoBackupStatus === "function") {
+        renderAutoBackupStatus();
+      }
     });
   }
 

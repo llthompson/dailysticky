@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Google Tag Manager -->
+    <script>
+      (function (w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+        var f = d.getElementsByTagName(s)[0],
+          j = d.createElement(s),
+          dl = l != "dataLayer" ? "&l=" + l : "";
+        j.async = true;
+        j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+        f.parentNode.insertBefore(j, f);
+      })(window, document, "script", "dataLayer", "GTM-W3BD8RVV");
+    </script>
+    <!-- End Google Tag Manager -->
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Settings | Daily Sticky</title>
+    <link rel="canonical" href="https://dailysticky.app/settings.html" />
+    <meta name="robots" content="noindex, follow" />
+    <meta
+      name="description"
+      content="Manage your Daily Sticky backups: turn on automatic backup, export a copy, or import a previously saved file."
+    />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Settings | Daily Sticky" />
+    <meta
+      property="og:description"
+      content="Manage your Daily Sticky backups: automatic backup, export, and import."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://dailysticky.app/settings.html" />
+    <meta
+      property="og:image"
+      content="https://dailysticky.app/the-daily-sticky-logo.png"
+    />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Settings | Daily Sticky" />
+    <meta
+      name="twitter:description"
+      content="Manage your Daily Sticky backups: automatic backup, export, and import."
+    />
+    <meta
+      name="twitter:image"
+      content="https://dailysticky.app/the-daily-sticky-logo.png"
+    />
+
+    <link rel="stylesheet" href="/src/shared/styles.css" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&family=Truculenta:opsz,wght@12..72,100..900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript
+      ><iframe
+        src="https://www.googletagmanager.com/ns.html?id=GTM-W3BD8RVV"
+        height="0"
+        width="0"
+        style="display: none; visibility: hidden"
+      ></iframe
+    ></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+    <header class="topbar simple-topbar">
+      <button id="menuBtn" class="btn icon-btn image-btn" aria-label="Menu">
+        <img src="/assets/img/menu-icon.png" alt="" />
+      </button>
+
+      <div id="menuDropdown" class="menu-dropdown hidden" role="menu">
+        <a class="menu-item" href="/">Home</a>
+        <a class="menu-item" href="/notes.html">View Sticker Stories</a>
+        <a class="menu-item" href="/about.html">About</a>
+        <a class="menu-item" href="/blog/">Sticky Notes</a>
+        <a class="menu-item" href="/artists.html">Meet the Artists</a>
+        <a class="menu-item" href="/contact.html">Contact</a>
+      </div>
+
+      <a href="/" class="simple-logo-link">
+        <img
+          src="/assets/img/the-daily-sticky-logo-header.webp"
+          alt="The Daily Sticky"
+          class="site-logo"
+          width="500"
+          height="279"
+        />
+      </a>
+
+      <a href="/" class="blog-nav-link">Home</a>
+    </header>
+
+    <main class="about-container settings-container">
+      <p class="blog-kicker">Backup & Restore</p>
+      <h1>Settings</h1>
+
+      <div class="about-card settings-card">
+        <section class="settings-section">
+          <h2>Auto Backup</h2>
+          <p id="autoBackupStatus" class="settings-status">Loading…</p>
+          <button id="homeAutoBackupBtn" class="menu-item settings-btn">
+            Turn on Auto Backup
+          </button>
+        </section>
+
+        <section class="settings-section">
+          <h2>Export</h2>
+          <p class="settings-caption">
+            Download a copy of your journal right now.
+          </p>
+          <button id="homeExportBtn" class="menu-item settings-btn">
+            Export Backup
+          </button>
+        </section>
+
+        <section class="settings-section">
+          <h2>Import</h2>
+          <p class="settings-caption">
+            Restore from a previously saved backup file. This replaces
+            what's currently in the app.
+          </p>
+          <label class="menu-item fileBtn settings-btn">
+            Import Backup
+            <input
+              id="homeImportInput"
+              type="file"
+              accept="application/json"
+              hidden
+            />
+          </label>
+        </section>
+
+        <p class="settings-link">
+          Want the full explanation of how backups work?
+          <a href="/blog/save-your-data.html">Read Save Your Journal Data →</a>
+        </p>
+      </div>
+    </main>
+
+    <script src="/src/shared/analytics.js"></script>
+    <script src="/src/shared/nav.js"></script>
+    <script src="/src/legacy/state.js"></script>
+  </body>
+</html>

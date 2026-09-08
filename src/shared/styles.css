@@ -419,6 +419,81 @@ body::after {
   background-repeat: no-repeat;
 }
 
+.settings-container {
+  text-align: center;
+}
+
+.settings-container .blog-kicker {
+  text-align: center;
+}
+
+.settings-section {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.settings-section:last-of-type {
+  border-bottom: none;
+}
+
+.settings-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: fit-content;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 999px;
+  margin: 4px auto 12px;
+}
+
+.settings-status.off {
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--muted);
+}
+
+.settings-status.on {
+  background: rgba(99, 200, 130, 0.18);
+  color: #1e7a45;
+}
+
+.settings-caption {
+  font-size: 15px;
+  margin: 4px 0 12px;
+}
+
+button.settings-btn,
+label.settings-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: var(--inner-glow);
+
+  color: var(--accent-ink);
+  font-family: var(--font-alt);
+  font-size: 0.9rem;
+  font-weight: 850;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+button.settings-btn:hover,
+label.settings-btn:hover {
+  background: color-mix(in srgb, var(--accent) 10%, white);
+}
+
+.settings-link {
+  margin-top: 18px;
+  font-size: 14px;
+}
+
 .back-link {
   margin-top: 18px;
   font-size: 1.2rem;

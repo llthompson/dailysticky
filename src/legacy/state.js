@@ -135,6 +135,31 @@ async function disableAutoBackup() {
   await clearBackupDirectoryHandle();
 }
 
+async function renderAutoBackupStatus() {
+  const statusEl = document.getElementById("autoBackupStatus");
+  if (!statusEl) return;
+
+  const mode = localStorage.getItem(AUTO_BACKUP_MODE_KEY);
+
+  if (!mode) {
+    statusEl.textContent = "Off";
+    statusEl.classList.remove("on");
+    statusEl.classList.add("off");
+    return;
+  }
+
+  if (mode === "directory") {
+    const handle = await loadBackupDirectoryHandle();
+    const name = handle?.name || "a chosen folder";
+    statusEl.textContent = `Saving to "${name}"`;
+  } else {
+    statusEl.textContent = "Saving to your device's downloads";
+  }
+
+  statusEl.classList.remove("off");
+  statusEl.classList.add("on");
+}
+
 async function writeBackupToDirectory() {
   try {
     const dirHandle = await loadBackupDirectoryHandle();
