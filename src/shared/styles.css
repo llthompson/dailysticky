@@ -3405,10 +3405,6 @@ h3 {
   /* padding: 18px; */
 }
 
-#monthExportOverlay.overlay {
-  place-items: center;
-}
-
 #monthExportOverlay .modal,
 #yearExportOverlay .modal {
   width: min(94vw, 330px);
@@ -3420,6 +3416,13 @@ h3 {
   box-shadow: none;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
+}
+
+@media (max-width: 700px) {
+  #monthExportOverlay .modal,
+  #yearExportOverlay .modal {
+    width: 90vw;
+  }
 }
 
 .export-popup-header {
