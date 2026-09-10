@@ -233,6 +233,7 @@ window.addEventListener("beforeinstallprompt", (event) => {
 window.addEventListener("appinstalled", () => {
   deferredInstallPrompt = null;
   dismissInstallPrompt();
+  DailyStickyAnalytics.trackEvent("pwa_installed");
 });
 
 const installPromptBtn = document.getElementById("installPromptBtn");

@@ -120,6 +120,7 @@ async function setupAutoBackup() {
       });
       await saveBackupDirectoryHandle(dirHandle);
       localStorage.setItem(AUTO_BACKUP_MODE_KEY, "directory");
+      DailyStickyAnalytics.trackEvent("auto_backup_enabled");
       return true;
     } catch {
       return false;
@@ -127,12 +128,14 @@ async function setupAutoBackup() {
   }
 
   localStorage.setItem(AUTO_BACKUP_MODE_KEY, "download");
+  DailyStickyAnalytics.trackEvent("auto_backup_enabled");
   return true;
 }
 
 async function disableAutoBackup() {
   localStorage.removeItem(AUTO_BACKUP_MODE_KEY);
   await clearBackupDirectoryHandle();
+  DailyStickyAnalytics.trackEvent("auto_backup_disabled");
 }
 
 async function renderAutoBackupStatus() {
