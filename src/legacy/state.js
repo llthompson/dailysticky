@@ -7,6 +7,7 @@ const LAST_PROMPT_SHOWN_KEY = "dailySticky.lastPromptShownDate.v1";
 const BACKUP_DIR_DB_NAME = "dailySticky.backupDir";
 const BACKUP_DIR_STORE = "handles";
 const BACKUP_DIR_HANDLE_KEY = "backupDirHandle";
+const LAST_BACKUP_RESULT_KEY = "dailySticky.lastBackupResult.v1";
 // test again at 10 am
 function loadDailyStickyState() {
   try {
@@ -161,15 +162,43 @@ async function renderAutoBackupStatus() {
 
   statusEl.classList.remove("off");
   statusEl.classList.add("on");
+
+  // const lastResultRaw = localStorage.getItem(LAST_BACKUP_RESULT_KEY);
+  // if (lastResultRaw) {
+  //   try {
+  //     const lastResult = JSON.parse(lastResultRaw);
+  //     const when = new Date(lastResult.at).toLocaleString();
+  //     statusEl.textContent += lastResult.ok
+  //       ? ` — last backup succeeded (${when})`
+  //       : ` — last backup FAILED: ${lastResult.reason} (${when})`;
+  //   } catch {
+  //     // ignore malformed diagnostic data
+  //   }
+  // }
+}
+
+function recordBackupResult(ok, reason) {
+  const result = { ok, reason: reason || null, at: Date.now() };
+  localStorage.setItem(LAST_BACKUP_RESULT_KEY, JSON.stringify(result));
+  console.log("Daily Sticky backup result:", result);
 }
 
 async function writeBackupToDirectory() {
   try {
     const dirHandle = await loadBackupDirectoryHandle();
-    if (!dirHandle) return false;
+    if (!dirHandle) {
+      recordBackupResult(false, "no folder saved");
+      return false;
+    }
 
-    const permission = await dirHandle.queryPermission({ mode: "readwrite" });
-    if (permission !== "granted") return false;
+    let permission = await dirHandle.queryPermission({ mode: "readwrite" });
+    if (permission !== "granted") {
+      permission = await dirHandle.requestPermission({ mode: "readwrite" });
+    }
+    if (permission !== "granted") {
+      recordBackupResult(false, `permission not granted after request (${permission})`);
+      return false;
+    }
 
     const state = loadDailyStickyState() || migrateDailyStickyState({});
     const fileHandle = await dirHandle.getFileHandle(
@@ -180,8 +209,11 @@ async function writeBackupToDirectory() {
     await writable.write(JSON.stringify(state, null, 2));
     await writable.close();
 
+    recordBackupResult(true);
     return true;
-  } catch {
+  } catch (error) {
+    console.error("Daily Sticky backup write failed:", error);
+    recordBackupResult(false, `${error.name || "Error"}: ${error.message || error}`);
     return false;
   }
 }
