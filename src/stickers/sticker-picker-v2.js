@@ -702,9 +702,10 @@
       )
       .slice()
       .sort((a, b) => {
-        const artistRank = (s) => (s.artistId ? 0 : 1);
-        const rankDiff = artistRank(a) - artistRank(b);
-        if (rankDiff !== 0) return rankDiff;
+        // Artist stickers first — uncomment to restore
+        // const artistRank = (s) => (s.artistId ? 0 : 1);
+        // const rankDiff = artistRank(a) - artistRank(b);
+        // if (rankDiff !== 0) return rankDiff;
         return a.id.localeCompare(b.id, undefined, { numeric: true });
       });
 
